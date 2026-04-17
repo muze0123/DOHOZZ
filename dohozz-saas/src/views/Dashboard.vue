@@ -1,0 +1,1848 @@
+<template>
+  <div class="dashboard-container">
+    <!-- 顶部导航栏 -->
+    <header class="top-header">
+      <div class="header-left">
+        <div class="logo-area">
+          <img src="@/assets/DOHOZZ_LOOGO.png" alt="DOHOZZ" class="logo-img" />
+          <span class="logo-text">DOHOZZ</span>
+        </div>
+        <div class="nav-divider"></div>
+        <span class="nav-item">带货</span>
+        <span class="nav-item">内容中心</span>
+        <span class="nav-item active">达人合作</span>
+        <span class="nav-item">指挥中台</span>
+        <span class="nav-item">系统设置</span>
+      </div>
+      <div class="header-right">
+        <div class="download-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          <span>下载插件</span>
+        </div>
+        <div class="header-icons">
+          <div class="icon-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span class="badge">99</span>
+          </div>
+          <div class="icon-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+          </div>
+          <div class="icon-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-wrapper">
+      <!-- 左侧导航栏 -->
+      <aside class="left-sidebar">
+        <div class="sidebar-menu">
+          <div class="menu-item active">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+              </svg>
+            </div>
+            <span>工作台</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+              </svg>
+            </div>
+            <span>数据运营</span>
+          </div>
+          <div class="menu-item has-submenu">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/>
+              </svg>
+            </div>
+            <span>找达人</span>
+            <div class="submenu-arrow"></div>
+          </div>
+          <div class="menu-item selected">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+            <span>达人库</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+              </svg>
+            </div>
+            <span>商品找达人</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+            <span>智能推荐达人</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+              </svg>
+            </div>
+            <span>达人榜单</span>
+            <span class="new-tag">New</span>
+          </div>
+          <div class="menu-divider"></div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+            <span>达人管理</span>
+            <div class="submenu-arrow"></div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+              </svg>
+            </div>
+            <span>批量建联</span>
+            <div class="submenu-arrow"></div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/>
+              </svg>
+            </div>
+            <span>样品管理</span>
+            <div class="submenu-arrow"></div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+              </svg>
+            </div>
+            <span>视频履约</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+              </svg>
+            </div>
+            <span>合作管理</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>
+              </svg>
+            </div>
+            <span>店铺商品</span>
+            <div class="submenu-arrow"></div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3H6V5h10zm2.5 3H18V5h.5c.83 0 1.5.67 1.5 1.5S19.33 8 18.5 8zM4 19h16v2H4v-2z"/>
+              </svg>
+            </div>
+            <span>订单管理</span>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              </svg>
+            </div>
+            <span>团长管理</span>
+            <div class="submenu-arrow"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- 主内容区 -->
+      <main class="main-content">
+        <!-- 平台Tab栏 -->
+        <div class="platform-tabs-bar">
+          <div class="platform-tabs">
+            <div
+              v-for="platform in platforms"
+              :key="platform.id"
+              class="platform-tab"
+              :class="{ active: activePlatform === platform.id }"
+              @click="switchPlatform(platform.id)"
+            >
+              <div class="platform-icon" v-html="platform.icon"></div>
+              <span>{{ platform.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 用户信息栏 -->
+        <div class="user-info-bar">
+          <div class="user-info-left">
+            <el-avatar :size="48" :icon="UserFilled" class="user-avatar" />
+            <div class="user-details">
+              <div class="user-name">{{ userInfo.name }}</div>
+              <div class="user-role">{{ userInfo.department }} | {{ userInfo.role }}</div>
+              <div class="user-tenure">
+                <span class="tenure-text">您已加入公司 </span>
+                <span class="tenure-value">{{ userInfo.tenure }}</span>
+                <span class="tenure-text"> 天</span>
+              </div>
+            </div>
+          </div>
+          <div class="user-filters">
+            <div class="filter-select">
+              <el-select v-model="selectedDept" placeholder="全部部门">
+                <el-option label="全部部门" value="all" />
+                <el-option label="销售部" value="sales" />
+                <el-option label="运营部" value="ops" />
+              </el-select>
+            </div>
+            <div class="filter-select">
+              <el-select v-model="selectedBD" placeholder="全部BD">
+                <el-option label="本人" value="self" />
+                <el-option label="张三" value="zhangsan" />
+                <el-option label="李四" value="lisi" />
+              </el-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 初始化引导区 -->
+        <div class="section init-guide-section">
+          <div class="section-header">
+            <div class="section-title-group">
+              <span class="section-title">轻松上手</span>
+              <span class="section-title">初始化引导</span>
+            </div>
+            <span class="collapse-btn" @click="guideCollapsed = !guideCollapsed">
+              {{ guideCollapsed ? '展开' : '收起' }}
+            </span>
+          </div>
+          <div class="guide-cards" v-show="!guideCollapsed">
+            <div class="guide-card" v-for="guide in guides" :key="guide.id">
+              <div class="guide-header">
+                <div class="guide-step">{{ guide.step }}</div>
+                <div class="guide-content">
+                  <div class="guide-title">{{ guide.title }}</div>
+                  <div class="guide-desc">{{ guide.desc }}</div>
+                </div>
+              </div>
+              <div class="guide-action">
+                <span class="action-text">去{{ guide.action }}</span>
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 待办事项区 -->
+        <div class="section todo-section">
+          <div class="section-header">
+            <span class="section-title">待办事项</span>
+            <div class="section-desc">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
+              <span>当前与跟进达人相关的待办事项，请及时处理</span>
+            </div>
+          </div>
+          <div class="todo-cards-grid">
+            <div
+              v-for="todo in todoItems"
+              :key="todo.id"
+              class="todo-card"
+              :class="{ 'has-warning': todo.warning > 0 }"
+            >
+              <div class="todo-label">{{ todo.label }}</div>
+              <div class="todo-value" :class="{ warning: todo.warning > 0 }">
+                {{ todo.value }}
+              </div>
+              <div class="todo-warning" v-if="todo.warningText">
+                <span :class="{ 'warning-text': todo.warning > 0 }">{{ todo.warningText }}</span>
+                <span class="warning-count" v-if="todo.warning > 0">{{ todo.warning }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 快捷工具区 -->
+        <div class="section quick-tools-section">
+          <div class="section-header">
+            <span class="section-title">快捷工具</span>
+          </div>
+          <div class="quick-tools-grid">
+            <div
+              v-for="tool in quickTools"
+              :key="tool.id"
+              class="quick-tool-item"
+            >
+              <div class="tool-icon" v-html="tool.icon"></div>
+              <span class="tool-name">{{ tool.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-bottom">
+          <!-- 达人大盘数据区 -->
+          <div class="section data-section">
+            <div class="section-header">
+              <span class="section-title">达人大盘数据</span>
+            </div>
+
+            <!-- 状态 Sub-Tab -->
+            <div class="status-tabs">
+              <div
+                v-for="status in statusFilters"
+                :key="status.key"
+                class="status-tab"
+                :class="{ active: selectedStatus === status.key }"
+                @click="selectedStatus = status.key"
+              >
+                {{ status.label }}{{ status.count }}
+              </div>
+            </div>
+
+            <!-- 时间筛选 -->
+            <div class="date-filter">
+              <div class="date-tabs">
+                <span
+                  v-for="tab in dateTabs"
+                  :key="tab"
+                  class="date-tab"
+                  :class="{ active: selectedDate === tab }"
+                  @click="selectedDate = tab"
+                >
+                  {{ tab }}
+                </span>
+              </div>
+              <span class="date-range">近7天（2025/11/20 - 2025/11/26）</span>
+            </div>
+
+            <!-- 数据列表 -->
+            <div class="data-table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>达人</th>
+                    <th>跟进BD</th>
+                    <th>达人来源</th>
+                    <th>流转时间</th>
+                    <th>当前状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, index) in tableData" :key="index">
+                    <td>
+                      <div class="talent-info">
+                        <el-avatar :size="32" :icon="UserFilled" />
+                        <div class="talent-detail">
+                          <span class="talent-name">{{ row.username }}</span>
+                          <span class="talent-nickname">{{ row.name }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="bd-info">
+                        <el-avatar :size="24" :icon="UserFilled" />
+                        <span>{{ row.bd }}</span>
+                      </div>
+                    </td>
+                    <td><span class="source-tag">{{ row.source }}</span></td>
+                    <td>{{ row.transferTime }}</td>
+                    <td>
+                      <span class="status-tag" :class="getStatusClass(row.status)">
+                        {{ row.statusText }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="action-link">跟进记录</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 分页 -->
+            <div class="pagination">
+              <span class="pagination-info">共40条记录 第1/8页</span>
+              <div class="pagination-controls">
+                <div class="page-btn">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                  </svg>
+                </div>
+                <div class="page-btn active">1</div>
+                <div class="page-btn">2</div>
+                <div class="page-btn">3</div>
+                <div class="page-btn">4</div>
+                <div class="page-btn">5</div>
+                <div class="page-btn">…</div>
+                <div class="page-btn">43</div>
+                <div class="page-btn">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="page-jump">
+                <span>跳至</span>
+                <input type="number" class="page-input" value="5" min="1" max="8" />
+                <span>页</span>
+                <span class="page-size">10条/页</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 业绩目标区 -->
+          <div class="section performance-section">
+            <div class="section-header">
+              <span class="section-title">业绩目标</span>
+            </div>
+
+            <div class="performance-chart">
+              <div class="chart-header">
+                <div class="completion-rate success">
+                  <span class="rate-value">93.55%</span>
+                  <span class="rate-label">完成目标</span>
+                </div>
+                <div class="chart-date">
+                  <span class="date-value">2025.11</span>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                    <path d="M7 10l5 5 5-5z"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="chart-area">
+                <div class="chart-lines">
+                  <div class="chart-line target"></div>
+                  <div class="chart-line actual"></div>
+                </div>
+                <div class="chart-dots">
+                  <span class="dot success"></span>
+                  <span class="dot success"></span>
+                  <span class="dot success"></span>
+                  <span class="dot success"></span>
+                  <span class="dot success"></span>
+                  <span class="dot current"></span>
+                </div>
+                <div class="chart-labels">
+                  <span>02-01</span>
+                  <span>02-7</span>
+                  <span>02-13</span>
+                  <span>02-19</span>
+                  <span>02-25</span>
+                  <span>02-28</span>
+                </div>
+                <div class="chart-values">
+                  <div class="value-item current">
+                    <span class="value-dot"></span>
+                    <span>当前：16.88w元</span>
+                  </div>
+                  <div class="value-item target">
+                    <span class="value-dot"></span>
+                    <span>目标：20w元</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="performance-stats">
+              <div class="stat-item">
+                <span class="stat-label">达人成交金额</span>
+                <div class="stat-progress">
+                  <div class="progress-bar orange">
+                    <div class="progress-fill" style="width: 50%"></div>
+                  </div>
+                  <span class="stat-value">10/<span class="stat-gray">20</span>（<span class="stat-percent">50%</span>）</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">建联达人数</span>
+                <div class="stat-progress">
+                  <div class="progress-bar green">
+                    <div class="progress-fill" style="width: 75%"></div>
+                  </div>
+                  <span class="stat-value">15/<span class="stat-gray">20</span>（<span class="stat-percent">75%</span>）</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">寄样达人数</span>
+                <div class="stat-progress">
+                  <div class="progress-bar blue">
+                    <div class="progress-fill" style="width: 25%"></div>
+                  </div>
+                  <span class="stat-value">5/<span class="stat-gray">20</span>（<span class="stat-percent">25%</span>）</span>
+                </div>
+              </div>
+            </div>
+            <div class="expand-btn">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
+              <span>展开全部</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 动态提醒区 -->
+        <div class="section notification-section">
+          <div class="notification-tabs">
+            <span
+              class="notif-tab"
+              :class="{ active: notifTab === 'reminder' }"
+              @click="notifTab = 'reminder'"
+            >
+              动态提醒
+            </span>
+            <span
+              class="notif-tab"
+              :class="{ active: notifTab === 'announce' }"
+              @click="notifTab = 'announce'"
+            >
+              系统公告
+            </span>
+            <span class="more-link">更多 ></span>
+          </div>
+          <div class="notification-list">
+            <div
+              v-for="item in currentNotifications"
+              :key="item.id"
+              class="notification-item"
+            >
+              <div class="notif-tag" :class="item.typeClass">{{ item.type }}</div>
+              <div class="notif-content" v-html="item.content"></div>
+              <div class="notif-time">{{ item.time }}</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, computed } from 'vue'
+import { ElMessage, ElAvatar } from 'element-plus'
+import { UserFilled } from '@element-plus/icons-vue'
+
+const activePlatform = ref('tiktok')
+const selectedDept = ref('')
+const selectedBD = ref('')
+const selectedDate = ref('近N天')
+const selectedStatus = ref('all')
+const guideCollapsed = ref(false)
+const notifTab = ref('reminder')
+
+const userInfo = reactive({
+  name: '张三',
+  tenure: 260,
+  department: '部门名称XXX',
+  role: '角色名称XXX'
+})
+
+const platforms = [
+  {
+    id: 'tiktok',
+    name: 'TikTok',
+    icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>'
+  },
+  {
+    id: 'instagram',
+    name: 'Instagram',
+    icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>'
+  },
+  {
+    id: 'shopee',
+    name: 'Shopee',
+    icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.006 4.295c-1.61 0-3.145.55-4.332 1.45l-.247.194c-.617.475-1.118 1.07-1.49 1.747-.37.676-.563 1.43-.563 2.23 0 .78.18 1.54.527 2.2.347.66.837 1.22 1.44 1.64l.16.11c.35.24.74.41 1.16.51.42.1.85.15 1.29.15h2.9c.75 0 1.47-.12 2.13-.36.66-.24 1.25-.58 1.75-1.01l.03-.02c.47-.42.85-.93 1.11-1.51.27-.58.41-1.22.41-1.89 0-.67-.14-1.3-.41-1.89-.27-.58-.64-1.09-1.11-1.51l-.03-.02c-.5-.43-1.09-.77-1.75-1.01-.66-.24-1.38-.36-2.13-.36H13.4l-.63-1.06-.64 1.06h-2.9l-.55-.39c-.5-.35-1.05-.63-1.65-.82-.6-.19-1.24-.29-1.9-.29-.55 0-1.1.08-1.62.23-.53.15-1.02.38-1.45.68l-.13.09c-.39.29-.73.64-1.01 1.05-.28.41-.43.87-.43 1.36 0 .49.15.95.43 1.36.28.41.62.76 1.01 1.05l.13.09c.43.3.92.53 1.45.68.52.15 1.07.23 1.62.23.66 0 1.3-.1 1.9-.29.6-.19 1.15-.47 1.65-.82l.55-.39h3.79l.63 1.06.64-1.06h2.27c1.08 0 2.1.28 2.98.79.88.51 1.58 1.24 2.04 2.13.46.89.7 1.91.7 2.98 0 1.07-.24 2.09-.7 2.98-.46.89-1.16 1.62-2.04 2.13-.88.51-1.9.79-2.98.79H8.17c-.82 0-1.61.16-2.33.46-.73.3-1.37.74-1.91 1.29-.54.55-.96 1.21-1.24 1.95-.28.74-.42 1.55-.42 2.39 0 .84.14 1.65.42 2.39.28.74.7 1.4 1.24 1.95.54.55 1.18.99 1.91 1.29.72.3 1.51.46 2.33.46h13.65c1.64 0 3.19-.34 4.56-.98 1.37-.64 2.52-1.54 3.37-2.63.85-1.09 1.38-2.38 1.53-3.79.15-1.41-.05-2.83-.58-4.14-.53-1.31-1.38-2.43-2.48-3.28-1.1-.85-2.4-1.38-3.81-1.53-1.41-.15-2.83.05-4.14.58-1.31.53-2.43 1.38-3.28 2.48l-.16.21-.24-.33z"/></svg>'
+  },
+  {
+    id: 'lazada',
+    name: 'Lazada',
+    icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.91 6.18c-.02-.39-.35-.7-.74-.7H2.83c-.39 0-.72.31-.74.7l-.99 14.64c-.02.39.27.71.66.71h18.68c.39 0 .68-.32.66-.71l-.09-14.64zm-8.84 6.1l-3.4 3.4H3.7l4.37-5.58 3.4 3.4 1.4-1.4-3.4-3.4 2.86-3.72c.18-.23.5-.3.74-.15l3.02 1.87 2.45-3.17c.16-.2.46-.24.68-.1l2.6 1.63c.22.14.29.42.16.64l-2.9 4.83-2.45 3.17c-.16.2-.46.24-.68.1l-2.61-1.63c-.22-.14-.29-.42-.16-.64l.86-1.42-1.4 1.4-1.42.86z"/></svg>'
+  }
+]
+
+const guides = reactive([
+  { id: 1, step: '1', title: '店铺授权', desc: '授权绑定店铺，统计交易数据和跟进达人', action: '授权' },
+  { id: 2, step: '2', title: '商品管理', desc: '创建本地商品SKU，便于对商品精细化管理', action: '设置' },
+  { id: 3, step: '3', title: '账号管理', desc: '创建员工账号，管理角色授权', action: '设置' }
+])
+
+const todoItems = reactive([
+  { id: 1, label: '待建联', value: 3, warning: 1, warningText: '待触达 1  待邀约 2' },
+  { id: 2, label: '待寄样', value: 3, warning: 1, warningText: '超过三天未寄样达人 1' },
+  { id: 3, label: '待审核样品', value: 3, warning: 0, warningText: '超过两天未审核样品 0' },
+  { id: 4, label: '待发货样品', value: 3, warning: 0, warningText: '超过两天未发货样品 0' },
+  { id: 5, label: '待签收样品', value: 0, warning: 0, warningText: '超过7天未签收样品 0' },
+  { id: 6, label: '寄样签收待履约', value: 0, warning: 0, warningText: '超过15天未履约 0' },
+  { id: 7, label: '寄样签收待交付', value: 0, warning: 0, warningText: '超过15天未交付 0' },
+  { id: 8, label: '待合作', value: 0, warning: 0, warningText: '超过15天未合作 0' },
+  { id: 9, label: '合作单待交付', value: 0, warning: 0, warningText: '超过15天未交付 0' },
+  { id: 10, label: '3天内将释放公海达人', value: 0, warning: 0, warningText: '临期未建联 0  临期未出单 0' }
+])
+
+const quickTools = reactive([
+  { id: 1, name: '找达人', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg>' },
+  { id: 2, name: '批量导入达人线索', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>' },
+  { id: 3, name: '批量建联', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>' },
+  { id: 4, name: '申请寄样', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>' },
+  { id: 5, name: '达人履约', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>' },
+  { id: 6, name: '跟进合作', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>' }
+])
+
+const dateTabs = ['周', '月', '自定义', '近N天']
+
+const statusFilters = reactive([
+  { key: 'all', label: '全部', count: 100 },
+  { key: 'pending_reach', label: '待触达', count: 10 },
+  { key: 'pending_invite', label: '待邀约', count: 6 },
+  { key: 'pending_sample', label: '待申样', count: 2 },
+  { key: 'pending_order', label: '待出单', count: 6 },
+  { key: 'ordered', label: '已出单', count: 8 },
+  { key: 'released', label: '释放公海', count: 30 }
+])
+
+const tableData = reactive([
+  { username: '达人用户名', name: '达人名称', bd: '张三', source: '达人库', transferTime: '2025-12-01', status: 'pending_reach', statusText: '待触达' },
+  { username: '达人用户名', name: '达人名称', bd: '张三', source: '达人库', transferTime: '2025-12-01', status: 'pending_reach', statusText: '待触达' },
+  { username: '达人用户名', name: '达人名称', bd: '张三', source: '达人库', transferTime: '2025-12-01', status: 'pending_reach', statusText: '待触达' },
+  { username: '达人用户名', name: '达人名称', bd: '张三', source: '达人库', transferTime: '2025-12-01', status: 'pending_reach', statusText: '待触达' }
+])
+
+const reminderNotifications = reactive([
+  { id: 1, type: '达人释放', typeClass: 'orange', content: '您的达人【XXX】因跟进后7天未未创建合作单/未出单被释放回公海', time: '11-11' },
+  { id: 2, type: '样品审批', typeClass: 'purple', content: '张三给【XXX达人名称】申请的样品已提交，请及时审批', time: '11-11' },
+  { id: 3, type: '样品签收', typeClass: 'green', content: '您给【XXX达人名称】申请的样品显示已签收，可跟进达人履约', time: '11-11' },
+  { id: 4, type: '样品审批通过', typeClass: 'green-dark', content: '您给【XXX达人名称】申请的样品已审批通过，等待发货中', time: '11-11' },
+  { id: 5, type: '达人转移', typeClass: 'orange', content: '【XXX达人名称】转移给你了，请及时跟进', time: '11-11' },
+  { id: 6, type: '达人分配', typeClass: 'orange', content: '【XXX达人名称】分配给你了，请及时跟进', time: '11-11' }
+])
+
+const announceNotifications = reactive([
+  { id: 1, type: '达人分配', typeClass: 'orange', content: '【XXX达人名称】分配给你了，请及时跟进', time: '11-11' },
+  { id: 2, type: '达人分配', typeClass: 'orange', content: '【XXX达人名称】分配给你了，请及时跟进', time: '11-11' },
+  { id: 3, type: '达人分配', typeClass: 'orange', content: '【XXX达人名称】分配给你了，请及时跟进', time: '11-11' },
+  { id: 4, type: '达人分配', typeClass: 'orange', content: '【XXX达人名称】分配给你了，请及时跟进', time: '11-11' }
+])
+
+const currentNotifications = computed(() => {
+  return notifTab.value === 'reminder' ? reminderNotifications : announceNotifications
+})
+
+const switchPlatform = (platformId) => {
+  activePlatform.value = platformId
+  ElMessage.info(`已切换至 ${platforms.find(p => p.id === platformId)?.name}`)
+}
+
+const getStatusClass = (status) => {
+  const classMap = {
+    'pending_reach': 'warning',
+    'pending_invite': 'info',
+    'pending_order': 'primary',
+    'ordered': 'success',
+    'released': 'danger',
+    'pending_sample': ''
+  }
+  return classMap[status] || ''
+}
+</script>
+
+<style lang="scss" scoped>
+$meta-blue: #0064E0;
+$meta-blue-hover: #0143B5;
+$meta-blue-light: #47A5FA;
+$white: #FFFFFF;
+$soft-gray: #F5F6F7;
+$warm-gray: #F7F8FA;
+$web-wash: #F0F2F5;
+$primary-text: #050505;
+$secondary-text: #65676B;
+$disabled-text: #BCC0C4;
+$divider: #E8E8E8;
+$success-green: #31A24C;
+$error-red: #E41E3F;
+$warning-amber: #F7B928;
+$purple: #8B5CF6;
+$orange: #FF9500;
+
+$font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+$transition-fast: 150ms ease;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dashboard-container {
+  min-height: 100vh;
+  background: $soft-gray;
+  font-family: $font-family;
+  color: $primary-text;
+  font-size: 14px;
+}
+
+// 顶部导航栏
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 16px;
+  background: $white;
+  border-bottom: 1px solid $divider;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-img {
+  width: 24px;
+  height: 24px;
+}
+
+.logo-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: $primary-text;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 16px;
+  background: $divider;
+  margin: 0 8px;
+}
+
+.nav-item {
+  font-size: 14px;
+  color: $secondary-text;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: $border-radius-sm;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $primary-text;
+  }
+
+  &.active {
+    color: $meta-blue;
+    font-weight: 500;
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: $meta-blue;
+  color: $white;
+  border-radius: $border-radius-sm;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-btn {
+  position: relative;
+  cursor: pointer;
+  color: $secondary-text;
+
+  &:hover {
+    color: $primary-text;
+  }
+
+  .badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: $error-red;
+    color: $white;
+    font-size: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// 主内容包装
+.main-wrapper {
+  display: flex;
+}
+
+// 左侧导航栏
+.left-sidebar {
+  width: 210px;
+  background: $white;
+  border-right: 1px solid $divider;
+  padding: 8px 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 48px;
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  color: $secondary-text;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all $transition-fast;
+  position: relative;
+
+  &:hover {
+    background: rgba($meta-blue, 0.05);
+    color: $primary-text;
+  }
+
+  &.active, &.selected {
+    background: rgba($meta-blue, 0.1);
+    color: $meta-blue;
+
+    .menu-icon {
+      color: $meta-blue;
+    }
+  }
+
+  .new-tag {
+    margin-left: auto;
+    padding: 1px 6px;
+    background: $error-red;
+    color: $white;
+    font-size: 10px;
+    border-radius: 4px;
+  }
+
+  .submenu-arrow {
+    margin-left: auto;
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 4px solid currentColor;
+  }
+}
+
+.menu-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.menu-divider {
+  height: 1px;
+  background: $divider;
+  margin: 8px 16px;
+}
+
+// 主内容区
+.main-content {
+  flex: 1;
+  padding: 0 16px 24px;
+  min-width: 0;
+}
+
+// 平台Tab栏
+.platform-tabs-bar {
+  background: $white;
+  border-bottom: 1px solid $divider;
+  padding: 0 16px;
+}
+
+.platform-tabs {
+  display: flex;
+  gap: 24px;
+}
+
+.platform-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  color: $secondary-text;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all $transition-fast;
+  position: relative;
+  top: 1px;
+
+  &:hover {
+    color: $primary-text;
+  }
+
+  &.active {
+    color: $meta-blue;
+    font-weight: 500;
+    border-bottom-color: $meta-blue;
+  }
+
+  .platform-icon {
+    width: 20px;
+    height: 20px;
+
+    :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+// 用户信息栏
+.user-info-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $white;
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: $border-radius-lg;
+  border: 1px solid $divider;
+}
+
+.user-info-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  flex-shrink: 0;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: $primary-text;
+}
+
+.user-role {
+  font-size: 12px;
+  color: $secondary-text;
+}
+
+.user-tenure {
+  font-size: 12px;
+  color: #999;
+
+  .tenure-value {
+    color: $primary-text;
+    font-weight: 500;
+  }
+}
+
+.user-filters {
+  display: flex;
+  gap: 12px;
+}
+
+.filter-select {
+  :deep(.el-select) {
+    width: 120px;
+  }
+}
+
+// 通用区块样式
+.section {
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid $divider;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title-group {
+  display: flex;
+  gap: 8px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $primary-text;
+}
+
+.section-desc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #999;
+  margin-left: 12px;
+}
+
+// 初始化引导区
+.init-guide-section {
+  .collapse-btn {
+    font-size: 12px;
+    color: $meta-blue;
+    cursor: pointer;
+  }
+}
+
+.guide-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.guide-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: $warm-gray;
+  border-radius: $border-radius-md;
+  border: 1px solid $divider;
+}
+
+.guide-header {
+  display: flex;
+  gap: 12px;
+}
+
+.guide-step {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $meta-blue;
+  color: $white;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.guide-content {
+  flex: 1;
+}
+
+.guide-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary-text;
+  margin-bottom: 4px;
+}
+
+.guide-desc {
+  font-size: 12px;
+  color: $secondary-text;
+  line-height: 1.5;
+}
+
+.guide-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: $meta-blue;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+// 待办事项区
+.todo-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.todo-card {
+  background: $warm-gray;
+  border: 1px solid $divider;
+  border-radius: $border-radius-md;
+  padding: 12px;
+  transition: all $transition-fast;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $meta-blue;
+  }
+
+  &.has-warning {
+    background: rgba($warning-amber, 0.05);
+  }
+}
+
+.todo-label {
+  font-size: 12px;
+  color: $secondary-text;
+  margin-bottom: 8px;
+}
+
+.todo-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: $primary-text;
+  margin-bottom: 4px;
+
+  &.warning {
+    color: $warning-amber;
+  }
+}
+
+.todo-warning {
+  font-size: 11px;
+  color: #999;
+  line-height: 1.4;
+}
+
+.warning-text {
+  color: $warning-amber;
+}
+
+.warning-count {
+  color: $warning-amber;
+  font-weight: 500;
+}
+
+// 快捷工具区
+.quick-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.quick-tool-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  background: $warm-gray;
+  border: 1px solid $divider;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $meta-blue;
+    background: rgba($meta-blue, 0.05);
+
+    .tool-icon {
+      color: $meta-blue;
+    }
+  }
+}
+
+.tool-icon {
+  width: 24px;
+  height: 24px;
+  color: $secondary-text;
+
+  :deep(svg) {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.tool-name {
+  font-size: 12px;
+  color: $secondary-text;
+  text-align: center;
+}
+
+// 内容底部
+.content-bottom {
+  display: flex;
+  gap: 16px;
+}
+
+// 达人大盘数据区
+.data-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.status-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.status-tab {
+  padding: 6px 12px;
+  background: $white;
+  border: 1px solid $divider;
+  border-radius: $border-radius-sm;
+  font-size: 12px;
+  color: $secondary-text;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $meta-blue;
+    border-color: $meta-blue;
+  }
+
+  &.active {
+    background: $meta-blue;
+    border-color: $meta-blue;
+    color: $white;
+  }
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.date-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.date-tab {
+  padding: 4px 12px;
+  background: $white;
+  border: 1px solid $divider;
+  border-radius: $border-radius-sm;
+  font-size: 12px;
+  color: $secondary-text;
+  cursor: pointer;
+
+  &.active {
+    background: $meta-blue;
+    border-color: $meta-blue;
+    color: $white;
+  }
+}
+
+.date-range {
+  font-size: 12px;
+  color: $secondary-text;
+}
+
+.data-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid $divider;
+  border-radius: $border-radius-md;
+  margin-bottom: 16px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+
+  th, td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid $divider;
+  }
+
+  th {
+    background: $soft-gray;
+    color: $secondary-text;
+    font-weight: 500;
+  }
+
+  td {
+    color: $primary-text;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.talent-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.talent-detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.talent-name {
+  font-weight: 500;
+}
+
+.talent-nickname {
+  font-size: 11px;
+  color: $secondary-text;
+}
+
+.bd-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.source-tag {
+  padding: 2px 6px;
+  background: $web-wash;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+
+  &.warning {
+    background: rgba($warning-amber, 0.1);
+    color: $warning-amber;
+  }
+
+  &.success {
+    background: rgba($success-green, 0.1);
+    color: $success-green;
+  }
+
+  &.danger {
+    background: rgba($error-red, 0.1);
+    color: $error-red;
+  }
+
+  &.info {
+    background: rgba($meta-blue, 0.1);
+    color: $meta-blue;
+  }
+
+  &.primary {
+    background: rgba($meta-blue-light, 0.1);
+    color: $meta-blue;
+  }
+}
+
+.action-link {
+  color: $meta-blue;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: $secondary-text;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.page-btn {
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $divider;
+  border-radius: $border-radius-sm;
+  font-size: 12px;
+  color: $secondary-text;
+  cursor: pointer;
+  background: $white;
+
+  &:hover {
+    border-color: $meta-blue;
+    color: $meta-blue;
+  }
+
+  &.active {
+    background: $meta-blue;
+    border-color: $meta-blue;
+    color: $white;
+  }
+}
+
+.page-jump {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: $secondary-text;
+}
+
+.page-input {
+  width: 40px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid $divider;
+  border-radius: $border-radius-sm;
+  font-size: 12px;
+  text-align: center;
+}
+
+.page-size {
+  margin-left: 8px;
+}
+
+// 业绩目标区
+.performance-section {
+  width: 420px;
+  flex-shrink: 0;
+}
+
+.performance-chart {
+  margin-bottom: 16px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.completion-rate {
+  &.success {
+    .rate-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: $success-green;
+    }
+    .rate-label {
+      font-size: 12px;
+      color: $secondary-text;
+    }
+  }
+}
+
+.chart-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: $secondary-text;
+  cursor: pointer;
+}
+
+.chart-area {
+  position: relative;
+  height: 100px;
+  padding: 0 20px;
+}
+
+.chart-lines {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 60px;
+  height: 60px;
+}
+
+.chart-line {
+  position: absolute;
+  height: 2px;
+  left: 0;
+  right: 0;
+
+  &.target {
+    top: 0;
+    background: linear-gradient(90deg, transparent 0%, $warning-amber 100%);
+    opacity: 0.3;
+  }
+
+  &.actual {
+    top: 10px;
+    background: linear-gradient(90deg, transparent 0%, $success-green 100%);
+    height: 3px;
+  }
+}
+
+.chart-dots {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 60px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  &.success {
+    background: $success-green;
+  }
+
+  &.current {
+    width: 10px;
+    height: 10px;
+    background: $success-green;
+    box-shadow: 0 0 0 2px rgba($success-green, 0.3);
+  }
+}
+
+.chart-labels {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 60px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: $disabled-text;
+}
+
+.chart-values {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.value-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+
+  .value-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  &.current {
+    color: $success-green;
+    .value-dot {
+      background: $success-green;
+    }
+  }
+
+  &.target {
+    color: $disabled-text;
+    .value-dot {
+      background: $warning-amber;
+    }
+  }
+}
+
+.performance-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: $secondary-text;
+}
+
+.stat-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: $web-wash;
+  border-radius: 3px;
+  overflow: hidden;
+
+  &.orange .progress-fill {
+    background: $warning-amber;
+  }
+
+  &.green .progress-fill {
+    background: $success-green;
+  }
+
+  &.blue .progress-fill {
+    background: $meta-blue;
+  }
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.stat-value {
+  font-size: 12px;
+  color: $primary-text;
+  white-space: nowrap;
+}
+
+.stat-gray {
+  color: $disabled-text;
+}
+
+.stat-percent {
+  color: $meta-blue;
+}
+
+.expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  margin-top: 12px;
+  border: 1px dashed $divider;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  font-size: 12px;
+  color: $secondary-text;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $meta-blue;
+    color: $meta-blue;
+  }
+}
+
+// 动态提醒区
+.notification-section {
+  margin-top: 0;
+}
+
+.notification-tabs {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid $divider;
+}
+
+.notif-tab {
+  font-size: 14px;
+  color: $secondary-text;
+  cursor: pointer;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+
+  &.active {
+    color: $primary-text;
+    font-weight: 500;
+    border-bottom-color: $meta-blue;
+  }
+}
+
+.more-link {
+  margin-left: auto;
+  font-size: 12px;
+  color: $meta-blue;
+  cursor: pointer;
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notification-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: $warm-gray;
+  border-radius: $border-radius-md;
+  border-left: 3px solid transparent;
+}
+
+.notif-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  width: fit-content;
+
+  &.orange {
+    background: rgba($orange, 0.1);
+    color: $orange;
+    border-left-color: $orange;
+  }
+
+  &.purple {
+    background: rgba($purple, 0.1);
+    color: $purple;
+  }
+
+  &.green {
+    background: rgba($success-green, 0.1);
+    color: $success-green;
+  }
+
+  &.green-dark {
+    background: rgba(darken($success-green, 10%), 0.1);
+    color: darken($success-green, 10%);
+  }
+}
+
+.notif-content {
+  font-size: 12px;
+  color: $secondary-text;
+  line-height: 1.5;
+}
+
+.notif-time {
+  font-size: 11px;
+  color: $disabled-text;
+}
+
+// Responsive
+@media (max-width: 1400px) {
+  .content-bottom {
+    flex-direction: column;
+  }
+
+  .performance-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .left-sidebar {
+    width: 180px;
+  }
+
+  .todo-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .quick-tools-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .left-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-info-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .todo-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quick-tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .guide-cards {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
