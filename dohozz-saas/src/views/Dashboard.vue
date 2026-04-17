@@ -178,34 +178,34 @@
               <span>{{ platform.name }}</span>
             </div>
           </div>
+        </div>
           
-          <!-- 用户信息栏 -->
-          <div class="user-info-bar">
-            <div class="user-info-left">
-              <el-avatar :size="48" :icon="UserFilled" class="user-avatar" />
-              <div class="user-details">
-                <div class="user-name">
-                  {{ userInfo.name }}
-                  <span class="inline-tenure">您已加入公司 <span style="color: #0064E0; font-weight: bold;">{{ userInfo.tenure }}</span> 天</span>
-                </div>
-                <div class="user-role">{{ userInfo.department }} | {{ userInfo.role }}</div>
+        <!-- 用户信息栏 (悬浮置顶) -->
+        <div class="user-info-bar sticky-user-bar">
+          <div class="user-info-left">
+            <el-avatar :size="48" :icon="UserFilled" class="user-avatar" />
+            <div class="user-details">
+              <div class="user-name">
+                {{ userInfo.name }}
+                <span class="inline-tenure">您已加入公司 <span style="color: #0064E0; font-weight: bold;">{{ userInfo.tenure }}</span> 天</span>
               </div>
+              <div class="user-role">{{ userInfo.department }} | {{ userInfo.role }}</div>
             </div>
-            <div class="user-filters">
-              <div class="filter-select">
-                <el-select v-model="selectedDept" placeholder="全部部门">
-                  <el-option label="全部部门" value="all" />
-                  <el-option label="销售部" value="sales" />
-                  <el-option label="运营部" value="ops" />
-                </el-select>
-              </div>
-              <div class="filter-select">
-                <el-select v-model="selectedBD" placeholder="全部BD">
-                  <el-option label="本人" value="self" />
-                  <el-option label="张三" value="zhangsan" />
-                  <el-option label="李四" value="lisi" />
-                </el-select>
-              </div>
+          </div>
+          <div class="user-filters">
+            <div class="filter-select">
+              <el-select v-model="selectedDept" placeholder="全部部门">
+                <el-option label="全部部门" value="all" />
+                <el-option label="销售部" value="sales" />
+                <el-option label="运营部" value="ops" />
+              </el-select>
+            </div>
+            <div class="filter-select">
+              <el-select v-model="selectedBD" placeholder="全部BD">
+                <el-option label="本人" value="self" />
+                <el-option label="张三" value="zhangsan" />
+                <el-option label="李四" value="lisi" />
+              </el-select>
             </div>
           </div>
         </div>
@@ -364,6 +364,21 @@
           <div class="section data-section">
             <div class="section-header">
               <span class="section-title">达人大盘数据</span>
+              <!-- 时间筛选 -->
+              <div class="date-filter" style="margin-bottom: 0;">
+                <div class="date-tabs">
+                  <span
+                    v-for="tab in dateTabs"
+                    :key="tab"
+                    class="date-tab"
+                    :class="{ active: selectedDate === tab }"
+                    @click="selectedDate = tab"
+                  >
+                    {{ tab }}
+                  </span>
+                </div>
+                <span class="date-range">近7天（2025/11/20 - 2025/11/26）</span>
+              </div>
             </div>
 
             <!-- 状态 Sub-Tab -->
@@ -377,22 +392,6 @@
               >
                 {{ status.label }}{{ status.count }}
               </div>
-            </div>
-
-            <!-- 时间筛选 -->
-            <div class="date-filter">
-              <div class="date-tabs">
-                <span
-                  v-for="tab in dateTabs"
-                  :key="tab"
-                  class="date-tab"
-                  :class="{ active: selectedDate === tab }"
-                  @click="selectedDate = tab"
-                >
-                  {{ tab }}
-                </span>
-              </div>
-              <span class="date-range">近7天（2025/11/20 - 2025/11/26）</span>
             </div>
 
             <!-- 数据列表 -->
@@ -562,8 +561,8 @@ const platforms = [
 ]
 
 const todoItems = reactive([
-  { id: 1, label: '待建联', value: 3, warning: 1, warningText: '待触达 1  待邀约 2' },
-  { id: 2, label: '待寄样', value: 3, warning: 1, warningText: '超过三天未寄样达人 1' },
+  { id: 1, label: '待建联', value: 3, warning: 0, warningText: '待触达 1  待邀约 2' },
+  { id: 2, label: '待寄样', value: 3, warning: 0, warningText: '超过三天未寄样达人 1' },
   { id: 3, label: '待审核样品', value: 3, warning: 0, warningText: '超过两天未审核样品 0' },
   { id: 4, label: '待发货样品', value: 3, warning: 0, warningText: '超过两天未发货样品 0' },
   { id: 5, label: '待签收样品', value: 0, warning: 0, warningText: '超过7天未签收样品 0' },
@@ -982,10 +981,10 @@ $transition-fast: 150ms ease;
 .platform-tabs-bar {
   background: $white;
   border: 1px solid $divider;
-  border-radius: $border-radius-lg;
+  border-bottom: none;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
   margin-top: 16px;
-  margin-bottom: 16px;
 }
 
 .platform-tabs {
@@ -1031,8 +1030,21 @@ $transition-fast: 150ms ease;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
-  border-top: 1px solid $divider;
+  padding: 16px;
+  border: 1px solid $divider;
+  border-radius: 0 0 $border-radius-lg $border-radius-lg;
+  background: $white;
+  margin-bottom: 16px;
+  transition: box-shadow 0.3s ease, border-radius 0.3s ease;
+}
+
+.sticky-user-bar {
+  position: sticky;
+  top: 48px;
+  z-index: 90;
+  
+  /* When stuck, a nice shadow gives floating illusion */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .user-info-left {
