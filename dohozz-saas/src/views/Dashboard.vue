@@ -179,7 +179,7 @@
 
       <!-- 主内容区 -->
       <main class="main-content">
-        <!-- 平台Tab栏 -->
+        <!-- 平台与用户信息合并区 -->
         <div class="platform-tabs-bar">
           <div class="platform-tabs">
             <div
@@ -193,72 +193,45 @@
               <span>{{ platform.name }}</span>
             </div>
           </div>
-        </div>
-
-        <!-- 用户信息栏 -->
-        <div class="user-info-bar">
-          <div class="user-info-left">
-            <el-avatar :size="48" :icon="UserFilled" class="user-avatar" />
-            <div class="user-details">
-              <div class="user-name">{{ userInfo.name }}</div>
-              <div class="user-role">{{ userInfo.department }} | {{ userInfo.role }}</div>
-              <div class="user-tenure">
-                <span class="tenure-text">您已加入公司 </span>
-                <span class="tenure-value">{{ userInfo.tenure }}</span>
-                <span class="tenure-text"> 天</span>
-              </div>
-            </div>
-          </div>
-          <div class="user-filters">
-            <div class="filter-select">
-              <el-select v-model="selectedDept" placeholder="全部部门">
-                <el-option label="全部部门" value="all" />
-                <el-option label="销售部" value="sales" />
-                <el-option label="运营部" value="ops" />
-              </el-select>
-            </div>
-            <div class="filter-select">
-              <el-select v-model="selectedBD" placeholder="全部BD">
-                <el-option label="本人" value="self" />
-                <el-option label="张三" value="zhangsan" />
-                <el-option label="李四" value="lisi" />
-              </el-select>
-            </div>
-          </div>
-        </div>
-
-        <!-- 初始化引导区 -->
-        <div class="section init-guide-section">
-          <div class="section-header">
-            <div class="section-title-group">
-              <span class="section-title">轻松上手</span>
-              <span class="section-title">初始化引导</span>
-            </div>
-            <span class="collapse-btn" @click="guideCollapsed = !guideCollapsed">
-              {{ guideCollapsed ? '展开' : '收起' }}
-            </span>
-          </div>
-          <div class="guide-cards" v-show="!guideCollapsed">
-            <div class="guide-card" v-for="guide in guides" :key="guide.id">
-              <div class="guide-header">
-                <div class="guide-step">{{ guide.step }}</div>
-                <div class="guide-content">
-                  <div class="guide-title">{{ guide.title }}</div>
-                  <div class="guide-desc">{{ guide.desc }}</div>
+          
+          <!-- 用户信息栏 -->
+          <div class="user-info-bar">
+            <div class="user-info-left">
+              <el-avatar :size="48" :icon="UserFilled" class="user-avatar" />
+              <div class="user-details">
+                <div class="user-name">{{ userInfo.name }}</div>
+                <div class="user-role">{{ userInfo.department }} | {{ userInfo.role }}</div>
+                <div class="user-tenure">
+                  <span class="tenure-text">您已加入公司 </span>
+                  <span class="tenure-value">{{ userInfo.tenure }}</span>
+                  <span class="tenure-text"> 天</span>
                 </div>
               </div>
-              <div class="guide-action">
-                <span class="action-text">去{{ guide.action }}</span>
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-                </svg>
+            </div>
+            <div class="user-filters">
+              <div class="filter-select">
+                <el-select v-model="selectedDept" placeholder="全部部门">
+                  <el-option label="全部部门" value="all" />
+                  <el-option label="销售部" value="sales" />
+                  <el-option label="运营部" value="ops" />
+                </el-select>
+              </div>
+              <div class="filter-select">
+                <el-select v-model="selectedBD" placeholder="全部BD">
+                  <el-option label="本人" value="self" />
+                  <el-option label="张三" value="zhangsan" />
+                  <el-option label="李四" value="lisi" />
+                </el-select>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 待办事项区 -->
-        <div class="section todo-section">
+        <!-- 中上部分局: 左侧待办与工具，右侧业绩目标 -->
+        <div class="middle-layout">
+          <div class="middle-left">
+            <!-- 待办事项区 -->
+            <div class="section todo-section">
           <div class="section-header">
             <span class="section-title">待办事项</span>
             <div class="section-desc">
@@ -300,6 +273,105 @@
             >
               <div class="tool-icon" v-html="tool.icon"></div>
               <span class="tool-name">{{ tool.name }}</span>
+            </div>
+          </div>
+        </div>
+          </div>
+          <div class="middle-right">
+            <!-- 业绩目标区 -->
+            <div class="section performance-section">
+              <div class="section-header">
+                <span class="section-title">业绩目标</span>
+              </div>
+  
+              <div class="performance-chart">
+                <div class="chart-header">
+                  <div class="completion-rate success">
+                    <span class="rate-value">93.55%</span>
+                    <span class="rate-label">完成目标</span>
+                  </div>
+                  <div class="chart-date">
+                    <el-date-picker
+                      v-model="performanceMonth"
+                      type="month"
+                      placeholder="选择月份"
+                      format="YYYY.MM"
+                      value-format="YYYY.MM"
+                      :clearable="false"
+                      class="performance-month-picker"
+                    />
+                  </div>
+                </div>
+  
+                <div class="chart-area">
+                  <div class="chart-lines">
+                    <div class="chart-line target"></div>
+                    <div class="chart-line actual"></div>
+                  </div>
+                  <div class="chart-dots">
+                    <span class="dot success"></span>
+                    <span class="dot success"></span>
+                    <span class="dot success"></span>
+                    <span class="dot success"></span>
+                    <span class="dot success"></span>
+                    <span class="dot current"></span>
+                  </div>
+                  <div class="chart-labels">
+                    <span>02-01</span>
+                    <span>02-7</span>
+                    <span>02-13</span>
+                    <span>02-19</span>
+                    <span>02-25</span>
+                    <span>02-28</span>
+                  </div>
+                  <div class="chart-values">
+                    <div class="value-item current">
+                      <span class="value-dot"></span>
+                      <span>当前：16.88w元</span>
+                    </div>
+                    <div class="value-item target">
+                      <span class="value-dot"></span>
+                      <span>目标：20w元</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="performance-stats">
+                <div class="stat-item">
+                  <span class="stat-label">达人成交金额</span>
+                  <div class="stat-progress">
+                    <div class="progress-bar orange">
+                      <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                    <span class="stat-value">10/<span class="stat-gray">20</span>（<span class="stat-percent">50%</span>）</span>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">建联达人数</span>
+                  <div class="stat-progress">
+                    <div class="progress-bar green">
+                      <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                    <span class="stat-value">15/<span class="stat-gray">20</span>（<span class="stat-percent">75%</span>）</span>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">寄样达人数</span>
+                  <div class="stat-progress">
+                    <div class="progress-bar blue">
+                      <div class="progress-fill" style="width: 25%"></div>
+                    </div>
+                    <span class="stat-value">5/<span class="stat-gray">20</span>（<span class="stat-percent">25%</span>）</span>
+                  </div>
+                </div>
+              </div>
+              <div class="expand-btn">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                  <path d="M7 10l5 5 5-5z"/>
+                </svg>
+                <span>展开全部</span>
+              </div>
             </div>
           </div>
         </div>
@@ -416,96 +488,7 @@
             </div>
           </div>
 
-          <!-- 业绩目标区 -->
-          <div class="section performance-section">
-            <div class="section-header">
-              <span class="section-title">业绩目标</span>
-            </div>
 
-            <div class="performance-chart">
-              <div class="chart-header">
-                <div class="completion-rate success">
-                  <span class="rate-value">93.55%</span>
-                  <span class="rate-label">完成目标</span>
-                </div>
-                <div class="chart-date">
-                  <span class="date-value">2025.11</span>
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-                    <path d="M7 10l5 5 5-5z"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="chart-area">
-                <div class="chart-lines">
-                  <div class="chart-line target"></div>
-                  <div class="chart-line actual"></div>
-                </div>
-                <div class="chart-dots">
-                  <span class="dot success"></span>
-                  <span class="dot success"></span>
-                  <span class="dot success"></span>
-                  <span class="dot success"></span>
-                  <span class="dot success"></span>
-                  <span class="dot current"></span>
-                </div>
-                <div class="chart-labels">
-                  <span>02-01</span>
-                  <span>02-7</span>
-                  <span>02-13</span>
-                  <span>02-19</span>
-                  <span>02-25</span>
-                  <span>02-28</span>
-                </div>
-                <div class="chart-values">
-                  <div class="value-item current">
-                    <span class="value-dot"></span>
-                    <span>当前：16.88w元</span>
-                  </div>
-                  <div class="value-item target">
-                    <span class="value-dot"></span>
-                    <span>目标：20w元</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="performance-stats">
-              <div class="stat-item">
-                <span class="stat-label">达人成交金额</span>
-                <div class="stat-progress">
-                  <div class="progress-bar orange">
-                    <div class="progress-fill" style="width: 50%"></div>
-                  </div>
-                  <span class="stat-value">10/<span class="stat-gray">20</span>（<span class="stat-percent">50%</span>）</span>
-                </div>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">建联达人数</span>
-                <div class="stat-progress">
-                  <div class="progress-bar green">
-                    <div class="progress-fill" style="width: 75%"></div>
-                  </div>
-                  <span class="stat-value">15/<span class="stat-gray">20</span>（<span class="stat-percent">75%</span>）</span>
-                </div>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">寄样达人数</span>
-                <div class="stat-progress">
-                  <div class="progress-bar blue">
-                    <div class="progress-fill" style="width: 25%"></div>
-                  </div>
-                  <span class="stat-value">5/<span class="stat-gray">20</span>（<span class="stat-percent">25%</span>）</span>
-                </div>
-              </div>
-            </div>
-            <div class="expand-btn">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-                <path d="M7 10l5 5 5-5z"/>
-              </svg>
-              <span>展开全部</span>
-            </div>
-          </div>
         </div>
 
         <!-- 动态提醒区 -->
@@ -554,8 +537,11 @@ const selectedDept = ref('')
 const selectedBD = ref('')
 const selectedDate = ref('近N天')
 const selectedStatus = ref('all')
-const guideCollapsed = ref(false)
 const notifTab = ref('reminder')
+
+const today = new Date()
+const currentMonthStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}`
+const performanceMonth = ref(currentMonthStr)
 
 const userInfo = reactive({
   name: '张三',
@@ -586,12 +572,6 @@ const platforms = [
     icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.91 6.18c-.02-.39-.35-.7-.74-.7H2.83c-.39 0-.72.31-.74.7l-.99 14.64c-.02.39.27.71.66.71h18.68c.39 0 .68-.32.66-.71l-.09-14.64zm-8.84 6.1l-3.4 3.4H3.7l4.37-5.58 3.4 3.4 1.4-1.4-3.4-3.4 2.86-3.72c.18-.23.5-.3.74-.15l3.02 1.87 2.45-3.17c.16-.2.46-.24.68-.1l2.6 1.63c.22.14.29.42.16.64l-2.9 4.83-2.45 3.17c-.16.2-.46.24-.68.1l-2.61-1.63c-.22-.14-.29-.42-.16-.64l.86-1.42-1.4 1.4-1.42.86z"/></svg>'
   }
 ]
-
-const guides = reactive([
-  { id: 1, step: '1', title: '店铺授权', desc: '授权绑定店铺，统计交易数据和跟进达人', action: '授权' },
-  { id: 2, step: '2', title: '商品管理', desc: '创建本地商品SKU，便于对商品精细化管理', action: '设置' },
-  { id: 3, step: '3', title: '账号管理', desc: '创建员工账号，管理角色授权', action: '设置' }
-])
 
 const todoItems = reactive([
   { id: 1, label: '待建联', value: 3, warning: 1, warningText: '待触达 1  待邀约 2' },
@@ -913,6 +893,32 @@ $transition-fast: 150ms ease;
   margin: 8px 16px;
 }
 
+// 中间层布局
+.middle-layout {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.middle-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.middle-right {
+  width: 500px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+.middle-left .section:last-child {
+  margin-bottom: 0;
+}
+.middle-right .section {
+  flex: 1;
+  margin-bottom: 0;
+}
+
 // 主内容区
 .main-content {
   flex: 1;
@@ -920,11 +926,14 @@ $transition-fast: 150ms ease;
   min-width: 0;
 }
 
-// 平台Tab栏
+// 平台Tab与用户信息区
 .platform-tabs-bar {
   background: $white;
-  border-bottom: 1px solid $divider;
+  border: 1px solid $divider;
+  border-radius: $border-radius-lg;
   padding: 0 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .platform-tabs {
@@ -970,11 +979,8 @@ $transition-fast: 150ms ease;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $white;
-  padding: 16px;
-  margin: 16px 0;
-  border-radius: $border-radius-lg;
-  border: 1px solid $divider;
+  padding: 16px 0;
+  border-top: 1px solid $divider;
 }
 
 .user-info-left {
@@ -1059,76 +1065,6 @@ $transition-fast: 150ms ease;
   font-size: 12px;
   color: #999;
   margin-left: 12px;
-}
-
-// 初始化引导区
-.init-guide-section {
-  .collapse-btn {
-    font-size: 12px;
-    color: $meta-blue;
-    cursor: pointer;
-  }
-}
-
-.guide-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.guide-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  background: $warm-gray;
-  border-radius: $border-radius-md;
-  border: 1px solid $divider;
-}
-
-.guide-header {
-  display: flex;
-  gap: 12px;
-}
-
-.guide-step {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: $meta-blue;
-  color: $white;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.guide-content {
-  flex: 1;
-}
-
-.guide-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: $primary-text;
-  margin-bottom: 4px;
-}
-
-.guide-desc {
-  font-size: 12px;
-  color: $secondary-text;
-  line-height: 1.5;
-}
-
-.guide-action {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: $meta-blue;
-  font-size: 12px;
-  cursor: pointer;
 }
 
 // 待办事项区
@@ -1478,8 +1414,28 @@ $transition-fast: 150ms ease;
 
 // 业绩目标区
 .performance-section {
-  width: 420px;
-  flex-shrink: 0;
+  /* width is controlled by upper layout */
+}
+
+/* 适配日期选择器 */
+.performance-month-picker {
+  width: 110px !important;
+}
+.performance-month-picker :deep(.el-input__wrapper) {
+  box-shadow: none !important;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+.performance-month-picker :deep(.el-input__inner) {
+  color: #65676B;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+  cursor: pointer;
+}
+.performance-month-picker :deep(.el-input__suffix) {
+  display: none;
 }
 
 .performance-chart {
