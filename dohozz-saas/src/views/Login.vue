@@ -45,14 +45,11 @@
             <el-input
               v-model="loginForm.password"
               :prefix-icon="Lock"
-              :type="showPassword ? 'text' : 'password'"
+              type="password"
               placeholder="请输入密码"
+              show-password
               @blur="validateField('password')"
-            >
-              <template #suffix>
-                <el-button class="toggle-password-btn" @click="showPassword = !showPassword" :icon="showPassword ? View : Hide" />
-              </template>
-            </el-input>
+            />
           </el-form-item>
 
           <div class="form-options">
@@ -76,24 +73,28 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, Lock, View, Hide } from '@element-plus/icons-vue'
+import { User, Lock } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
 const loginFormRef = ref(null)
+const isLoaded = ref(false)
 const loginForm = reactive({
   email: '',
   password: '',
   rememberMe: false
 })
 
-const showPassword = ref(false)
 const loading = ref(false)
 
 const validateEmail = (_rule, value, callback) => {
+  if (!isLoaded.value) {
+    callback()
+    return
+  }
   const email = value.trim()
   const phoneRegex = /^1[3-9]\d{9}$/
 
@@ -111,6 +112,10 @@ const validateEmail = (_rule, value, callback) => {
 }
 
 const validatePassword = (_rule, value, callback) => {
+  if (!isLoaded.value) {
+    callback()
+    return
+  }
   const password = value
 
   if (!password) {
@@ -163,20 +168,23 @@ const handleLogin = async () => {
   }
 }
 
-const loadRememberedUser = () => {
+const loadRememberedUser = async () => {
   try {
     const encryptedEmail = localStorage.getItem('rememberedUser')
     if (encryptedEmail) {
       loginForm.email = atob(encryptedEmail)
       loginForm.rememberMe = true
+      await nextTick()
+      isLoaded.value = true
     }
   } catch (e) {
     console.warn('无法加载记住的用户信息:', e)
   }
 }
 
-onMounted(() => {
-  loadRememberedUser()
+onMounted(async () => {
+  await loadRememberedUser()
+  isLoaded.value = true
 })
 </script>
 
@@ -384,6 +392,32 @@ onMounted(() => {
     transition: all 0.15s ease;
     padding: 0 16px;
 
+    .el-input__prefix,
+    .el-input__suffix {
+      display: flex;
+      align-items: center;
+    }
+
+    .el-input__prefix {
+      padding-right: 8px;
+    }
+
+    .el-input__suffix {
+      gap: 4px;
+    }
+
+    .iconfont {
+      font-family: 'iconfont', sans-serif;
+      font-size: 16px;
+    }
+
+    .el-input__clear {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+
     &:hover {
       box-shadow: 0 0 0 1px #cbd5e1;
     }
@@ -391,21 +425,6 @@ onMounted(() => {
     &.is-focus {
       box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
     }
-  }
-}
-
-.toggle-password-btn {
-  border: none;
-  background: transparent;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background: #f8fafc;
   }
 }
 

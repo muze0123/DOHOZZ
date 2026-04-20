@@ -3,41 +3,97 @@
     <!-- 顶部导航栏 -->
     <header class="top-header">
       <div class="header-left">
+        <!-- A区：logo、系统名、业务场景选择 -->
         <div class="logo-area">
           <img src="@/assets/DOHOZZ_LOOGO.png" alt="DOHOZZ" class="logo-img" />
           <span class="logo-text">DOHOZZ</span>
         </div>
+        
+        <el-dropdown class="scenario-dropdown" trigger="click" @command="handleScenarioChange">
+          <div class="scenario-selector">
+            <span class="scenario-text">{{ currentScenario === 'ecommerce' ? '带货' : '种草' }}</span>
+            <span class="scenario-arrow"></span>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu class="scenario-dropdown-menu">
+              <el-dropdown-item command="ecommerce" :class="{ active: currentScenario === 'ecommerce' }">达人带货</el-dropdown-item>
+              <el-dropdown-item command="seeding" :class="{ active: currentScenario === 'seeding' }">内容种草</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+
         <div class="nav-divider"></div>
-        <span class="nav-item">带货</span>
-        <span class="nav-item">内容中心</span>
-        <span class="nav-item active">达人合作</span>
-        <span class="nav-item">指挥中台</span>
-        <span class="nav-item">系统设置</span>
+
+        <!-- B区：动态菜单 -->
+        <nav class="b-nav-menu">
+          <span
+            v-for="menu in currentNavMenus"
+            :key="menu"
+            class="nav-item"
+            :class="{ active: activeNavMenu === menu }"
+            @click="activeNavMenu = menu"
+          >
+            {{ menu }}
+          </span>
+        </nav>
       </div>
+
       <div class="header-right">
-        <div class="download-btn">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-          </svg>
-          <span>下载插件</span>
-        </div>
-        <div class="header-icons">
-          <div class="icon-btn">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+        <!-- C区：基础服务功能图标 -->
+        <div class="c-icons-area">
+          <!-- 下载插件 -->
+          <div class="c-btn-pill">
+            <svg class="c-icon-svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
             </svg>
-            <span class="badge">99</span>
+            <span>下载插件</span>
           </div>
-          <div class="icon-btn">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-            </svg>
-          </div>
-          <div class="icon-btn">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-          </div>
+
+          <!-- 多语言选择 -->
+          <el-dropdown trigger="hover" @command="handleLanguageChange">
+            <div class="c-btn-lang">
+              <svg class="c-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+              </svg>
+              <span class="lang-text">{{ currentLanguage }}</span>
+              <svg class="c-icon-arrow" viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="中文" :class="{ 'is-active': currentLanguage === '中文' }">中文</el-dropdown-item>
+                <el-dropdown-item command="English" :class="{ 'is-active': currentLanguage === 'English' }">English</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+
+          <!-- 任务列表 -->
+          <el-tooltip content="任务列表" placement="bottom" :show-after="300">
+            <div class="c-btn-circle">
+              <svg class="c-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                <path d="M17.99 9l-1.41-1.42-6.59 6.59-2.58-2.57-1.42 1.41 4 3.99z"/>
+              </svg>
+            </div>
+          </el-tooltip>
+
+          <!-- 消息中心 -->
+          <el-tooltip content="消息中心" placement="bottom" :show-after="300">
+            <div class="c-btn-circle has-badge">
+              <svg class="c-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+              </svg>
+              <span class="badge">99</span>
+            </div>
+          </el-tooltip>
+
+          <!-- 个人中心 -->
+          <el-tooltip content="个人中心" placement="bottom" :show-after="300">
+            <div class="c-btn-avatar">
+              <el-avatar :size="32" :icon="UserIcon" class="header-avatar" />
+            </div>
+          </el-tooltip>
         </div>
       </div>
     </header>
@@ -46,119 +102,47 @@
       <!-- 左侧导航栏 -->
       <aside class="left-sidebar">
         <div class="sidebar-menu">
-          <div class="menu-item active">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-              </svg>
-            </div>
-            <span>工作台</span>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-              </svg>
-            </div>
-            <span>数据运营</span>
-          </div>
-          <div class="menu-item has-submenu" @click="talentMenuOpen = !talentMenuOpen">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/>
-              </svg>
-            </div>
-            <span>找达人</span>
-            <div class="submenu-arrow" :style="{ transform: talentMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)' }"></div>
-          </div>
-          
-          <div class="submenu-container" v-show="talentMenuOpen">
-            <div class="menu-item submenu-item">
-              <span>达人库</span>
-              <span class="new-tag">New</span>
-            </div>
-            <div class="menu-item submenu-item">
-              <span>智能推荐达人</span>
-              <span class="new-tag">New</span>
-            </div>
-            <div class="menu-item submenu-item">
-              <span>商品找达人</span>
-              <span class="new-tag">New</span>
-            </div>
-            <div class="menu-item submenu-item">
-              <span>达人榜单</span>
-              <span class="new-tag">New</span>
-            </div>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </div>
-            <span>达人管理</span>
-            <div class="submenu-arrow"></div>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-              </svg>
-            </div>
-            <span>批量建联</span>
-            <div class="submenu-arrow"></div>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/>
-              </svg>
-            </div>
-            <span>样品管理</span>
-            <div class="submenu-arrow"></div>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
-              </svg>
-            </div>
-            <span>视频履约</span>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-              </svg>
-            </div>
-            <span>合作管理</span>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>
-              </svg>
-            </div>
-            <span>店铺商品</span>
-            <div class="submenu-arrow"></div>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3H6V5h10zm2.5 3H18V5h.5c.83 0 1.5.67 1.5 1.5S19.33 8 18.5 8zM4 19h16v2H4v-2z"/>
-              </svg>
-            </div>
-            <span>订单管理</span>
-          </div>
-          <div class="menu-item">
-            <div class="menu-icon">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-              </svg>
-            </div>
-            <span>团长管理</span>
-            <div class="submenu-arrow"></div>
-          </div>
+          <template v-for="item in sidebarMenuItems" :key="item.name">
+            <!-- 带子菜单的项 -->
+            <template v-if="item.children && item.children.length">
+              <div
+                class="menu-item has-submenu"
+                :class="{ active: activeSidebarMenu === item.name }"
+                @click="toggleSubmenu(item.name)"
+              >
+                <div class="menu-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" v-html="item.icon"></svg>
+                </div>
+                <span>{{ item.name }}</span>
+                <div class="submenu-arrow" :style="{ transform: openSubmenus[item.name] ? 'rotate(90deg)' : 'rotate(0deg)' }"></div>
+              </div>
+              <div class="submenu-container" v-show="openSubmenus[item.name]">
+                <div
+                  v-for="child in item.children"
+                  :key="child.name"
+                  class="menu-item submenu-item"
+                  :class="{ active: activeSidebarMenu === child.name }"
+                  @click="activeSidebarMenu = child.name"
+                >
+                  <span>{{ child.name }}</span>
+                  <span v-if="child.tag" class="new-tag">{{ child.tag }}</span>
+                </div>
+              </div>
+            </template>
+            <!-- 无子菜单的项 -->
+            <template v-else>
+              <div
+                class="menu-item"
+                :class="{ active: activeSidebarMenu === item.name }"
+                @click="activeSidebarMenu = item.name"
+              >
+                <div class="menu-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" v-html="item.icon"></svg>
+                </div>
+                <span>{{ item.name }}</span>
+              </div>
+            </template>
+          </template>
         </div>
       </aside>
 
@@ -183,7 +167,7 @@
         <!-- 用户信息栏 (悬浮置顶) -->
         <div class="user-info-bar sticky-user-bar">
           <div class="user-info-left">
-            <el-avatar :size="48" :icon="UserFilled" class="user-avatar" />
+            <el-avatar :size="48" :icon="UserIcon" class="user-avatar" />
             <div class="user-details">
               <div class="user-name">
                 {{ userInfo.name }}
@@ -411,7 +395,7 @@
                   <tr v-for="(row, index) in tableData" :key="index">
                     <td>
                       <div class="talent-info">
-                        <el-avatar :size="32" :icon="UserFilled" />
+                        <el-avatar :size="32" :icon="UserIcon" />
                         <div class="talent-detail">
                           <span class="talent-name">{{ row.username }}</span>
                           <span class="talent-nickname">{{ row.name }}</span>
@@ -420,7 +404,7 @@
                     </td>
                     <td>
                       <div class="bd-info">
-                        <el-avatar :size="24" :icon="UserFilled" />
+                        <el-avatar :size="24" :icon="UserIcon" />
                         <span>{{ row.bd }}</span>
                       </div>
                     </td>
@@ -510,9 +494,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch, h } from 'vue'
 import { ElMessage, ElAvatar } from 'element-plus'
-import { UserFilled } from '@element-plus/icons-vue'
+
+const UserIcon = {
+  render() {
+    return h('i', { class: 'iconfont icon-yonghu' })
+  },
+  h
+}
 
 const activePlatform = ref('tiktok')
 const selectedDept = ref('')
@@ -520,7 +510,162 @@ const selectedBD = ref('')
 const selectedDate = ref('近N天')
 const selectedStatus = ref('all')
 const notifTab = ref('reminder')
-const talentMenuOpen = ref(false)
+const currentLanguage = ref('中文')
+
+const handleLanguageChange = (lang) => {
+  currentLanguage.value = lang
+  ElMessage.success(`语言已切换为 ${lang}`)
+}
+
+const currentScenario = ref('ecommerce')
+const activeNavMenu = ref('达人合作')
+const activeSidebarMenu = ref('工作台')
+const openSubmenus = reactive({})
+
+const toggleSubmenu = (name) => {
+  openSubmenus[name] = !openSubmenus[name]
+}
+
+// B区导航菜单配置
+const navMenuConfig = {
+  ecommerce: ['达人合作', '内容中心', '指挥中台', '系统设置'],
+  seeding: ['内容合作', '系统设置']
+}
+
+const currentNavMenus = computed(() => {
+  return navMenuConfig[currentScenario.value] || []
+})
+
+const handleScenarioChange = (command) => {
+  currentScenario.value = command
+}
+
+// 当业务场景切换时，重置B区菜单和左侧菜单
+watch(currentScenario, (newVal) => {
+  const menus = navMenuConfig[newVal]
+  activeNavMenu.value = menus[0]
+})
+
+// 当B区菜单切换时，重置左侧激活菜单
+watch(activeNavMenu, (newVal) => {
+  const items = sidebarMenuItems.value
+  if (items.length > 0) {
+    activeSidebarMenu.value = items[0].name
+  }
+  // 重置子菜单展开状态
+  Object.keys(openSubmenus).forEach(key => {
+    openSubmenus[key] = false
+  })
+})
+
+// SVG icon paths
+const icons = {
+  dashboard: '<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>',
+  dataOps: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>',
+  search: '<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/>',
+  person: '<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>',
+  group: '<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/>',
+  sample: '<path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/>',
+  video: '<path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>',
+  cooperation: '<path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>',
+  shop: '<path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>',
+  order: '<path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3H6V5h10zm2.5 3H18V5h.5c.83 0 1.5.67 1.5 1.5S19.33 8 18.5 8zM4 19h16v2H4v-2z"/>',
+  globe: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>',
+  insight: '<path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>',
+  ai: '<path d="M21 11.18V9.72c0-.47-.16-.92-.46-1.28L16.6 3.72c-.38-.46-.94-.72-1.54-.72H8.94c-.6 0-1.16.26-1.54.72L3.46 8.44c-.3.36-.46.81-.46 1.28v1.46c0 .65.23 1.25.62 1.71-.01.09-.02.17-.02.26v1.85c0 .83.34 1.58.88 2.12L6 18.65V21h12v-2.35l1.52-1.53c.54-.54.88-1.29.88-2.12v-1.85c0-.09-.01-.17-.02-.26.39-.46.62-1.06.62-1.71zm-2 4.82c0 .28-.11.54-.31.71l-1.69 1.7v1.59H7v-1.59l-1.69-1.7c-.2-.17-.31-.43-.31-.71v-1.85c0-.09.01-.17.02-.26.23.11.48.17.73.17h.25c.64 0 1.23-.27 1.65-.71l.71-.71.71.71c.42.44 1.01.71 1.65.71h.65c.64 0 1.23-.27 1.65-.71l.71-.71.71.71c.42.44 1.01.71 1.65.71H17c.25 0 .5-.06.73-.17.01.09.02.17.02.26v1.85zM19 11.18c0 .28-.11.54-.31.71l-.69.69-1.06-1.06-.71.71-.29.29c-.19.19-.44.29-.71.29h-.65c-.27 0-.52-.1-.71-.29L13.58 12l-.71.71-1.29 1.29c-.19.19-.44.29-.71.29h-.65c-.27 0-.52-.1-.71-.29L9.22 12.71l-.71-.71-1.06 1.06-.69-.69c-.2-.17-.31-.43-.31-.71V9.72c0-.12.04-.23.11-.32l3.94-4.72c.09-.12.24-.18.39-.18h6.12c.15 0 .3.06.39.18l3.94 4.72c.07.09.11.2.11.32v1.46z"/>',
+  content: '<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/>',
+  asset: '<path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/>',
+  launch: '<path d="M1 18v3h3c0-1.66-1.34-3-3-3zm0-4v2c2.76 0 5 2.24 5 5h2c0-3.87-3.13-7-7-7zm18-7c0-1.1-.9-2-2-2H7v1.63c3.96 1.28 7.09 4.41 8.37 8.37H19V7zm-2 7c0 1.1-.9 2-2 2h-.37C13.64 12.38 10.62 9.36 7 8.37V7h10v7zM1 10v2c4.97 0 9 4.03 9 9h2c0-6.07-4.93-11-11-11z"/>',
+  bigscreen: '<path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/>',
+  team: '<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>',
+  live: '<path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>',
+  product: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2V9h-2v8zm-4 0h2v-5H8v5zm8 0h2v-3h-2v3z"/>',
+  members: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>',
+  department: '<path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>',
+  role: '<path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>',
+  config: '<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>',
+  exchange: '<path d="M12.89 11.1c-1.78-.59-2.64-.96-2.64-1.9 0-1.02 1.11-1.39 1.81-1.39 1.31 0 1.79.99 1.9 1.34l1.58-.67c-.15-.45-.82-1.92-2.54-2.16V5h-2v1.3c-2.44.54-2.47 2.74-2.47 2.9 0 2.47 2.3 3.2 3.26 3.53 1.57.54 2.26 1.01 2.26 2.05 0 1.31-1.27 1.71-1.98 1.71-1.22 0-2.15-.95-2.39-1.98l-1.66.5c.52 1.96 1.97 2.5 2.98 2.69V19h2v-1.33c.78-.15 2.65-.84 2.65-3.15 0-2.27-1.94-3.09-2.76-3.42z"/><path d="M2 2h20v2H2V2zm0 18h20v2H2v-2z"/>',
+  permission: '<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>',
+  account: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"/>',
+  overview: '<path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>',
+  plan: '<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/>',
+  performance: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-5h2v5zm4 0h-2v-3h2v3zm0-5h-2V9h2v3zm4 5h-2V7h2v10z"/>'
+}
+
+// 左侧菜单数据配置
+const sidebarMenuConfig = {
+  // 带货场景
+  ecommerce: {
+    '达人合作': [
+      { name: '工作台', icon: icons.dashboard },
+      { name: '数据运营', icon: icons.dataOps },
+      { name: '找达人', icon: icons.search, children: [
+        { name: '达人库', tag: 'New' },
+        { name: '智能推荐达人', tag: 'New' },
+        { name: '商品找达人', tag: 'New' },
+        { name: '达人榜单', tag: 'New' }
+      ]},
+      { name: '达人管理', icon: icons.person },
+      { name: '批量建联', icon: icons.group },
+      { name: '样品管理', icon: icons.sample },
+      { name: '视频履约', icon: icons.video },
+      { name: '合作管理', icon: icons.cooperation },
+      { name: '团长管理', icon: icons.globe },
+      { name: '店铺商品', icon: icons.shop },
+      { name: '订单管理', icon: icons.order }
+    ],
+    '内容中心': [
+      { name: '内容洞察', icon: icons.insight },
+      { name: 'AI创作', icon: icons.ai },
+      { name: '合作内容', icon: icons.content },
+      { name: '内容资产', icon: icons.asset },
+      { name: '投放管理', icon: icons.launch }
+    ],
+    '指挥中台': [
+      { name: '大盘', icon: icons.dataOps },
+      { name: '达播', icon: icons.live },
+      { name: '商品', icon: icons.product },
+      { name: '团队', icon: icons.team },
+      { name: '内容', icon: icons.content },
+      { name: '大屏', icon: icons.bigscreen }
+    ],
+    '系统设置': [
+      { name: '成员管理', icon: icons.members },
+      { name: '部门管理', icon: icons.department },
+      { name: '角色管理', icon: icons.role },
+      { name: '业务配置', icon: icons.config },
+      { name: '汇率设置', icon: icons.exchange },
+      { name: '权限管理', icon: icons.permission },
+      { name: '账号信息', icon: icons.account }
+    ]
+  },
+  // 种草场景
+  seeding: {
+    '内容合作': [
+      { name: '数据概览', icon: icons.overview },
+      { name: '营销计划', icon: icons.plan },
+      { name: '达人管理', icon: icons.person },
+      { name: '合作内容', icon: icons.content },
+      { name: '绩效管理', icon: icons.performance },
+      { name: '店铺商品', icon: icons.shop }
+    ],
+    '系统设置': [
+      { name: '成员管理', icon: icons.members },
+      { name: '部门管理', icon: icons.department },
+      { name: '角色管理', icon: icons.role },
+      { name: '业务配置', icon: icons.config },
+      { name: '汇率设置', icon: icons.exchange },
+      { name: '权限管理', icon: icons.permission },
+      { name: '账号信息', icon: icons.account }
+    ]
+  }
+}
+
+const sidebarMenuItems = computed(() => {
+  const scenarioConfig = sidebarMenuConfig[currentScenario.value]
+  if (!scenarioConfig) return []
+  return scenarioConfig[activeNavMenu.value] || []
+})
 
 const today = new Date()
 const currentMonthStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}`
@@ -725,72 +870,187 @@ $transition-fast: 150ms ease;
   margin: 0 8px;
 }
 
+.scenario-dropdown {
+  margin-left: 12px;
+}
+
+.scenario-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: $border-radius-sm;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $web-wash;
+  }
+}
+
+.scenario-text {
+  font-size: 15px;
+  color: $primary-text;
+  font-weight: 500;
+}
+
+.scenario-arrow {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid #333;
+  margin-top: 2px;
+}
+
+.b-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 8px;
+}
+
 .nav-item {
   font-size: 14px;
   color: $secondary-text;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: $border-radius-sm;
-  transition: all $transition-fast;
+  padding: 4px 0;
+  position: relative;
+  transition: color $transition-fast;
 
   &:hover {
     color: $primary-text;
   }
 
   &.active {
-    color: $meta-blue;
-    font-weight: 500;
+    color: $primary-text;
+    font-weight: 600;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: $primary-text;
+      border-radius: 2px;
+    }
   }
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
-.download-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: $meta-blue;
-  color: $white;
-  border-radius: $border-radius-sm;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.header-icons {
+.c-icons-area {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.icon-btn {
-  position: relative;
+.c-icon-svg {
+  flex-shrink: 0;
+}
+
+.c-btn-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid #1677ff;
+  color: #1677ff;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  background: white;
+  transition: all $transition-fast;
+  
+  &:hover {
+    background: #f0f5ff;
+  }
+}
+
+.c-btn-lang {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: $border-radius-sm;
   cursor: pointer;
   color: $secondary-text;
+  transition: all $transition-fast;
 
   &:hover {
+    background: $web-wash;
     color: $primary-text;
   }
 
-  .badge {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 4px;
-    background: $error-red;
-    color: $white;
-    font-size: 10px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .lang-text {
+    font-size: 13px;
+    white-space: nowrap;
   }
+
+  .c-icon-arrow {
+    margin-top: 1px;
+    opacity: 0.6;
+  }
+}
+
+.c-btn-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #d9d9d9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  color: $secondary-text;
+  background: $white;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: #bfbfbf;
+    color: $primary-text;
+  }
+  
+  &.has-badge {
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -8px;
+      background: #ff4d4f;
+      color: $white;
+      font-size: 11px;
+      border-radius: 10px;
+      padding: 0 5px;
+      height: 16px;
+      line-height: 16px;
+      transform: scale(0.9);
+    }
+  }
+}
+
+.c-btn-avatar {
+  cursor: pointer;
+
+  .header-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: $white;
+    transition: box-shadow $transition-fast;
+
+    &:hover {
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+    }
+  }
+}
+
+:deep(.scenario-dropdown-menu .el-dropdown-menu__item.active) {
+  color: $meta-blue;
+  background-color: #f0f5ff;
 }
 
 // 主内容包装
@@ -1055,6 +1315,11 @@ $transition-fast: 150ms ease;
 
 .user-avatar {
   flex-shrink: 0;
+
+  :deep(.iconfont) {
+    font-family: 'iconfont', sans-serif;
+    font-size: 20px;
+  }
 }
 
 .user-details {
