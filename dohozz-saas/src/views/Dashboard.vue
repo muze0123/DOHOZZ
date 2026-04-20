@@ -148,7 +148,11 @@
 
       <!-- 主内容区 -->
       <main class="main-content">
-        <!-- 平台与用户信息合并区 -->
+        <!-- 数据概览页面 -->
+        <DataOverview v-if="activeSidebarMenu === '数据概览'" />
+
+        <!-- 工作台页面 -->
+        <template v-else-if="activeSidebarMenu === '工作台'">
         <div class="platform-tabs-bar">
           <div class="platform-tabs">
             <div
@@ -488,6 +492,17 @@
             </div>
           </div>
         </div>
+        </template>
+
+        <!-- 其他菜单页面占位 -->
+        <div v-else class="empty-page">
+          <div class="empty-content">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="#d9d9d9">
+              <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+            </svg>
+            <p>{{ activeSidebarMenu }} - 功能开发中</p>
+          </div>
+        </div>
       </main>
     </div>
   </div>
@@ -496,6 +511,7 @@
 <script setup>
 import { ref, reactive, computed, watch, h } from 'vue'
 import { ElMessage, ElAvatar } from 'element-plus'
+import DataOverview from './DataOverview.vue'
 
 const UserIcon = {
   render() {
@@ -598,7 +614,13 @@ const sidebarMenuConfig = {
   ecommerce: {
     '达人合作': [
       { name: '工作台', icon: icons.dashboard },
-      { name: '数据运营', icon: icons.dataOps },
+      { name: '数据运营', icon: icons.dataOps, children: [
+        { name: '数据概览' },
+        { name: '绩效管理' },
+        { name: '提成管理' },
+        { name: '报表中心' },
+        { name: '业绩目标' }
+      ]},
       { name: '找达人', icon: icons.search, children: [
         { name: '达人库', tag: 'New' },
         { name: '智能推荐达人', tag: 'New' },
@@ -2128,6 +2150,26 @@ $transition-fast: 150ms ease;
 
   .guide-cards {
     grid-template-columns: 1fr;
+  }
+}
+
+// Empty page placeholder
+.empty-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 40px;
+}
+
+.empty-content {
+  text-align: center;
+  color: #bfbfbf;
+
+  p {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #999;
   }
 }
 </style>
