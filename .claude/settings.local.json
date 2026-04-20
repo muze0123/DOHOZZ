@@ -3,13 +3,12 @@
     "allow": [
       "Bash(npm run:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(git config:*)",
-      "Bash(git fetch:*)",
-      "Bash(git pull:*)",
-      "Bash(GIT_CURL_VERBOSE=1 git push --force origin main)"
+      "Bash(git remote:*)",
+      "Bash(GIT_HTTP_USER_AGENT=\"git/2.0\" git push -u origin main)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)"
     ]
   }
 }
