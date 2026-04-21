@@ -1,1145 +1,943 @@
 <template>
   <div class="data-overview">
-    <!-- 时间筛选栏 -->
-    <div class="filter-bar">
-      <div class="filter-left">
-        <span class="filter-label">时间筛选：</span>
-        <div class="date-quick-btns">
-          <span
-            v-for="tab in dateQuickTabs"
-            :key="tab"
-            class="quick-btn"
-            :class="{ active: activeQuickDate === tab }"
-            @click="activeQuickDate = tab"
-          >{{ tab }}</span>
+    <!-- ==================== 区域A：全局筛选工具栏 ==================== -->
+    <div class="filter-area">
+      <!-- 平台Tab -->
+      <div class="platform-tabs-bar">
+        <div class="platform-tabs">
+          <div v-for="p in platformTabs" :key="p.id" class="platform-tab" :class="{ active: filters.platform === p.id }" @click="filters.platform = p.id">
+            <div class="platform-icon" v-html="p.icon"></div>
+            <span>{{ p.name }}</span>
+          </div>
         </div>
-        <el-date-picker
-          v-model="dateRange"
-          type="daterange"
-          range-separator="~"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          format="YYYY/MM/DD"
-          value-format="YYYY-MM-DD"
-          size="small"
-          class="date-range-picker"
-        />
       </div>
-      <div class="filter-right">
-        <div class="period-toggle">
-          <span
-            v-for="p in ['日', '周', '月']"
-            :key="p"
-            class="period-btn"
-            :class="{ active: activePeriod === p }"
-            @click="activePeriod = p"
-          >{{ p }}</span>
+      <!-- 筛选条件区块 -->
+      <div class="filter-toolbar sticky-filter-bar">
+        <div class="filter-row">
+          <div class="filter-item">
+            <span class="filter-label">店铺筛选</span>
+            <el-select v-model="filters.store" placeholder="全部店铺" filterable clearable size="small" class="filter-select">
+              <el-option label="全部店铺" value="" />
+              <el-option label="XXX旗舰店1" value="store1" />
+              <el-option label="XXX旗舰店2" value="store2" />
+              <el-option label="XXX旗舰店3" value="store3" />
+            </el-select>
+          </div>
+          <div class="filter-item">
+            <span class="filter-label">部门筛选</span>
+            <el-select v-model="filters.department" placeholder="全部部门" filterable clearable size="small" class="filter-select">
+              <el-option label="全部部门" value="" />
+              <el-option label="销售一部" value="dept1" />
+              <el-option label="销售二部" value="dept2" />
+              <el-option label="运营部" value="dept3" />
+            </el-select>
+          </div>
+          <div class="filter-item">
+            <span class="filter-label">BD筛选</span>
+            <el-select v-model="filters.bd" placeholder="全部BD" filterable clearable size="small" class="filter-select">
+              <el-option label="全部BD" value="" />
+              <el-option label="张三" value="bd1" />
+              <el-option label="李四" value="bd2" />
+              <el-option label="王五" value="bd3" />
+            </el-select>
+          </div>
+          <div class="filter-item date-filter">
+            <div class="date-quick-btns">
+              <span v-for="t in dateQuickTabs" :key="t.key" class="quick-btn" :class="{ active: filters.dateType === t.key }" @click="filters.dateType = t.key">{{ t.label }}</span>
+            </div>
+            <el-date-picker v-model="filters.dateRange" type="daterange" range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY/MM/DD" value-format="YYYY-MM-DD" size="small" class="date-range-picker" :clearable="false" />
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- 数据概览 KPI -->
-    <div class="section-block">
+    <!-- ==================== 区域B：数据大盘区 ==================== -->
+    <div class="section-block area-b">
       <div class="section-head">
-        <span class="section-title">数据概览</span>
-        <span class="section-sub">数据更新于：2025/11/26 12:00:00</span>
+        <div class="head-left">
+          <span class="section-title">数据大盘</span>
+          <span class="update-time">数据更新于：2026-04-20 12:00:00</span>
+          <el-tooltip content="数据每 1 小时更新一次" placement="top"><span class="help-icon">?</span></el-tooltip>
+        </div>
+        <el-button size="small" @click="showConfigDialog = true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right:4px"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          配置
+        </el-button>
       </div>
-      <div class="kpi-cards">
-        <div v-for="(kpi, idx) in kpiList" :key="idx" class="kpi-card">
-          <div class="kpi-label">
-            {{ kpi.label }}
-            <span class="kpi-unit" v-if="kpi.unit">({{ kpi.unit }})</span>
-          </div>
-          <div class="kpi-value" :class="kpi.valueClass">{{ kpi.value }}</div>
-          <div class="kpi-trend">
-            <span :class="kpi.trendClass">{{ kpi.trendIcon }} {{ kpi.trend }}</span>
+
+      <!-- KPI 指标卡片 -->
+      <div class="kpi-cards-scroll">
+        <div class="kpi-cards">
+          <div v-for="kpi in visibleKpis" :key="kpi.id" class="kpi-card" :class="{ selected: selectedChartKpiIds.includes(kpi.id) }" @click="toggleKpiSelect(kpi.id)">
+            <div class="kpi-label">{{ kpi.label }}<el-tooltip :content="kpi.tooltip" placement="top"><span class="help-icon">?</span></el-tooltip></div>
+            <div class="kpi-value">{{ kpi.value }}</div>
+            <div class="kpi-trend">
+              <span v-if="kpi.trendDir === 'up'" class="trend-up">↑ {{ kpi.trend }}</span>
+              <span v-else-if="kpi.trendDir === 'down'" class="trend-down">↓ {{ kpi.trend }}</span>
+              <span v-else class="trend-flat">— {{ kpi.trend }}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 趋势折线图 -->
+      <!-- 折线趋势图 -->
       <div class="trend-chart-area">
-        <svg class="trend-chart" viewBox="0 0 900 220" preserveAspectRatio="none">
-          <!-- Grid lines -->
-          <line x1="50" y1="20" x2="50" y2="190" stroke="#f0f0f0" stroke-width="1"/>
+        <svg class="trend-chart" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet">
           <line x1="50" y1="190" x2="870" y2="190" stroke="#e8e8e8" stroke-width="1"/>
-          <line x1="50" y1="150" x2="870" y2="150" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="4"/>
-          <line x1="50" y1="110" x2="870" y2="110" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="4"/>
-          <line x1="50" y1="70" x2="870" y2="70" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="4"/>
-          <line x1="50" y1="30" x2="870" y2="30" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="4"/>
-          <!-- Y-axis labels -->
-          <text x="40" y="193" text-anchor="end" fill="#999" font-size="11">0</text>
-          <text x="40" y="153" text-anchor="end" fill="#999" font-size="11">10w</text>
-          <text x="40" y="113" text-anchor="end" fill="#999" font-size="11">20w</text>
-          <text x="40" y="73" text-anchor="end" fill="#999" font-size="11">30w</text>
-          <text x="40" y="33" text-anchor="end" fill="#999" font-size="11">40w</text>
-          <!-- Line 1 - 销售金额 (blue) -->
-          <polyline fill="none" stroke="#1677ff" stroke-width="2"
-            points="80,140 180,120 280,90 380,100 480,60 580,80 680,50 780,70 850,65"/>
-          <!-- Line 2 - 达人金额 (orange) -->
-          <polyline fill="none" stroke="#fa8c16" stroke-width="2" stroke-dasharray="6 3"
-            points="80,160 180,150 280,130 380,140 480,110 580,125 680,100 780,115 850,108"/>
-          <!-- X-axis labels -->
-          <text x="80" y="208" fill="#999" font-size="11" text-anchor="middle">2024.03.27</text>
-          <text x="180" y="208" fill="#999" font-size="11" text-anchor="middle">2025.06.04</text>
-          <text x="280" y="208" fill="#999" font-size="11" text-anchor="middle">04.01-04.07</text>
-          <text x="380" y="208" fill="#999" font-size="11" text-anchor="middle">2025.10.30</text>
-          <text x="480" y="208" fill="#999" font-size="11" text-anchor="middle">2025.11.05</text>
-          <text x="580" y="208" fill="#999" font-size="11" text-anchor="middle">2025.12.18</text>
-          <text x="680" y="208" fill="#999" font-size="11" text-anchor="middle">2026.01.09</text>
-          <text x="780" y="208" fill="#999" font-size="11" text-anchor="middle">2026.04.09</text>
-          <!-- Dots -->
-          <circle cx="480" cy="60" r="4" fill="#1677ff"/>
-          <circle cx="680" cy="50" r="4" fill="#1677ff"/>
+          <line v-for="n in 4" :key="n" x1="50" :y1="190 - n * 40" x2="870" :y2="190 - n * 40" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="4"/>
+          <text v-for="(lbl, i) in yLabels" :key="'y'+i" x="42" :y="194 - i * 40" text-anchor="end" fill="#999" font-size="11">{{ lbl }}</text>
+          <polyline fill="none" stroke="#1677ff" stroke-width="2.5" points="80,150 180,130 280,100 380,115 480,70 580,90 680,55 780,75 850,68"/>
+          <polyline fill="none" stroke="#fa8c16" stroke-width="2" stroke-dasharray="6 3" points="80,165 180,155 280,135 380,148 480,118 580,130 680,108 780,120 850,114"/>
+          <text v-for="(d, i) in xDates" :key="'x'+i" :x="80 + i * 96.25" y="208" fill="#999" font-size="10" text-anchor="middle">{{ d }}</text>
         </svg>
         <div class="chart-legend">
-          <span class="legend-item"><span class="legend-line blue"></span>销售总金额</span>
-          <span class="legend-item"><span class="legend-line orange dashed"></span>达成出单金额</span>
+          <span v-for="(lineId, index) in selectedChartKpiIds" :key="lineId" class="legend-item">
+            <span class="legend-line" :class="{ dashed: index === 1 }" :style="index === 0 ? { background: '#1677ff' } : { borderColor: '#fa8c16' }"></span>
+            {{ allKpiDataMap[lineId]?.label }}
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- GMV分布 -->
-    <div class="gmv-row">
-      <!-- 团购GMV分布 -->
+    <!-- ==================== 区域C+D：GMV分布 ==================== -->
+    <div class="dual-section">
+      <!-- 区域C：店铺GMV分布 -->
       <div class="section-block half">
-        <div class="section-head">
-          <span class="section-title">团购GMV分布</span>
-        </div>
-        <div class="gmv-chart-content">
-          <div class="gmv-stats">
-            <div class="gmv-total-label">合作出单金额<span class="gmv-arrow">▼</span></div>
-            <div class="gmv-total-value">¥133.32w</div>
-            <div class="gmv-detail">XXX品牌/产品<br>¥113,000 12.0%</div>
-          </div>
-          <div class="donut-chart">
-            <svg viewBox="0 0 160 160" width="160" height="160">
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#e8e8e8" stroke-width="24"/>
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#1677ff" stroke-width="24"
-                stroke-dasharray="188.5 188.5" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#91caff" stroke-width="24"
-                stroke-dasharray="94.2 282.8" stroke-dashoffset="-188.5" transform="rotate(-90 80 80)"/>
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#bae0ff" stroke-width="24"
-                stroke-dasharray="47.1 329.9" stroke-dashoffset="-282.7" transform="rotate(-90 80 80)"/>
+        <div class="section-head"><span class="section-title">店铺 GMV 分布</span></div>
+        <div class="gmv-content">
+          <div class="donut-wrapper">
+            <svg viewBox="0 0 180 180" width="180" height="180">
+              <circle cx="90" cy="90" r="65" fill="none" stroke="#f0f0f0" stroke-width="26"/>
+              <circle cx="90" cy="90" r="65" fill="none" stroke="#1677ff" stroke-width="26" :stroke-dasharray="storeGmvArcs[0].dash" stroke-dashoffset="0" transform="rotate(-90 90 90)" class="donut-arc"/>
+              <circle cx="90" cy="90" r="65" fill="none" stroke="#36cfc9" stroke-width="26" :stroke-dasharray="storeGmvArcs[1].dash" :stroke-dashoffset="storeGmvArcs[1].offset" transform="rotate(-90 90 90)" class="donut-arc"/>
+              <circle cx="90" cy="90" r="65" fill="none" stroke="#ffc53d" stroke-width="26" :stroke-dasharray="storeGmvArcs[2].dash" :stroke-dashoffset="storeGmvArcs[2].offset" transform="rotate(-90 90 90)" class="donut-arc"/>
+              <text x="90" y="84" text-anchor="middle" fill="#1e293b" font-size="16" font-weight="700">¥133.32w</text>
+              <text x="90" y="102" text-anchor="middle" fill="#94a3b8" font-size="11">总成交金额</text>
             </svg>
           </div>
-          <div class="gmv-legend">
-            <div class="legend-row"><span class="dot" style="background:#1677ff"></span>XXX品牌/产品</div>
-            <div class="legend-row"><span class="dot" style="background:#91caff"></span>XXX品牌/产品</div>
-            <div class="legend-row"><span class="dot" style="background:#bae0ff"></span>XXX品牌/产品</div>
+          <div class="gmv-legend-list">
+            <div v-for="(s, i) in storeGmvData" :key="i" class="gmv-legend-item">
+              <span class="dot" :style="{ background: s.color }"></span>
+              <span class="legend-name">{{ s.name }}</span>
+              <span class="legend-val">{{ s.amount }}</span>
+              <span class="legend-pct">{{ s.pct }}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 数据GMV分布 -->
+      <!-- 区域D：载体GMV分布 -->
       <div class="section-block half">
-        <div class="section-head">
-          <span class="section-title">数据GMV分布</span>
-        </div>
-        <div class="gmv-chart-content">
-          <div class="gmv-stats">
-            <div class="stat-row"><span class="stat-label">全部</span><span class="stat-pct">25%</span></div>
-            <div class="stat-row"><span class="stat-label">已出单</span><span class="stat-pct">38%</span></div>
-            <div class="stat-row"><span class="stat-label">待出单</span><span class="stat-pct">12%</span></div>
-            <div class="stat-row"><span class="stat-label">待发货</span><span class="stat-pct">15%</span></div>
-            <div class="stat-row"><span class="stat-label">已完成</span><span class="stat-pct">10%</span></div>
-          </div>
-          <div class="donut-chart">
-            <svg viewBox="0 0 160 160" width="160" height="160">
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#e8e8e8" stroke-width="24"/>
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#597ef7" stroke-width="24"
-                stroke-dasharray="94.2 282.8" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#73d13d" stroke-width="24"
-                stroke-dasharray="143.3 233.7" stroke-dashoffset="-94.2" transform="rotate(-90 80 80)"/>
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#ffc53d" stroke-width="24"
-                stroke-dasharray="45.2 331.8" stroke-dashoffset="-237.5" transform="rotate(-90 80 80)"/>
-              <circle cx="80" cy="80" r="60" fill="none" stroke="#ff7875" stroke-width="24"
-                stroke-dasharray="56.5 320.5" stroke-dashoffset="-282.7" transform="rotate(-90 80 80)"/>
+        <div class="section-head"><span class="section-title">载体 GMV 分布</span></div>
+        <div class="gmv-content">
+          <div class="donut-wrapper">
+            <svg viewBox="0 0 180 180" width="180" height="180">
+              <circle cx="90" cy="90" r="65" fill="none" stroke="#f0f0f0" stroke-width="26"/>
+              <circle cx="90" cy="90" r="65" fill="none" stroke="#597ef7" stroke-width="26" stroke-dasharray="204 204" stroke-dashoffset="0" transform="rotate(-90 90 90)" class="donut-arc"/>
+              <circle cx="90" cy="90" r="65" fill="none" stroke="#73d13d" stroke-width="26" stroke-dasharray="102 306" stroke-dashoffset="-204" transform="rotate(-90 90 90)" class="donut-arc"/>
+              <circle cx="90" cy="90" r="65" fill="none" stroke="#ffc53d" stroke-width="26" stroke-dasharray="102 306" stroke-dashoffset="-306" transform="rotate(-90 90 90)" class="donut-arc"/>
             </svg>
+          </div>
+          <div class="gmv-legend-list">
+            <div v-for="(c, i) in carrierGmvData" :key="i" class="gmv-legend-item">
+              <span class="dot" :style="{ background: c.color }"></span>
+              <span class="legend-name">{{ c.name }}</span>
+              <span class="legend-val">{{ c.amount }}</span>
+              <span class="legend-pct">{{ c.pct }}</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 店铺数据 -->
-    <div class="section-block">
+    <!-- ==================== 区域E：动销数据区 ==================== -->
+    <div class="section-block area-e">
       <div class="section-head">
-        <span class="section-title">店铺数据</span>
-      </div>
-      <div class="store-summary-cards">
-        <div class="store-card highlight">
-          <div class="store-card-label">达人出单人数<span class="info-icon">ⓘ</span></div>
-          <div class="store-card-value">8888</div>
-          <div class="store-card-bar">
-            <div class="bar-fill" style="width:65%;background:linear-gradient(90deg,#1677ff,#69b1ff)"></div>
-          </div>
-          <div class="store-card-pct">占比 18.5%</div>
+        <div class="head-left">
+          <span class="section-title">动销数据</span>
         </div>
-        <div class="store-card">
-          <div class="store-card-label">达人产出金额<span class="info-icon">ⓘ</span></div>
-          <div class="store-card-value">8888</div>
-          <div class="store-card-pct">占比 11%</div>
+        <el-button size="small" type="primary" plain @click="handleExport">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right:4px"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          导出
+        </el-button>
+      </div>
+      <!-- 双Tab指标卡 -->
+      <div class="sale-tabs">
+        <div class="sale-tab-card" :class="{ active: saleTab === 'talent' }" @click="saleTab = 'talent'">
+          <div class="tab-label">出单达人数<el-tooltip content="所选时间范围内有通过直播/视频/橱窗出单的达人数" placement="top"><span class="help-icon">?</span></el-tooltip></div>
+          <div class="tab-value">8,888</div>
+          <div class="tab-trend"><span class="trend-up">↑ 18.5%</span></div>
+        </div>
+        <div class="sale-tab-card" :class="{ active: saleTab === 'product' }" @click="saleTab = 'product'">
+          <div class="tab-label">出单商品数<el-tooltip content="所选时间范围内有支付订单的商品数" placement="top"><span class="help-icon">?</span></el-tooltip></div>
+          <div class="tab-value">8,888</div>
+          <div class="tab-trend"><span class="trend-up">↑ 11%</span></div>
         </div>
       </div>
 
-      <!-- 店铺数据表格 -->
+      <!-- 数据表格 -->
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
-            <tr>
-              <th>排序</th>
-              <th>平台</th>
-              <th>头像</th>
-              <th>开发商/网店 <span class="sort-icon">↕</span></th>
-              <th>下单总价</th>
-              <th>退货发件</th>
-              <th>完成/签发人</th>
-              <th>佣金/提成/利润</th>
+            <tr v-if="saleTab === 'talent'">
+              <th>排名</th><th>平台</th><th>达人</th>
+              <th class="sortable" @click="toggleSort('amount')">成交金额 <span class="sort-arrows">{{ sortIcon('amount') }}</span></th>
+              <th class="sortable" @click="toggleSort('sales')">销量 <span class="sort-arrows">{{ sortIcon('sales') }}</span></th>
+              <th>成交商品(SKU数)</th><th>直播/视频/橱窗</th>
+            </tr>
+            <tr v-else>
+              <th>排名</th><th>平台</th><th>商品信息</th>
+              <th class="sortable" @click="toggleSort('amount')">成交金额 <span class="sort-arrows">{{ sortIcon('amount') }}</span></th>
+              <th class="sortable" @click="toggleSort('sales')">销量 <span class="sort-arrows">{{ sortIcon('sales') }}</span></th>
+              <th>成交达人数</th><th>直播/视频/橱窗</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, idx) in storeTableData" :key="idx">
-              <td>
-                <span class="rank-num" :class="{ top: idx < 3 }">{{ idx + 1 }}</span>
+            <tr v-for="(row, idx) in saleTablePage" :key="idx">
+              <td><span class="rank-badge" :class="{ gold: idx + (salePage-1)*5 < 3 }">{{ idx + 1 + (salePage-1)*5 }}</span></td>
+              <td><div class="cell-platform"><svg viewBox="0 0 24 24" width="16" height="16" fill="#333"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg><span>{{ row.platform }}</span></div></td>
+              <td v-if="saleTab === 'talent'">
+                <div class="cell-talent"><el-avatar :size="28" class="tiny-avatar"/><div><div class="talent-uname">{{ row.username }}</div><div class="talent-name">{{ row.name }}</div></div></div>
               </td>
-              <td>
-                <div class="platform-cell">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="#333">
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                  </svg>
-                  <span>{{ row.platform }}</span>
-                </div>
+              <td v-else>
+                <div class="cell-product"><div class="product-img-placeholder"></div><div><div class="product-name">{{ row.productName }}</div><div class="product-id">ID：{{ row.productId }}</div></div></div>
               </td>
-              <td>
-                <div class="avatar-group">
-                  <el-avatar :size="24" v-for="n in 3" :key="n" class="mini-avatar" />
-                </div>
-              </td>
-              <td>{{ row.store }}</td>
-              <td>{{ row.totalPrice }}</td>
-              <td>{{ row.returns }}</td>
-              <td>{{ row.complete }}</td>
-              <td>
-                <span class="commission-text" :class="{ negative: row.profitNegative }">{{ row.commission }}</span>
-              </td>
+              <td class="amount-cell">{{ row.amount }}</td>
+              <td>{{ row.sales }}</td>
+              <td>{{ row.skuOrTalent }}</td>
+              <td class="ratio-cell">{{ row.ratio }}</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div class="table-pagination">
-        <div class="page-btn active">1</div>
-        <div class="page-btn">2</div>
-        <div class="page-btn">3</div>
-        <div class="page-btn">4</div>
-        <div class="page-btn">5</div>
-        <div class="page-btn">…</div>
-        <div class="page-btn">43</div>
-        <span class="page-size-info">10条/页 第1/5页</span>
+      <div class="pagination-bar">
+        <div class="page-btns">
+          <span v-for="p in saleTotalPages" :key="p" class="page-btn" :class="{ active: salePage === p }" @click="salePage = p">{{ p }}</span>
+        </div>
+        <span class="page-info">{{ saleTableData.length }}条 · 5条/页 · 第{{ salePage }}/{{ saleTotalPages }}页</span>
       </div>
     </div>
 
-    <!-- 营销概况 -->
-    <div class="section-block">
-      <div class="section-head">
-        <span class="section-title">营销概况</span>
-      </div>
-      <div class="marketing-cards">
-        <div v-for="(m, idx) in marketingKpis" :key="idx" class="marketing-card">
-          <div class="marketing-label">{{ m.label }}<span class="info-icon">ⓘ</span></div>
-          <div class="marketing-value">{{ m.value }}</div>
-          <div class="marketing-trend" v-if="m.trend">
-            <span :class="m.trendClass">{{ m.trend }}</span>
-          </div>
+    <!-- ==================== 区域F：寄样概况区 ==================== -->
+    <div class="section-block area-f">
+      <div class="section-head"><span class="section-title">寄样概况</span></div>
+      <div class="sample-kpi-row">
+        <div v-for="(sk, i) in sampleKpis" :key="i" class="sample-kpi-card">
+          <div class="sk-label">{{ sk.label }}<el-tooltip :content="sk.tooltip" placement="top"><span class="help-icon">?</span></el-tooltip></div>
+          <div class="sk-value">{{ sk.value }}</div>
+          <div class="sk-trend" v-if="sk.trend"><span :class="sk.trendClass">{{ sk.trend }}</span></div>
         </div>
       </div>
-    </div>
-
-    <!-- 样品到期趋势 + 案例TCO分布 -->
-    <div class="gmv-row">
-      <div class="section-block half">
-        <div class="section-head">
-          <span class="section-title">样品到期趋势</span>
-        </div>
-        <div class="bar-chart-area">
-          <svg class="bar-chart-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
-            <!-- Y axis labels -->
-            <text x="30" y="185" fill="#999" font-size="10" text-anchor="end">0</text>
-            <text x="30" y="145" fill="#999" font-size="10" text-anchor="end">50</text>
-            <text x="30" y="105" fill="#999" font-size="10" text-anchor="end">100</text>
-            <text x="30" y="65" fill="#999" font-size="10" text-anchor="end">150</text>
-            <text x="30" y="25" fill="#999" font-size="10" text-anchor="end">200</text>
-            <!-- Grid lines -->
-            <line x1="35" y1="180" x2="390" y2="180" stroke="#f0f0f0" stroke-width="1"/>
-            <line x1="35" y1="140" x2="390" y2="140" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <line x1="35" y1="100" x2="390" y2="100" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <line x1="35" y1="60" x2="390" y2="60" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <line x1="35" y1="20" x2="390" y2="20" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <!-- Bars -->
-            <rect x="55" y="80" width="20" height="100" fill="#91caff" rx="2"/>
-            <rect x="95" y="60" width="20" height="120" fill="#91caff" rx="2"/>
-            <rect x="135" y="100" width="20" height="80" fill="#91caff" rx="2"/>
-            <rect x="175" y="40" width="20" height="140" fill="#91caff" rx="2"/>
-            <rect x="215" y="120" width="20" height="60" fill="#91caff" rx="2"/>
-            <rect x="255" y="70" width="20" height="110" fill="#91caff" rx="2"/>
-            <rect x="295" y="90" width="20" height="90" fill="#91caff" rx="2"/>
-            <rect x="335" y="50" width="20" height="130" fill="#91caff" rx="2"/>
-            <!-- X labels -->
-            <text x="65" y="195" fill="#999" font-size="9" text-anchor="middle">01/15达人名</text>
-            <text x="105" y="195" fill="#999" font-size="9" text-anchor="middle">02/15达人名</text>
-            <text x="145" y="195" fill="#999" font-size="9" text-anchor="middle">03/15达人名</text>
-            <text x="185" y="195" fill="#999" font-size="9" text-anchor="middle">04/15达人名</text>
-            <text x="225" y="195" fill="#999" font-size="9" text-anchor="middle">05/15达人名</text>
-            <text x="265" y="195" fill="#999" font-size="9" text-anchor="middle">06/15达人名</text>
-            <text x="305" y="195" fill="#999" font-size="9" text-anchor="middle">07/15达人名</text>
-            <text x="345" y="195" fill="#999" font-size="9" text-anchor="middle">08/15达人名</text>
+      <div class="dual-section inner">
+        <!-- 样品数据趋势图 -->
+        <div class="chart-box">
+          <div class="chart-box-title">样品数据趋势</div>
+          <svg class="bar-line-chart" viewBox="0 0 440 200" preserveAspectRatio="xMidYMid meet">
+            <line x1="40" y1="175" x2="420" y2="175" stroke="#e8e8e8" stroke-width="1"/>
+            <line v-for="n in 4" :key="n" x1="40" :y1="175 - n*35" x2="420" :y2="175 - n*35" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
+            <text x="35" y="178" text-anchor="end" fill="#999" font-size="9">0</text>
+            <text x="35" y="143" text-anchor="end" fill="#999" font-size="9">300</text>
+            <text x="35" y="108" text-anchor="end" fill="#999" font-size="9">600</text>
+            <text x="35" y="73" text-anchor="end" fill="#999" font-size="9">900</text>
+            <text x="35" y="38" text-anchor="end" fill="#999" font-size="9">1200</text>
+            <rect v-for="(b, i) in sampleBars" :key="'bar'+i" :x="60 + i*48" :y="175 - b.h" width="24" :height="b.h" fill="#91caff" rx="2"/>
+            <polyline fill="none" stroke="#fa8c16" stroke-width="2" :points="sampleLinePoints"/>
+            <text v-for="(d, i) in sampleDates" :key="'sd'+i" :x="72 + i*48" y="190" fill="#999" font-size="8" text-anchor="middle">{{ d }}</text>
           </svg>
           <div class="chart-legend small">
-            <span class="legend-item"><span class="legend-box" style="background:#91caff"></span>到货批次</span>
-            <span class="legend-item"><span class="legend-line orange dashed"></span>发件趋势 0.75%</span>
+            <span class="legend-item"><span class="legend-box" style="background:#91caff"></span>样品单数</span>
+            <span class="legend-item"><span class="legend-line dashed" style="border-color:#fa8c16"></span>签收出单率</span>
           </div>
         </div>
-      </div>
-
-      <div class="section-block half">
-        <div class="section-head">
-          <span class="section-title">案例TCO分布</span>
-        </div>
-        <div class="bar-chart-area">
-          <svg class="bar-chart-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
-            <!-- Y axis labels -->
-            <text x="30" y="185" fill="#999" font-size="10" text-anchor="end">0%</text>
-            <text x="30" y="145" fill="#999" font-size="10" text-anchor="end">10%</text>
-            <text x="30" y="105" fill="#999" font-size="10" text-anchor="end">20%</text>
-            <text x="30" y="65" fill="#999" font-size="10" text-anchor="end">30%</text>
-            <text x="30" y="25" fill="#999" font-size="10" text-anchor="end">40%</text>
-            <!-- Grid lines -->
-            <line x1="35" y1="180" x2="390" y2="180" stroke="#f0f0f0" stroke-width="1"/>
-            <line x1="35" y1="140" x2="390" y2="140" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <line x1="35" y1="100" x2="390" y2="100" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <line x1="35" y1="60" x2="390" y2="60" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <line x1="35" y1="20" x2="390" y2="20" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <!-- Stacked Bars -->
-            <rect x="60" y="60" width="30" height="60" fill="#597ef7" rx="2"/>
-            <rect x="60" y="120" width="30" height="60" fill="#91caff" rx="2"/>
-            <rect x="120" y="40" width="30" height="80" fill="#597ef7" rx="2"/>
-            <rect x="120" y="120" width="30" height="60" fill="#91caff" rx="2"/>
-            <rect x="180" y="80" width="30" height="40" fill="#597ef7" rx="2"/>
-            <rect x="180" y="120" width="30" height="60" fill="#91caff" rx="2"/>
-            <rect x="240" y="50" width="30" height="70" fill="#597ef7" rx="2"/>
-            <rect x="240" y="120" width="30" height="60" fill="#91caff" rx="2"/>
-            <rect x="300" y="70" width="30" height="50" fill="#597ef7" rx="2"/>
-            <rect x="300" y="120" width="30" height="60" fill="#91caff" rx="2"/>
-            <rect x="360" y="90" width="30" height="30" fill="#597ef7" rx="2"/>
-            <rect x="360" y="120" width="30" height="60" fill="#91caff" rx="2"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- 合作漏斗 + 营销漏斗 -->
-    <div class="gmv-row">
-      <div class="section-block half">
-        <div class="section-head">
-          <span class="section-title">合作漏斗</span>
-        </div>
-        <div class="funnel-chart">
-          <div class="funnel-bar" v-for="(f, idx) in funnelCooperation" :key="idx">
-            <span class="funnel-label">{{ f.label }}</span>
-            <div class="funnel-bar-bg">
-              <div class="funnel-bar-fill" :style="{ width: f.pct + '%', background: f.color }"></div>
+        <!-- 寄样TOP10 -->
+        <div class="chart-box">
+          <div class="chart-box-title">寄样 TOP10</div>
+          <div class="top10-list">
+            <div v-for="(t, i) in sampleTop10" :key="i" class="top10-row">
+              <span class="top10-rank" :class="{ gold: i < 3 }">{{ i + 1 }}</span>
+              <span class="top10-name">{{ t.name }}</span>
+              <div class="top10-bar-bg"><div class="top10-bar-fill" :style="{ width: t.pct + '%' }"></div></div>
+              <span class="top10-val">{{ t.value }}</span>
             </div>
-            <span class="funnel-value">{{ f.value }}</span>
-          </div>
-          <div class="funnel-footer">
-            历史全部出单达人中 XXX 预达人/XX下单产品人数 <span class="link">处理</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="section-block half">
-        <div class="section-head">
-          <span class="section-title">营销漏斗</span>
-        </div>
-        <div class="funnel-chart">
-          <div class="funnel-bar" v-for="(f, idx) in funnelMarketing" :key="idx">
-            <span class="funnel-label">{{ f.label }}</span>
-            <div class="funnel-bar-bg">
-              <div class="funnel-bar-fill" :style="{ width: f.pct + '%', background: f.color }"></div>
-            </div>
-            <span class="funnel-value">{{ f.value }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 排行榜 -->
-    <div class="section-block">
+    <!-- ==================== 区域G+H：合作漏斗 + 寄样漏斗 ==================== -->
+    <div class="dual-section">
+      <!-- 区域G：合作漏斗 -->
+      <div class="section-block half">
+        <div class="section-head"><span class="section-title">合作漏斗</span></div>
+        <div class="funnel-visual">
+          <div v-for="(f, i) in cooperationFunnel" :key="i" class="funnel-step">
+            <el-tooltip :content="f.tooltip" placement="right">
+              <div class="funnel-layer" :style="{ width: f.widthPct + '%', background: f.color }">
+                <span class="funnel-layer-label">{{ f.label }}</span>
+                <span class="funnel-layer-value">{{ f.value }}</span>
+              </div>
+            </el-tooltip>
+            <div class="funnel-rate" v-if="f.rate">
+              <span class="rate-line"></span>
+              <span class="rate-text">{{ f.rateName }} {{ f.rate }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="funnel-footer-text">
+          成交金额达到 <strong>¥{{ deepCoopThreshold.toLocaleString() }}</strong> 的达人为深度合作达人
+          <span class="link-text" @click="showDeepCoopDialog = true">设置</span>
+        </div>
+      </div>
+
+      <!-- 区域H：寄样漏斗 -->
+      <div class="section-block half">
+        <div class="section-head"><span class="section-title">寄样漏斗</span></div>
+        <div class="funnel-visual">
+          <div v-for="(f, i) in sampleFunnel" :key="i" class="funnel-step">
+            <el-tooltip :content="f.tooltip" placement="right">
+              <div class="funnel-layer" :style="{ width: f.widthPct + '%', background: f.color }">
+                <span class="funnel-layer-label">{{ f.label }}</span>
+                <span class="funnel-layer-value">{{ f.value }}</span>
+              </div>
+            </el-tooltip>
+            <div class="funnel-rate" v-if="f.rate">
+              <span class="rate-line"></span>
+              <span class="rate-text">{{ f.rateName }} {{ f.rate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 区域I：排行榜区 ==================== -->
+    <div class="section-block area-i">
       <div class="section-head">
-        <span class="section-title">排行榜</span>
-        <div class="rank-toggle">
-          <span class="rank-btn" :class="{ active: rankType === 'amount' }" @click="rankType = 'amount'">金额</span>
-          <span class="rank-btn" :class="{ active: rankType === 'count' }" @click="rankType = 'count'">人数</span>
+        <div class="head-left">
+          <span class="section-title">排行榜</span>
+          <div class="tab-toggle">
+            <span class="toggle-btn" :class="{ active: rankTab === 'bd' }" @click="rankTab = 'bd'; rankPage = 1">BD</span>
+            <span class="toggle-btn" :class="{ active: rankTab === 'sample' }" @click="rankTab = 'sample'; rankPage = 1">样品</span>
+          </div>
         </div>
       </div>
       <div class="data-table-wrapper">
         <table class="data-table">
           <thead>
-            <tr>
-              <th>排行</th>
-              <th>姓名</th>
-              <th>时间</th>
-              <th>签约金额</th>
-              <th>主导人数</th>
+            <tr v-if="rankTab === 'bd'">
+              <th>排名</th><th>BD</th><th>占比</th>
+              <th class="sortable" @click="toggleRankSort('amount')">成交金额 <span class="sort-arrows">{{ rankSortIcon('amount') }}</span></th>
+              <th>出单达人数</th>
+            </tr>
+            <tr v-else>
+              <th>排名</th><th>平台</th><th>商品信息</th><th>占比</th>
+              <th class="sortable" @click="toggleRankSort('sampleCount')">申样数 <span class="sort-arrows">{{ rankSortIcon('sampleCount') }}</span></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(r, idx) in rankData" :key="idx">
-              <td>
-                <span class="rank-num" :class="{ top: idx < 3 }">{{ idx + 1 }}</span>
-              </td>
-              <td>
-                <div class="bd-info-cell">
-                  <el-avatar :size="24" class="mini-avatar" />
-                  <span>{{ r.name }}</span>
-                </div>
-              </td>
-              <td>{{ r.time }}</td>
-              <td>{{ r.amount }}</td>
-              <td>{{ r.count }}</td>
+            <tr v-for="(r, idx) in rankTablePage" :key="idx">
+              <td><span class="rank-badge" :class="{ gold: idx + (rankPage-1)*10 < 3 }">{{ idx + 1 + (rankPage-1)*10 }}</span></td>
+              <template v-if="rankTab === 'bd'">
+                <td><div class="cell-talent"><el-avatar :size="24" class="tiny-avatar"/><span>{{ r.name }}</span></div></td>
+                <td>{{ r.pct }}</td>
+                <td class="amount-cell">{{ r.amount }}</td>
+                <td>{{ r.talentCount }}</td>
+              </template>
+              <template v-else>
+                <td><div class="cell-platform"><svg viewBox="0 0 24 24" width="16" height="16" fill="#333"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg><span>{{ r.platform }}</span></div></td>
+                <td><div class="cell-product"><div class="product-img-placeholder small"></div><div><div class="product-name">{{ r.productName }}</div><div class="product-id">ID：{{ r.productId }}</div></div></div></td>
+                <td>{{ r.pct }}</td>
+                <td>{{ r.sampleCount }}</td>
+              </template>
             </tr>
           </tbody>
         </table>
       </div>
-      <div class="table-pagination">
-        <div class="page-btn active">1</div>
-        <div class="page-btn">2</div>
-        <div class="page-btn">3</div>
-        <div class="page-btn">4</div>
-        <div class="page-btn">5</div>
-        <div class="page-btn">…</div>
-        <div class="page-btn">43</div>
-        <span class="page-size-info">1条/页 10/页 第1/3页</span>
+      <div class="pagination-bar">
+        <div class="page-btns">
+          <span v-for="p in rankTotalPages" :key="p" class="page-btn" :class="{ active: rankPage === p }" @click="rankPage = p">{{ p }}</span>
+        </div>
+        <span class="page-info">10条/页 · 第{{ rankPage }}/{{ rankTotalPages }}页</span>
       </div>
     </div>
+
+    <!-- ==================== 深度合作设置弹窗 ==================== -->
+    <el-dialog v-model="showDeepCoopDialog" title="深度合作设置" width="420px" :close-on-click-modal="false">
+      <div class="deep-coop-form">
+        <span>* 顺利出单且成交金额达到</span>
+        <el-input-number v-model="deepCoopInput" :min="100" :max="100000" :precision="2" :step="100" size="small" style="width:160px;margin:0 8px"/>
+        <span>元</span>
+      </div>
+      <template #footer>
+        <el-button @click="showDeepCoopDialog = false">取消</el-button>
+        <el-button type="primary" @click="saveDeepCoop">确定</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- ==================== 导出确认弹窗 ==================== -->
+    <el-dialog v-model="showExportDialog" title="导出提示" width="420px">
+      <p>本次将导出所选时间范围内的所有数据，导出结果可以在「任务中心-下载任务」中查看和下载。</p>
+      <template #footer>
+        <el-button @click="showExportDialog = false">取消</el-button>
+        <el-button type="warning" @click="confirmExport">确认导出</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- ==================== 自定义表格字段弹窗 ==================== -->
+    <el-dialog v-model="showConfigDialog" title="自定义表格字段" width="680px" :close-on-click-modal="false" @open="onConfigDialogOpen">
+      <div class="config-dialog-tip">指标最少选择 3 个，最多选择 12 个，已选择 <span>{{ tempSelectedIds.length }}</span> 个</div>
+      <div class="config-cols">
+        <div class="config-left">
+          <div v-for="group in metricGroups" :key="group.name" class="metric-group">
+            <div class="metric-group-title">{{ group.name }}</div>
+            <div class="metric-group-opts">
+               <el-checkbox-group v-model="tempSelectedIds">
+                 <el-checkbox v-for="opt in group.options" :key="opt.id" :label="opt.id" @change="(val) => handleCheckChange(val, opt.id, opt)">
+                   <el-tooltip :content="opt.tooltip" placement="right"><span>{{ opt.label }}</span></el-tooltip>
+                 </el-checkbox>
+               </el-checkbox-group>
+            </div>
+          </div>
+        </div>
+        <div class="config-right">
+          <div class="right-header">已选 ({{ tempSelectedIds.length }})</div>
+          <div class="selected-list">
+            <div v-for="(item, idx) in tempSelectedItems" :key="item.id" 
+                 class="selected-item" draggable="true" 
+                 @dragstart="onDragStart(idx)" @dragover.prevent @drop="onDrop(idx)">
+              <div class="item-inner">
+                <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf"><path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
+                <span>{{ item.label }}</span>
+              </div>
+              <span class="delete-icon" @click="removeSelected(item.id)">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#999"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <div class="dialog-footer-between">
+          <el-button type="info" plain @click="confirmRestoreDefault">恢复默认</el-button>
+          <div>
+            <el-button @click="showConfigDialog = false">取消</el-button>
+            <el-button type="primary" @click="saveConfig">确定</el-button>
+          </div>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { ElAvatar } from 'element-plus'
+import { ref, reactive, computed } from 'vue'
+import { ElMessage, ElAvatar, ElMessageBox } from 'element-plus'
 
-const dateQuickTabs = ['昨天', '近7天', '近30天', '近90天']
-const activeQuickDate = ref('近7天')
-const dateRange = ref(null)
-const activePeriod = ref('日')
-const rankType = ref('amount')
+// ===== 区域A：筛选 =====
+const filters = reactive({
+  store: '', department: '', bd: '',
+  dateType: '7d',
+  dateRange: ['2026-04-13', '2026-04-19'],
+  platform: 'all'
+})
+const dateQuickTabs = [
+  { key: 'yesterday', label: '昨天' }, { key: '7d', label: '近7天' },
+  { key: '30d', label: '近30天' }, { key: '90d', label: '近90天' },
+  { key: 'custom', label: '自定义' }
+]
+const platformTabs = [
+  { id: 'all', name: '全部', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>' },
+  { id: 'tiktok', name: 'TikTok', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>' },
+  { id: 'instagram', name: 'Instagram', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/></svg>' },
+  { id: 'shopee', name: 'Shopee', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="12" r="10"/></svg>' },
+  { id: 'lazada', name: 'Lazada', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>' }
+]
 
-const kpiList = reactive([
-  { label: '销售总金额', unit: '元', value: '¥132.32w', trend: '较上月↑16%', trendIcon: '📈', trendClass: 'trend-up', valueClass: '' },
-  { label: '买入总金额', unit: '元', value: '¥52.32w', trend: '较上月↑38%', trendIcon: '', trendClass: 'trend-up', valueClass: '' },
-  { label: '达人达成金额', unit: '元', value: '¥123.12w', trend: '较上月↓1.4%', trendIcon: '', trendClass: 'trend-down', valueClass: '' },
-  { label: '出入产包数', unit: '个', value: '100', trend: '较上月↓30%', trendIcon: '', trendClass: 'trend-down', valueClass: '' },
-  { label: '入库/出库金额', unit: '元', value: '¥52.32w', trend: '较上月↑48%', trendIcon: '', trendClass: 'trend-up', valueClass: '' },
-  { label: '合作单', unit: '个', value: '69', trend: '较上月↑48%', trendIcon: '', trendClass: 'trend-up', valueClass: '' }
+// ===== 区域B：数据大盘 =====
+const allKpiDataMap = {
+  '1': { id: '1', label: '店铺总成交金额', value: '¥132.32w', trend: '16%', trendDir: 'up', tooltip: '按支付成功时间，所选周期内支付成功的买家实付金额汇总（含退款）' },
+  '2': { id: '2', label: '店铺总退款金额', value: '¥8.21w', trend: '3.2%', trendDir: 'down', tooltip: '按支付成功时间，所选周期内支付后已退款成功的订单金额汇总' },
+  '3': { id: '3', label: '达播成交金额', value: '¥98.56w', trend: '12%', trendDir: 'up', tooltip: '按支付成功时间，含退款金额，包含达人订单和团长订单' },
+  '4': { id: '4', label: '达播实际成交金额', value: '¥90.35w', trend: '8.5%', trendDir: 'up', tooltip: '按支付成功时间，剔除退款，包含达人订单和团长订单' },
+  '5': { id: '5', label: '达播成交订单量', value: '1,200', trend: '5%', trendDir: 'up', tooltip: '按支付成功时间，含退款订单，包含达人订单和团长订单' },
+  '6': { id: '6', label: '达播退款金额', value: '¥5.10w', trend: '2%', trendDir: 'down', tooltip: '按支付成功时间，支付后已退款成功的金额，包含达人和团长订单' },
+  '7': { id: '7', label: '达人成交金额', value: '¥78.12w', trend: '22%', trendDir: 'up', tooltip: '按支付成功时间，含退款金额，只含达人订单' },
+  '8': { id: '8', label: '达人实际成交金额', value: '¥72.08w', trend: '18%', trendDir: 'up', tooltip: '按支付成功时间，剔除退款，不含团长订单' },
+  '9': { id: '9', label: '达人合作销量', value: '880', trend: '10%', trendDir: 'up', tooltip: '按支付成功时间，含退款订单，所有支付成功的订单销量' },
+  '10': { id: '10', label: '达人退款金额', value: '¥3.50w', trend: '1.5%', trendDir: 'flat', tooltip: '按支付成功时间，支付后已退款成功的金额，不含团长订单' },
+  '11': { id: '11', label: '团长成交金额', value: '¥20.44w', trend: '5%', trendDir: 'up', tooltip: '按支付成功时间，含退款金额，只含团长订单' },
+  '12': { id: '12', label: '团长实际成交金额', value: '¥18.27w', trend: '4%', trendDir: 'up', tooltip: '按支付成功时间，剔除退款，只含团长订单' },
+  '13': { id: '13', label: '团长成交金额（未归属）', value: '¥5.00w', trend: '1%', trendDir: 'up', tooltip: '团长总成交金额，含未归属数据' },
+  '14': { id: '14', label: '团长退款金额', value: '¥1.60w', trend: '0.5%', trendDir: 'down', tooltip: '按支付成功时间，退款成功金额，需员工跟进后统计' },
+  '15': { id: '15', label: '团长合作销量', value: '320', trend: '3%', trendDir: 'up', tooltip: '按支付成功时间，团长订单支付成功销量（含退款），需员工跟进后统计' },
+  '16': { id: '16', label: '寄样数', value: '456', trend: '7.2%', trendDir: 'up', tooltip: '按样品发货时间，所选周期内发货成功的样品单数量' },
+  '17': { id: '17', label: '跟进达人数', value: '1,280', trend: '3.1%', trendDir: 'up', tooltip: '按跟进时间，所选周期内新跟进的达人数' },
+  '18': { id: '18', label: '寄样达人数', value: '198', trend: '2.8%', trendDir: 'down', tooltip: '按发货时间，所选周期内发货成功的达人数' },
+  '19': { id: '19', label: '出单达人数', value: '356', trend: '5.4%', trendDir: 'up', tooltip: '按支付成功时间，所选周期内有成交订单的达人数' }
+}
+
+const metricGroups = [
+  { name: '总成交数据', options: [ allKpiDataMap['1'], allKpiDataMap['2'] ] },
+  { name: '达播成交数据', options: [ allKpiDataMap['3'], allKpiDataMap['4'], allKpiDataMap['5'], allKpiDataMap['6'] ] },
+  { name: '达人成交数据', options: [ allKpiDataMap['7'], allKpiDataMap['8'], allKpiDataMap['9'], allKpiDataMap['10'] ] },
+  { name: '团长成交数据', options: [ allKpiDataMap['11'], allKpiDataMap['12'], allKpiDataMap['13'], allKpiDataMap['14'], allKpiDataMap['15'] ] },
+  { name: '达人跟进数据', options: [ allKpiDataMap['17'], allKpiDataMap['18'], allKpiDataMap['19'], allKpiDataMap['16'] ] }
+]
+
+const defaultKpiIds = ['1', '2', '3', '4', '7', '8', '19', '16']
+const userSavedConfigIds = ref(JSON.parse(localStorage.getItem('DOHOZZ_KPI_CONFIG_v1')) || [...defaultKpiIds])
+const visibleKpis = computed(() => userSavedConfigIds.value.map(id => allKpiDataMap[id]))
+
+// 默认选中 店铺总成交金额 和 达人成交金额
+const selectedChartKpiIds = ref(['1', '7'])
+
+const toggleKpiSelect = (id) => {
+  const arr = selectedChartKpiIds.value
+  const pos = arr.indexOf(id)
+  if (pos !== -1) {
+    if (arr.length <= 1) { ElMessage.warning('至少保留 1 个数据指标'); return }
+    arr.splice(pos, 1)
+  } else {
+    if (arr.length >= 2) { ElMessage.warning('最多选择 2 个数据指标'); return }
+    arr.push(id)
+  }
+}
+
+const yLabels = ['0', '10w', '20w', '30w', '40w']
+const xDates = ['04/13', '04/14', '04/15', '04/16', '04/17', '04/18', '04/19', '04/20']
+
+// ===== 区域C：店铺GMV =====
+const circ = 2 * Math.PI * 65
+const storeGmvData = reactive([
+  { name: 'XXX旗舰店1', amount: '¥66.66w', pct: '50%', color: '#1677ff', ratio: 0.5 },
+  { name: 'XXX旗舰店2', amount: '¥40.00w', pct: '30%', color: '#36cfc9', ratio: 0.3 },
+  { name: 'XXX旗舰店3', amount: '¥26.66w', pct: '20%', color: '#ffc53d', ratio: 0.2 }
+])
+const storeGmvArcs = computed(() => {
+  let offset = 0
+  return storeGmvData.map(s => {
+    const len = circ * s.ratio
+    const o = { dash: `${len} ${circ - len}`, offset: `-${offset}` }
+    offset += len
+    return o
+  })
+})
+
+// ===== 区域D：载体GMV =====
+const carrierGmvData = reactive([
+  { name: '商品卡', amount: '¥66.66w', pct: '50%', color: '#597ef7' },
+  { name: '视频', amount: '¥33.33w', pct: '25%', color: '#73d13d' },
+  { name: '直播', amount: '¥33.33w', pct: '25%', color: '#ffc53d' }
 ])
 
-const storeTableData = reactive([
-  { platform: 'TikTok', store: '大 12.5k', totalPrice: '100', returns: '80', complete: '68', commission: '0% / 66% / 2.5%', profitNegative: false },
-  { platform: 'TikTok', store: '大 12.5k', totalPrice: '100', returns: '80', complete: '68', commission: '68% / 12% / 1.5%', profitNegative: false },
-  { platform: 'Shopee', store: '大 12.5k', totalPrice: '100', returns: '20', complete: '68', commission: '60% / 12% / 1.7%', profitNegative: false },
-  { platform: 'Lazada', store: '大 12.5k', totalPrice: '100', returns: '80', complete: '68', commission: '59% / 23% / 2.6%', profitNegative: true },
-  { platform: 'Lazada', store: '大 12.5k', totalPrice: '100', returns: '80', complete: '68', commission: '98% / 2.8% / 7.4%', profitNegative: false }
+// ===== 区域E：动销数据 =====
+const saleTab = ref('talent')
+const salePage = ref(1)
+const saleSort = reactive({ field: 'amount', dir: 'desc' })
+const saleTableData = reactive([
+  { platform:'TikTok', username:'talent_001', name:'达人名称A', productName:'热销商品A', productId:'71200120132', amount:'¥12,560', sales:'900', skuOrTalent:'68', ratio:'0% / 98% / 2%' },
+  { platform:'TikTok', username:'talent_002', name:'达人名称B', productName:'热销商品B', productId:'71200120133', amount:'¥10,230', sales:'800', skuOrTalent:'55', ratio:'68% / 12% / 1.5%' },
+  { platform:'Shopee', username:'talent_003', name:'达人名称C', productName:'热销商品C', productId:'71200120134', amount:'¥8,900', sales:'720', skuOrTalent:'42', ratio:'60% / 12% / 1.7%' },
+  { platform:'Lazada', username:'talent_004', name:'达人名称D', productName:'热销商品D', productId:'71200120135', amount:'¥7,650', sales:'580', skuOrTalent:'38', ratio:'59% / 23% / 2.6%' },
+  { platform:'TikTok', username:'talent_005', name:'达人名称E', productName:'热销商品E', productId:'71200120136', amount:'¥6,320', sales:'460', skuOrTalent:'30', ratio:'98% / 2.8% / 7.4%' },
+  { platform:'Instagram', username:'talent_006', name:'达人名称F', productName:'热销商品F', productId:'71200120137', amount:'¥5,100', sales:'350', skuOrTalent:'25', ratio:'45% / 35% / 20%' },
+  { platform:'TikTok', username:'talent_007', name:'达人名称G', productName:'热销商品G', productId:'71200120138', amount:'¥4,800', sales:'320', skuOrTalent:'22', ratio:'30% / 50% / 20%' },
+  { platform:'Shopee', username:'talent_008', name:'达人名称H', productName:'热销商品H', productId:'71200120139', amount:'¥3,200', sales:'210', skuOrTalent:'15', ratio:'80% / 15% / 5%' },
+  { platform:'Lazada', username:'talent_009', name:'达人名称I', productName:'热销商品I', productId:'71200120140', amount:'¥2,650', sales:'180', skuOrTalent:'12', ratio:'55% / 30% / 15%' },
+  { platform:'TikTok', username:'talent_010', name:'达人名称J', productName:'热销商品J', productId:'71200120141', amount:'¥1,500', sales:'100', skuOrTalent:'8', ratio:'70% / 20% / 10%' }
+])
+const saleTotalPages = computed(() => Math.ceil(saleTableData.length / 5))
+const saleTablePage = computed(() => saleTableData.slice((salePage.value - 1) * 5, salePage.value * 5))
+const toggleSort = (field) => { saleSort.dir = saleSort.field === field && saleSort.dir === 'desc' ? 'asc' : 'desc'; saleSort.field = field }
+const sortIcon = (field) => saleSort.field === field ? (saleSort.dir === 'desc' ? '↓' : '↑') : '↕'
+
+// ===== 区域F：寄样概况 =====
+const sampleKpis = reactive([
+  { label: '样品单数', value: '56', trend: '↑ 3.6%', trendClass: 'trend-up', tooltip: '所选时间范围内创建的样品单数量' },
+  { label: '寄样商品数', value: '128', trend: '↑ 5.2%', trendClass: 'trend-up', tooltip: '所有样品单中的商品总件数' },
+  { label: '寄样费用', value: '¥1.2w', trend: '↑ 8%', trendClass: 'trend-up', tooltip: '所有样品单的商品总费用' },
+  { label: '签收样品数', value: '42', trend: '↓ 2.1%', trendClass: 'trend-down', tooltip: '所选时间范围内已签收的样品单数' },
+  { label: '签收交付率', value: '12%', trend: '', trendClass: '', tooltip: '已签收样品中完成出单的数量÷已签收样品总数' },
+  { label: '签收出单率', value: '8.5%', trend: '', trendClass: '', tooltip: '已签收样品中有同商品出单的数量÷已签收样品总数' }
+])
+const sampleBars = [{ h: 80 }, { h: 120 }, { h: 60 }, { h: 140 }, { h: 95 }, { h: 110 }, { h: 70 }]
+const sampleLinePoints = '72,130 120,110 168,140 216,90 264,115 312,100 360,125'
+const sampleDates = ['04/13','04/14','04/15','04/16','04/17','04/18','04/19']
+const sampleTop10 = reactive([
+  { name: '张三', value: 32, pct: 100 }, { name: '李四', value: 28, pct: 87 },
+  { name: '王五', value: 24, pct: 75 }, { name: '赵六', value: 20, pct: 62 },
+  { name: '陈七', value: 18, pct: 56 }, { name: '周八', value: 15, pct: 47 },
+  { name: '吴九', value: 12, pct: 37 }, { name: '郑十', value: 10, pct: 31 },
+  { name: '刘一', value: 8, pct: 25 }, { name: '孙二', value: 6, pct: 19 }
 ])
 
-const marketingKpis = reactive([
-  { label: '待开发达人', value: '826', trend: '较上周 ↑3.4%', trendClass: 'trend-up' },
-  { label: '跟进中达人', value: '125', trend: '较上周 ↑1%', trendClass: 'trend-up' },
-  { label: '已推荐达人', value: '836', trend: '', trendClass: '' },
-  { label: '签约达人', value: '125', trend: '较上周 ↑3.4%', trendClass: 'trend-up' },
-  { label: '签约率/签约达人', value: '52%', trend: '较上周 ↑3.4%', trendClass: 'trend-up' }
+// ===== 区域G：合作漏斗 =====
+const cooperationFunnel = reactive([
+  { label: '建联中的达人', value: '3,265', widthPct: 100, color: '#1677ff', tooltip: '将达人添加到我的达人并开始进行第一步建联的达人总数（累计值）', rate: null, rateName: '' },
+  { label: '建联成功的达人', value: '1,568', widthPct: 76, color: '#4096ff', tooltip: '通过站内信或定向邀约顺利建联上的达人', rate: '48.03%', rateName: '建联成功率' },
+  { label: '合作中的达人', value: '816', widthPct: 52, color: '#69b1ff', tooltip: '创建了合作单未出单的达人', rate: '52.04%', rateName: '选品成功率' },
+  { label: '出单达人', value: '356', widthPct: 34, color: '#91caff', tooltip: '顺利出单的达人（合作成功的达人）', rate: '43.63%', rateName: '带货成功率' },
+  { label: '深度合作的达人', value: '128', widthPct: 20, color: '#bae0ff', tooltip: '有出单的同时，达到全公司统一设置的GMV阈值', rate: '35.96%', rateName: '深度带货率' }
+])
+const deepCoopThreshold = ref(10000)
+const deepCoopInput = ref(10000)
+const showDeepCoopDialog = ref(false)
+const saveDeepCoop = () => {
+  if (!deepCoopInput.value) { ElMessage.error('请输入数值'); return }
+  if (deepCoopInput.value < 100 || deepCoopInput.value > 100000) { ElMessage.error('请设置金额在 100-100,000 范围内'); return }
+  deepCoopThreshold.value = deepCoopInput.value
+  showDeepCoopDialog.value = false
+  ElMessage.success('深度合作设置已保存')
+}
+
+// ===== 区域H：寄样漏斗 =====
+const sampleFunnel = reactive([
+  { label: '申请寄样', value: '456', widthPct: 100, color: '#722ed1', tooltip: '所选周期内申请的样品单数量', rate: null, rateName: '' },
+  { label: '寄样发货', value: '380', widthPct: 83, color: '#9254de', tooltip: '申请的样品单中发货成功的数量', rate: '83.33%', rateName: '申样成功率' },
+  { label: '样品签收', value: '298', widthPct: 65, color: '#b37feb', tooltip: '申请的样品单中有成功签收的数量', rate: '78.42%', rateName: '发货签收率' },
+  { label: '签收交付', value: '186', widthPct: 41, color: '#d3adf7', tooltip: '申请的样品单中有成功交付的数量', rate: '62.42%', rateName: '签收交付率' },
+  { label: '交付出单', value: '92', widthPct: 20, color: '#efdbff', tooltip: '申请的样品单中有成功出单的数量', rate: '49.46%', rateName: '交付出单率' }
 ])
 
-const funnelCooperation = reactive([
-  { label: '建联达人', pct: 100, color: '#1677ff', value: '3,265' },
-  { label: '回复达人', pct: 72, color: '#4096ff', value: '2,351' },
-  { label: '寄样达人', pct: 48, color: '#69b1ff', value: '1,568' },
-  { label: '出单达人', pct: 25, color: '#91caff', value: '816' }
+// ===== 区域I：排行榜 =====
+const rankTab = ref('bd')
+const rankPage = ref(1)
+const rankSort = reactive({ field: 'amount', dir: 'desc' })
+const bdRankData = reactive([
+  { name:'张三', pct:'20%', amount:'¥12,230', talentCount:18 },
+  { name:'李四', pct:'15%', amount:'¥9,180', talentCount:14 },
+  { name:'王五', pct:'12%', amount:'¥7,350', talentCount:11 },
+  { name:'赵六', pct:'10%', amount:'¥6,120', talentCount:9 },
+  { name:'陈七', pct:'8%', amount:'¥4,900', talentCount:7 },
+  { name:'周八', pct:'7%', amount:'¥4,280', talentCount:6 },
+  { name:'吴九', pct:'6%', amount:'¥3,670', talentCount:5 },
+  { name:'郑十', pct:'5%', amount:'¥3,060', talentCount:4 },
+  { name:'刘一', pct:'4%', amount:'¥2,450', talentCount:3 },
+  { name:'孙二', pct:'3%', amount:'¥1,840', talentCount:2 }
 ])
-
-const funnelMarketing = reactive([
-  { label: '浏览量', pct: 100, color: '#597ef7', value: '12,568' },
-  { label: '点击量', pct: 65, color: '#85a5ff', value: '8,169' },
-  { label: '加购量', pct: 35, color: '#adc6ff', value: '4,399' },
-  { label: '下单量', pct: 18, color: '#d6e4ff', value: '2,262' }
+const sampleRankData = reactive([
+  { platform:'TikTok', productName:'热销商品A', productId:'71200120132', pct:'18%', sampleCount:32 },
+  { platform:'TikTok', productName:'热销商品B', productId:'71200120133', pct:'14%', sampleCount:25 },
+  { platform:'Shopee', productName:'热销商品C', productId:'71200120134', pct:'11%', sampleCount:20 },
+  { platform:'Lazada', productName:'热销商品D', productId:'71200120135', pct:'9%', sampleCount:16 },
+  { platform:'TikTok', productName:'热销商品E', productId:'71200120136', pct:'8%', sampleCount:14 }
 ])
+const currentRankData = computed(() => rankTab.value === 'bd' ? bdRankData : sampleRankData)
+const rankTotalPages = computed(() => Math.max(1, Math.ceil(currentRankData.value.length / 10)))
+const rankTablePage = computed(() => currentRankData.value.slice((rankPage.value - 1) * 10, rankPage.value * 10))
+const toggleRankSort = (f) => { rankSort.dir = rankSort.field === f && rankSort.dir === 'desc' ? 'asc' : 'desc'; rankSort.field = f }
+const rankSortIcon = (f) => rankSort.field === f ? (rankSort.dir === 'desc' ? '↓' : '↑') : '↕'
 
-const rankData = reactive([
-  { name: '张三', time: '7.0%', amount: '¥12.03', count: '18' },
-  { name: '张三', time: '7.0%', amount: '¥12.03', count: '18' },
-  { name: '张三', time: '20%', amount: '¥12.03', count: '18' },
-  { name: '张三', time: '30%', amount: '¥12.03', count: '18' },
-  { name: '张三', time: '30%', amount: '¥12.03', count: '18' }
-])
-</script>
-
-<style lang="scss" scoped>
-$primary: #1677ff;
-$text-primary: #1e293b;
-$text-secondary: #64748b;
-$text-muted: #94a3b8;
-$border-color: #e8e8e8;
-$bg-light: #f7f8fa;
-$radius: 8px;
-$transition: 150ms ease;
-
-.data-overview {
-  padding: 0;
+// ===== 弹窗 =====
+const showConfigDialog = ref(false)
+const showExportDialog = ref(false)
+const handleExport = () => { showExportDialog.value = true }
+const confirmExport = () => {
+  showExportDialog.value = false
+  ElMessage.success('导出任务已提交，请在「任务中心-下载任务」中查看')
 }
 
-// 时间筛选栏
-.filter-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  background: #fff;
-  border-bottom: 1px solid $border-color;
-  flex-wrap: wrap;
-  gap: 12px;
+// ===== 自定义表格字段弹窗功能 =====
+const tempSelectedIds = ref([])
+const tempSelectedItems = ref([])
+
+const onConfigDialogOpen = () => {
+  tempSelectedIds.value = [...userSavedConfigIds.value]
+  syncTempItemsFromIds()
 }
 
-.filter-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+const syncTempItemsFromIds = () => {
+  tempSelectedItems.value = tempSelectedIds.value.map(id => allKpiDataMap[id])
 }
 
-.filter-label {
-  font-size: 13px;
-  color: $text-secondary;
-  white-space: nowrap;
-}
-
-.date-quick-btns {
-  display: flex;
-  gap: 4px;
-}
-
-.quick-btn {
-  padding: 4px 12px;
-  font-size: 13px;
-  border-radius: 4px;
-  cursor: pointer;
-  color: $text-secondary;
-  background: $bg-light;
-  border: 1px solid transparent;
-  transition: all $transition;
-
-  &:hover {
-    color: $primary;
-  }
-
-  &.active {
-    background: #e6f4ff;
-    color: $primary;
-    border-color: $primary;
-  }
-}
-
-.date-range-picker {
-  :deep(.el-input__wrapper) {
-    height: 28px;
-  }
-}
-
-.period-toggle {
-  display: flex;
-  border: 1px solid $border-color;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.period-btn {
-  padding: 4px 14px;
-  font-size: 13px;
-  cursor: pointer;
-  color: $text-secondary;
-  background: #fff;
-  border-right: 1px solid $border-color;
-  transition: all $transition;
-
-  &:last-child {
-    border-right: none;
-  }
-
-  &:hover {
-    color: $primary;
-  }
-
-  &.active {
-    background: $primary;
-    color: #fff;
-  }
-}
-
-// 通用 Section
-.section-block {
-  background: #fff;
-  border-radius: $radius;
-  border: 1px solid $border-color;
-  margin: 16px 20px;
-  padding: 20px;
-
-  &.half {
-    flex: 1;
-    min-width: 0;
-    margin: 0;
-  }
-}
-
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: $text-primary;
-}
-
-.section-sub {
-  font-size: 12px;
-  color: $text-muted;
-}
-
-// KPI Cards
-.kpi-cards {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.kpi-card {
-  padding: 16px;
-  background: $bg-light;
-  border-radius: 8px;
-  border: 1px solid #f0f0f0;
-}
-
-.kpi-label {
-  font-size: 12px;
-  color: $text-secondary;
-  margin-bottom: 8px;
-}
-
-.kpi-unit {
-  color: $text-muted;
-}
-
-.kpi-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: $text-primary;
-  margin-bottom: 6px;
-}
-
-.kpi-trend {
-  font-size: 12px;
-}
-
-.trend-up {
-  color: #f5222d;
-}
-
-.trend-down {
-  color: #52c41a;
-}
-
-// Trend Chart
-.trend-chart-area {
-  margin-top: 8px;
-}
-
-.trend-chart {
-  width: 100%;
-  height: 220px;
-}
-
-.chart-legend {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  margin-top: 8px;
-
-  &.small {
-    margin-top: 4px;
-    gap: 16px;
-  }
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: $text-secondary;
-}
-
-.legend-line {
-  display: inline-block;
-  width: 20px;
-  height: 2px;
-
-  &.blue {
-    background: $primary;
-  }
-
-  &.orange {
-    background: #fa8c16;
-  }
-
-  &.dashed {
-    border-top: 2px dashed #fa8c16;
-    background: none;
-    height: 0;
-  }
-}
-
-.legend-box {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-}
-
-// GMV Row
-.gmv-row {
-  display: flex;
-  gap: 16px;
-  padding: 0 20px;
-  margin-bottom: 0;
-  margin-top: 16px;
-}
-
-.gmv-chart-content {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.gmv-stats {
-  flex: 1;
-  min-width: 120px;
-}
-
-.gmv-total-label {
-  font-size: 12px;
-  color: $text-secondary;
-}
-
-.gmv-arrow {
-  font-size: 10px;
-  margin-left: 4px;
-}
-
-.gmv-total-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: $text-primary;
-  margin: 4px 0 8px;
-}
-
-.gmv-detail {
-  font-size: 12px;
-  color: $text-muted;
-  line-height: 1.6;
-}
-
-.donut-chart {
-  flex-shrink: 0;
-}
-
-.gmv-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.legend-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: $text-secondary;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-  font-size: 13px;
-}
-
-.stat-label {
-  color: $text-secondary;
-}
-
-.stat-pct {
-  font-weight: 600;
-  color: $text-primary;
-}
-
-// Store Data
-.store-summary-cards {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.store-card {
-  flex: 1;
-  padding: 16px;
-  background: $bg-light;
-  border-radius: 8px;
-  border: 1px solid #f0f0f0;
-
-  &.highlight {
-    border: 1px solid $primary;
-    background: #f0f7ff;
-  }
-}
-
-.store-card-label {
-  font-size: 12px;
-  color: $text-secondary;
-  margin-bottom: 8px;
-}
-
-.info-icon {
-  font-size: 11px;
-  color: $text-muted;
-  margin-left: 4px;
-  cursor: help;
-}
-
-.store-card-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: $text-primary;
-  margin-bottom: 8px;
-}
-
-.store-card-bar {
-  height: 6px;
-  background: #e8e8e8;
-  border-radius: 3px;
-  margin-bottom: 6px;
-  overflow: hidden;
-
-  .bar-fill {
-    height: 100%;
-    border-radius: 3px;
-  }
-}
-
-.store-card-pct {
-  font-size: 12px;
-  color: $text-muted;
-}
-
-// Data Table
-.data-table-wrapper {
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-
-  th {
-    text-align: left;
-    padding: 10px 12px;
-    background: $bg-light;
-    color: $text-secondary;
-    font-weight: 500;
-    border-bottom: 1px solid $border-color;
-    white-space: nowrap;
-  }
-
-  td {
-    padding: 12px;
-    border-bottom: 1px solid #f5f5f5;
-    color: $text-primary;
-  }
-
-  tr:hover td {
-    background: #fafafa;
-  }
-}
-
-.sort-icon {
-  color: $text-muted;
-  font-size: 11px;
-}
-
-.rank-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  font-size: 12px;
-  color: $text-secondary;
-  background: $bg-light;
-
-  &.top {
-    background: $primary;
-    color: #fff;
-  }
-}
-
-.platform-cell {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.avatar-group {
-  display: flex;
-  gap: -4px;
-
-  .mini-avatar {
-    border: 2px solid #fff;
-    margin-left: -6px;
-    background: #d9d9d9;
-
-    &:first-child {
-      margin-left: 0;
+const handleCheckChange = (isChecked, id, opt) => {
+  if (isChecked) {
+    if (tempSelectedIds.value.length > 12) {
+      ElMessage.warning('最多选择 12 个指标')
+      tempSelectedIds.value = tempSelectedIds.value.filter(x => x !== id)
+    } else {
+      tempSelectedItems.value.push(opt)
+    }
+  } else {
+    if (tempSelectedIds.value.length < 3) {
+      ElMessage.warning('最少保留 3 个指标')
+      tempSelectedIds.value.push(id)
+    } else {
+      tempSelectedItems.value = tempSelectedItems.value.filter(x => x.id !== id)
     }
   }
 }
 
-.commission-text {
-  font-size: 12px;
-
-  &.negative {
-    color: #f5222d;
+const removeSelected = (id) => {
+  if (tempSelectedIds.value.length <= 3) {
+    ElMessage.warning('最少保留 3 个指标')
+    return
   }
+  tempSelectedIds.value = tempSelectedIds.value.filter(x => x !== id)
+  tempSelectedItems.value = tempSelectedItems.value.filter(x => x.id !== id)
 }
 
-.bd-info-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+let draggedIndex = -1
+const onDragStart = (idx) => { draggedIndex = idx }
+const onDrop = (idx) => {
+  if (draggedIndex === -1 || draggedIndex === idx) return
+  const list = tempSelectedItems.value
+  const item = list.splice(draggedIndex, 1)[0]
+  list.splice(idx, 0, item)
+  tempSelectedIds.value = list.map(x => x.id)
+  draggedIndex = -1
+}
 
-  .mini-avatar {
-    background: #d9d9d9;
+const confirmRestoreDefault = () => {
+  ElMessageBox.confirm('确定恢复默认配置吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(() => {
+    tempSelectedIds.value = [...defaultKpiIds]
+    syncTempItemsFromIds()
+  }).catch(() => {})
+}
+
+const saveConfig = () => {
+  if (tempSelectedIds.value.length < 3) { ElMessage.warning('最少保留 3 个指标'); return }
+  if (tempSelectedIds.value.length > 12) { ElMessage.warning('最多选择 12 个指标'); return }
+  
+  userSavedConfigIds.value = [...tempSelectedIds.value]
+  localStorage.setItem('DOHOZZ_KPI_CONFIG_v1', JSON.stringify(userSavedConfigIds.value))
+  
+  // ensure selected chart KPIs are still valid
+  selectedChartKpiIds.value = selectedChartKpiIds.value.filter(id => userSavedConfigIds.value.includes(id))
+  if (selectedChartKpiIds.value.length === 0 && userSavedConfigIds.value.length > 0) {
+    selectedChartKpiIds.value.push(userSavedConfigIds.value[0])
   }
+  
+  showConfigDialog.value = false
+  ElMessage.success('自定义配置已保存')
 }
+</script>
 
-// Pagination
-.table-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: 16px;
-  padding: 8px 0;
-}
+<style lang="scss" scoped>
+$primary: #1677ff;
+$text-1: #1e293b;
+$text-2: #64748b;
+$text-3: #94a3b8;
+$border: #e8e8e8;
+$bg: #f7f8fa;
+$radius: 8px;
+$fast: 150ms ease;
 
-.page-btn {
-  min-width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid $border-color;
-  border-radius: 4px;
+.data-overview { background: $bg; min-height: calc(100vh - 48px); }
+
+// ===== 区域A =====
+.filter-area { margin: 16px 20px; }
+.platform-tabs-bar {
   background: #fff;
-  cursor: pointer;
-  font-size: 12px;
-  color: $text-secondary;
-  transition: all $transition;
-
-  &:hover {
-    border-color: $primary;
-    color: $primary;
-  }
-
-  &.active {
-    background: $primary;
-    border-color: $primary;
-    color: #fff;
-  }
+  border: 1px solid $border;
+  border-bottom: none;
+  border-radius: $radius $radius 0 0;
+  padding: 0 20px;
 }
-
-.page-size-info {
-  font-size: 12px;
-  color: $text-muted;
-  margin-left: 12px;
+.platform-tabs { display: flex; gap: 24px; }
+.platform-tab {
+  display: flex; align-items: center; gap: 8px; padding: 12px 0;
+  color: $text-2; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all $fast; position: relative; top: 1px;
+  .platform-icon { display: flex; align-items: center; }
+  &:hover { color: $text-1; }
+  &.active { color: $primary; font-weight: 500; border-bottom-color: $primary; }
 }
-
-// Marketing Cards
-.marketing-cards {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
-}
-
-.marketing-card {
-  padding: 16px;
-  background: $bg-light;
-  border-radius: 8px;
-  border: 1px solid #f0f0f0;
-}
-
-.marketing-label {
-  font-size: 12px;
-  color: $text-secondary;
-  margin-bottom: 8px;
-}
-
-.marketing-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: $text-primary;
-  margin-bottom: 4px;
-}
-
-.marketing-trend {
-  font-size: 12px;
-}
-
-// Bar Charts
-.bar-chart-area {
-  padding: 8px 0;
-}
-
-.bar-chart-svg {
-  width: 100%;
-  height: 200px;
-}
-
-// Funnel
-.funnel-chart {
-  padding: 8px 0;
-}
-
-.funnel-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.funnel-label {
-  font-size: 12px;
-  color: $text-secondary;
-  width: 70px;
-  text-align: right;
-  flex-shrink: 0;
-}
-
-.funnel-bar-bg {
-  flex: 1;
-  height: 24px;
-  background: #f0f0f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.funnel-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.6s ease;
-}
-
-.funnel-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: $text-primary;
-  width: 60px;
-  text-align: right;
-  flex-shrink: 0;
-}
-
-.funnel-footer {
-  font-size: 12px;
-  color: $text-muted;
-  margin-top: 8px;
-  padding-left: 82px;
-
-  .link {
-    color: $primary;
-    cursor: pointer;
-  }
-}
-
-// Rank Toggle
-.rank-toggle {
-  display: flex;
-  border: 1px solid $border-color;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.rank-btn {
-  padding: 3px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  color: $text-secondary;
+.sticky-filter-bar {
+  position: sticky;
+  top: 48px;
+  z-index: 100;
   background: #fff;
-  border-right: 1px solid $border-color;
-  transition: all $transition;
+  border: 1px solid $border;
+  border-top: none;
+  border-radius: 0 0 $radius $radius;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 12px 20px;
+}
+.filter-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.filter-item { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.filter-label { font-size: 13px; color: $text-1; font-weight: 500; white-space: nowrap; }
+.filter-select { width: 200px; }
+.filter-item.date-filter { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.date-quick-btns { display: flex; gap: 4px; }
+.quick-btn { padding: 4px 12px; font-size: 13px; border-radius: 4px; cursor: pointer; color: $text-2; background: $bg; border: 1px solid transparent; transition: all $fast;
+  &:hover { color: $primary; }
+  &.active { background: #e6f4ff; color: $primary; border-color: #91caff; }
+}
+.date-range-picker { :deep(.el-input__wrapper) { height: 28px; } }
 
-  &:last-child {
-    border-right: none;
-  }
+// ===== 通用 Section =====
+.section-block { background: #fff; border-radius: $radius; border: 1px solid $border; margin: 16px 20px; padding: 20px;
+  &.half { flex: 1; min-width: 0; margin: 0; }
+}
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.head-left { display: flex; align-items: center; gap: 12px; }
+.section-title { font-size: 15px; font-weight: 600; color: $text-1; }
+.update-time { font-size: 12px; color: $text-3; }
+.help-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: #f0f0f0; color: $text-3; font-size: 10px; cursor: help; margin-left: 4px; font-weight: 600; }
 
-  &.active {
-    background: $primary;
-    color: #fff;
+// ===== 区域B：KPI =====
+.kpi-cards-scroll { overflow-x: auto; margin: 0 -4px; padding-bottom: 4px; }
+.kpi-cards { display: flex; gap: 12px; min-width: max-content; }
+.kpi-card { min-width: 155px; padding: 14px 16px; background: $bg; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+  &:hover { border-color: #d6e4ff; }
+  &.selected { border-color: $primary; background: #f0f7ff; }
+}
+.kpi-label { font-size: 12px; color: $text-2; margin-bottom: 6px; display: flex; align-items: center; }
+.kpi-value { font-size: 22px; font-weight: 700; color: $text-1; margin-bottom: 4px; }
+.kpi-trend { font-size: 12px; }
+.trend-up { color: #52c41a; }
+.trend-down { color: #f5222d; }
+.trend-flat { color: $text-3; }
+
+// 趋势图
+.trend-chart-area { margin-top: 12px; }
+.trend-chart { width: 100%; height: 220px; }
+.chart-legend { display: flex; justify-content: center; gap: 24px; margin-top: 8px;
+  &.small { margin-top: 4px; gap: 16px; font-size: 11px; }
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: $text-2; }
+.legend-line { display: inline-block; width: 20px; height: 3px; border-radius: 2px;
+  &.dashed { background: none !important; height: 0; border-top: 2px dashed; }
+}
+.legend-box { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+
+// ===== GMV 分布 =====
+.dual-section { display: flex; gap: 16px; margin: 16px 20px;
+  &.inner { margin: 12px 0 0; }
+}
+.gmv-content { display: flex; align-items: center; gap: 32px; }
+.donut-wrapper { flex-shrink: 0; }
+.donut-arc { transition: opacity 0.3s; }
+.gmv-legend-list { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.gmv-legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-name { color: $text-1; min-width: 90px; }
+.legend-val { color: $text-1; font-weight: 600; }
+.legend-pct { color: $text-3; font-size: 12px; }
+
+// ===== 区域E：动销 =====
+.sale-tabs { display: flex; gap: 16px; margin-bottom: 16px; }
+.sale-tab-card { flex: 1; padding: 16px; background: $bg; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all $fast;
+  &.active { border-color: $primary; background: #f0f7ff; }
+  &:hover { border-color: #d6e4ff; }
+}
+.tab-label { font-size: 12px; color: $text-2; margin-bottom: 4px; display: flex; align-items: center; }
+.tab-value { font-size: 24px; font-weight: 700; color: $text-1; margin-bottom: 2px; }
+.tab-trend { font-size: 12px; }
+
+// ===== 表格 =====
+.data-table-wrapper { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px;
+  th { text-align: left; padding: 10px 12px; background: $bg; color: $text-2; font-weight: 500; border-bottom: 1px solid $border; white-space: nowrap;
+    &.sortable { cursor: pointer; user-select: none; &:hover { color: $primary; } }
   }
+  td { padding: 12px; border-bottom: 1px solid #f5f5f5; color: $text-1; }
+  tr:hover td { background: #fafbfc; }
+}
+.sort-arrows { font-size: 11px; color: $text-3; margin-left: 2px; }
+.rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 600; color: $text-2; background: #f0f0f0;
+  &.gold { background: linear-gradient(135deg, #ffd700, #ffb800); color: #fff; }
+}
+.amount-cell { font-weight: 600; }
+.ratio-cell { font-size: 12px; color: $text-2; }
+.cell-platform { display: flex; align-items: center; gap: 6px; }
+.cell-talent { display: flex; align-items: center; gap: 8px; }
+.tiny-avatar { background: #d9d9d9; flex-shrink: 0; }
+.talent-uname { font-size: 13px; color: $text-1; }
+.talent-name { font-size: 11px; color: $text-3; }
+.cell-product { display: flex; align-items: center; gap: 8px; }
+.product-img-placeholder { width: 40px; height: 40px; background: #f0f0f0; border-radius: 4px; flex-shrink: 0;
+  &.small { width: 32px; height: 32px; }
+}
+.product-name { font-size: 13px; color: $text-1; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.product-id { font-size: 11px; color: $text-3; }
+
+.pagination-bar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.page-btns { display: flex; gap: 4px; }
+.page-btn { min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid $border; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; color: $text-2; transition: all $fast;
+  &:hover { border-color: $primary; color: $primary; }
+  &.active { background: $primary; border-color: $primary; color: #fff; }
+}
+.page-info { font-size: 12px; color: $text-3; }
+
+// ===== 区域F：寄样概况 =====
+.sample-kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; }
+.sample-kpi-card { padding: 12px 14px; background: $bg; border-radius: 8px; }
+.sk-label { font-size: 12px; color: $text-2; margin-bottom: 4px; display: flex; align-items: center; }
+.sk-value { font-size: 20px; font-weight: 700; color: $text-1; margin-bottom: 2px; }
+.sk-trend { font-size: 12px; }
+.chart-box { flex: 1; min-width: 0; }
+.chart-box-title { font-size: 13px; font-weight: 600; color: $text-1; margin-bottom: 8px; }
+.bar-line-chart { width: 100%; height: 200px; }
+.top10-list { display: flex; flex-direction: column; gap: 8px; }
+.top10-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.top10-rank { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #f0f0f0; font-size: 11px; font-weight: 600; color: $text-2; flex-shrink: 0;
+  &.gold { background: linear-gradient(135deg, #ffd700, #ffb800); color: #fff; }
+}
+.top10-name { width: 50px; color: $text-1; flex-shrink: 0; }
+.top10-bar-bg { flex: 1; height: 16px; background: #f0f0f0; border-radius: 4px; overflow: hidden; }
+.top10-bar-fill { height: 100%; background: linear-gradient(90deg, #1677ff, #69b1ff); border-radius: 4px; transition: width 0.6s ease; }
+.top10-val { width: 30px; text-align: right; font-weight: 600; color: $text-1; flex-shrink: 0; }
+
+// ===== 漏斗 =====
+.funnel-visual { padding: 8px 0; }
+.funnel-step { margin-bottom: 6px; display: flex; align-items: center; gap: 12px; }
+.funnel-layer { height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; transition: width 0.5s ease; min-width: 120px; }
+.funnel-layer-label { font-size: 12px; color: #fff; font-weight: 500; }
+.funnel-layer-value { font-size: 14px; color: #fff; font-weight: 700; }
+.funnel-rate { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.rate-line { width: 16px; border-top: 1px dashed $text-3; }
+.rate-text { font-size: 11px; color: $text-2; white-space: nowrap; }
+.funnel-footer-text { font-size: 12px; color: $text-3; margin-top: 12px; padding-left: 4px; }
+.link-text { color: $primary; cursor: pointer; margin-left: 4px; &:hover { text-decoration: underline; } }
+
+// ===== 排行榜 Tab =====
+.tab-toggle { display: flex; border: 1px solid $border; border-radius: 4px; overflow: hidden; }
+.toggle-btn { padding: 4px 14px; font-size: 13px; cursor: pointer; color: $text-2; background: #fff; border-right: 1px solid $border; transition: all $fast;
+  &:last-child { border-right: none; }
+  &.active { background: $primary; color: #fff; }
 }
 
-// Responsive
+// ===== 弹窗 =====
+.deep-coop-form { display: flex; align-items: center; font-size: 14px; color: $text-1; }
+
+.config-dialog-tip { font-size: 13px; color: $text-2; margin-bottom: 16px; padding: 10px 16px; background: #e6f4ff; border: 1px solid #91caff; border-radius: 4px;
+   span { font-weight: 700; color: $primary; }
+}
+.config-cols { display: flex; gap: 20px; align-items: flex-start; }
+.config-left { flex: 1; min-width: 0; max-height: 480px; overflow-y: auto; padding-right: 12px; }
+.metric-group { margin-bottom: 20px; }
+.metric-group-title { font-size: 13px; font-weight: 600; color: $text-1; margin-bottom: 10px; }
+.metric-group-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+  :deep(.el-checkbox) { margin-right: 0; height: auto; display: flex; align-items: flex-start;
+    .el-checkbox__label { font-size: 13px; color: $text-1; white-space: normal; padding-left: 6px; }
+  }
+}
+.config-right { width: 240px; border: 1px solid $border; border-radius: 4px; display: flex; flex-direction: column; max-height: 480px; }
+.right-header { padding: 12px; background: #fafafa; border-bottom: 1px solid $border; font-size: 13px; font-weight: 600; color: $text-1; }
+.selected-list { flex: 1; overflow-y: auto; padding: 8px; }
+.selected-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border: 1px solid $border; margin-bottom: 8px; border-radius: 4px; cursor: grab; font-size: 13px; color: $text-1; transition: box-shadow 0.2s;
+  &:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); .delete-icon svg { fill: #ff4d4f; } }
+  &:active { cursor: grabbing; }
+}
+.item-inner { display: flex; align-items: center; gap: 8px; }
+.drag-handle { cursor: grab; }
+.delete-icon { cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 2px;
+  &:hover svg { fill: #ff4d4f; }
+}
+.dialog-footer-between { display: flex; align-items: center; justify-content: space-between; }
+
+// ===== 响应式 =====
 @media (max-width: 1200px) {
-  .kpi-cards {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .marketing-cards {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .sample-kpi-row { grid-template-columns: repeat(3, 1fr); }
 }
-
 @media (max-width: 900px) {
-  .gmv-row {
-    flex-direction: column;
-  }
-
-  .kpi-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .marketing-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .dual-section { flex-direction: column; }
+  .kpi-cards { flex-wrap: nowrap; }
+  .sample-kpi-row { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
