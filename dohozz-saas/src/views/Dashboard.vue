@@ -160,6 +160,9 @@
         <!-- 报表中心页面 -->
         <ReportCenter v-else-if="activeSidebarMenu === '报表中心'" />
 
+        <!-- 创建报表页面（第三层级） -->
+        <CreateReport v-else-if="thirdLevelPage === 'create'" />
+
         <!-- 其他菜单页面占位 -->
         <div v-else class="empty-page">
           <div class="empty-content">
@@ -181,6 +184,7 @@ import DataOverview from './DataOverview.vue'
 import Workspace from './Workspace.vue'
 import Performance from './Performance.vue'
 import ReportCenter from './ReportCenter.vue'
+import CreateReport from './CreateReport.vue'
 
 const UserIcon = {
   render() {
@@ -199,7 +203,16 @@ const handleLanguageChange = (lang) => {
 const currentScenario = ref('ecommerce')
 const activeNavMenu = ref('达人合作')
 const activeSidebarMenu = ref('工作台')
+const thirdLevelPage = ref('') // 用于第三层级页面，如创建报表
 const openSubmenus = reactive({})
+
+// 提供给子组件的方法
+const setThirdLevelPage = (page) => {
+  thirdLevelPage.value = page
+}
+
+provide('setThirdLevelPage', setThirdLevelPage)
+provide('thirdLevelPage', thirdLevelPage)
 
 const toggleSubmenu = (name) => {
   openSubmenus[name] = !openSubmenus[name]

@@ -186,12 +186,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Pagination from '@/components/Pagination.vue'
 
 const router = useRouter()
+const setThirdLevelPage = inject('setThirdLevelPage')
 
 // 分页
 const pagination = reactive({
@@ -322,12 +323,13 @@ const handleReset = () => {
 
 // 创建报表
 const handleCreate = () => {
-  router.push('/report/create')
+  setThirdLevelPage('create')
 }
 
 // 编辑报表
 const handleEdit = (row) => {
-  router.push(`/report/edit/${row.reportId}`)
+  // 编辑也通过第三层级方式处理
+  ElMessage.info('跳转编辑页面')
 }
 
 // 删除报表
