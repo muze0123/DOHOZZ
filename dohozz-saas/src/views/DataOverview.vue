@@ -42,6 +42,7 @@
             </el-select>
           </div>
           <div class="filter-item date-filter">
+            <span class="filter-label">时间筛选</span>
             <div class="date-quick-btns">
               <span v-for="t in dateQuickTabs" :key="t.key" class="quick-btn" :class="{ active: filters.dateType === t.key }" @click="filters.dateType = t.key">{{ t.label }}</span>
             </div>
@@ -718,44 +719,58 @@ const saveConfig = () => {
 
 <style lang="scss" scoped>
 $primary: #1677ff;
-$text-1: #1e293b;
-$text-2: #64748b;
+$primary-text: #050505;
+$secondary-text: #65676B;
+$text-1: #050505;
+$text-2: #65676B;
 $text-3: #94a3b8;
 $border: #e8e8e8;
 $bg: #f7f8fa;
+$white: #ffffff;
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
 $radius: 8px;
 $fast: 150ms ease;
 
-.data-overview { background: $bg; min-height: calc(100vh - 48px); }
+.data-overview { background: $bg; min-height: calc(100vh - 48px); padding: 16px 0 24px; }
 
 // ===== 区域A =====
-.filter-area { margin: 16px 20px; }
+.filter-area { margin: 0; }
 .platform-tabs-bar {
-  background: #fff;
+  background: $white;
   border: 1px solid $border;
   border-bottom: none;
   border-radius: $radius $radius 0 0;
-  padding: 0 20px;
+  padding: 0 16px;
 }
 .platform-tabs { display: flex; gap: 24px; }
 .platform-tab {
   display: flex; align-items: center; gap: 8px; padding: 12px 0;
-  color: $text-2; cursor: pointer; border-bottom: 2px solid transparent;
+  color: $secondary-text; cursor: pointer; border-bottom: 2px solid transparent;
   transition: all $fast; position: relative; top: 1px;
   .platform-icon { display: flex; align-items: center; }
-  &:hover { color: $text-1; }
+  &:hover { color: $primary-text; }
   &.active { color: $primary; font-weight: 500; border-bottom-color: $primary; }
+}
+.filter-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid $border;
+  border-top: none;
+  border-radius: 0 0 $radius $radius;
+  background: $white;
+  transition: box-shadow 0.3s ease, border-radius 0.3s ease;
 }
 .sticky-filter-bar {
   position: sticky;
   top: 48px;
-  z-index: 100;
-  background: #fff;
-  border: 1px solid $border;
-  border-top: none;
-  border-radius: 0 0 $radius $radius;
+  z-index: 90;
+  
+  /* When stuck, a nice shadow gives floating illusion */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  padding: 12px 20px;
 }
 .filter-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .filter-item { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
@@ -770,13 +785,13 @@ $fast: 150ms ease;
 .date-range-picker { :deep(.el-input__wrapper) { height: 28px; } }
 
 // ===== 通用 Section =====
-.section-block { background: #fff; border-radius: $radius; border: 1px solid $border; margin: 16px 20px; padding: 20px;
+.section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: 1px solid $border;
   &.half { flex: 1; min-width: 0; margin: 0; }
 }
 .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .head-left { display: flex; align-items: center; gap: 12px; }
-.section-title { font-size: 15px; font-weight: 600; color: $text-1; }
-.update-time { font-size: 12px; color: $text-3; }
+.section-title { font-size: 14px; font-weight: 600; color: $primary-text; }
+.update-time { font-size: 12px; color: $secondary-text; }
 .help-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: #f0f0f0; color: $text-3; font-size: 10px; cursor: help; margin-left: 4px; font-weight: 600; }
 
 // ===== 区域B：KPI =====
@@ -793,6 +808,30 @@ $fast: 150ms ease;
 .trend-down { color: #f5222d; }
 .trend-flat { color: $text-3; }
 
+// ===== 数据指标 Tooltip 样式 =====
+:deep(.el-tooltip__popper) {
+  background: #fff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  padding: 0;
+  .el-tooltip__content {
+    padding: 10px 12px;
+    color: #4e5969;
+    font-family: PingFang SC;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    white-space: pre-line;
+  }
+  .el-tooltip__arrow::before {
+    background: #fff;
+    border-color: #e5e7eb;
+  }
+}
+
 // 趋势图
 .trend-chart-area { margin-top: 12px; }
 .trend-chart { width: 100%; height: 220px; }
@@ -806,7 +845,7 @@ $fast: 150ms ease;
 .legend-box { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
 
 // ===== GMV 分布 =====
-.dual-section { display: flex; gap: 16px; margin: 16px 20px;
+.dual-section { display: flex; gap: 16px; margin: 16px 0 0;
   &.inner { margin: 12px 0 0; }
 }
 .gmv-content { display: flex; align-items: center; gap: 32px; }

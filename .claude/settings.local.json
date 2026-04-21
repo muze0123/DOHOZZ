@@ -11,7 +11,11 @@
       "Bash(git commit -m ':*)",
       "Bash(ssh -T git@github.com)",
       "Bash(mkdir -p ~/.ssh)",
-      "Bash(ssh-keyscan github.com)"
+      "Bash(ssh-keyscan github.com)",
+      "Bash(python3:*)",
+      "Bash(npx vue-tsc:*)",
+      "Bash(xxd -l 2000 /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/DataOverview.vue)",
+      "Bash(git commit:*)"
     ]
   }
 }
