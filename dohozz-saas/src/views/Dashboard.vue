@@ -181,7 +181,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, h } from 'vue'
+import { ref, reactive, computed, watch, h, provide } from 'vue'
 import { ElMessage, ElAvatar } from 'element-plus'
 import DataOverview from './DataOverview.vue'
 import Workspace from './Workspace.vue'
