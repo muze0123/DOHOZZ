@@ -189,7 +189,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+
+const router = useRouter()
 
 // 筛选条件
 const searchKeyword = ref('')
@@ -316,12 +319,12 @@ const handleReset = () => {
 
 // 创建报表
 const handleCreate = () => {
-  ElMessage.info('跳转至创建报表页面')
+  router.push('/report/create')
 }
 
 // 编辑报表
 const handleEdit = (row) => {
-  ElMessage.info(`编辑报表：${row.reportName}`)
+  router.push(`/report/edit/${row.reportId}`)
 }
 
 // 删除报表

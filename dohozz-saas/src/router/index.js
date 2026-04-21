@@ -39,6 +39,15 @@ const routes = [
       requiresAuth: true,
       title: '报表中心 - DOHOZZ'
     }
+  },
+  {
+    path: '/report/create',
+    name: 'CreateReport',
+    component: () => import('@/views/CreateReport.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '创建报表 - DOHOZZ'
+    }
   }
 ]
 
