@@ -111,7 +111,7 @@
               <template v-if="currentRule.commissionType === 'tiered'">
                 <div class="tiered-content" :class="{ collapsed: row.collapsed }">
                   <span v-for="(tier, i) in row.tiers.slice(0, 2)" :key="i" class="tier-item">
-                    {{ tier.label }}：{{ tier.rate }}
+                    {{ tier.label }}：{{ tier.rate }}%
                   </span>
                   <span v-if="row.tiers.length > 2 && !row.collapsed" class="tier-item">...</span>
                 </div>
@@ -131,7 +131,7 @@
               <template v-if="currentRule.commissionType === 'tiered'">
                 <div class="tiered-content" :class="{ collapsed: row.collapsed }">
                   <span v-for="(tier, i) in row.manageTiers.slice(0, 2)" :key="i" class="tier-item">
-                    {{ tier.label }}：{{ tier.rate }}
+                    {{ tier.label }}：{{ tier.rate }}%
                   </span>
                 </div>
               </template>
@@ -272,17 +272,153 @@
     </el-drawer>
 
     <!-- 区域E：修改记录抽屉 -->
-    <el-drawer v-model="showHistoryDrawer" title="修改记录" size="500px" direction="rtl">
-      <div class="history-list">
-        <div v-for="(record, i) in historyList" :key="i" class="history-item">
-          <div class="history-header">
-            <span class="history-time">{{ record.time }}</span>
-            <span class="history-operator">{{ record.operator }}</span>
+    <el-drawer v-model="showHistoryDrawer" title="修改记录" size="600px" direction="rtl">
+      <div class="history-drawer">
+        <!-- 筛选条件区（吸顶）-->
+        <div class="history-filters">
+          <div class="filter-row">
+            <div class="filter-item">
+              <span class="filter-label">操作人</span>
+              <el-select v-model="historyFilters.operator" placeholder="全部" clearable filterable style="width: 140px">
+                <el-option label="全部" value="" />
+                <el-option label="张三" value="张三" />
+                <el-option label="李四" value="李四" />
+                <el-option label="王五" value="王五" />
+              </el-select>
+            </div>
+            <div class="filter-item">
+              <span class="filter-label">操作类型</span>
+              <el-select v-model="historyFilters.actionType" placeholder="全部" clearable style="width: 160px">
+                <el-option label="全部" value="" />
+                <el-option label="修改提成规则" value="rule" />
+                <el-option label="新增提成方案" value="add" />
+                <el-option label="删除提成方案" value="delete" />
+                <el-option label="修改提成方案" value="edit" />
+              </el-select>
+            </div>
+            <div class="filter-item">
+              <span class="filter-label">方案名称</span>
+              <el-input v-model="historyFilters.planName" placeholder="请输入方案名称" clearable style="width: 140px" @keyup.enter="fetchHistory" />
+            </div>
           </div>
-          <div class="history-content">{{ record.content }}</div>
         </div>
-        <div v-if="historyList.length === 0" class="empty-history">
-          暂无修改记录
+
+        <!-- 修改记录列表 -->
+        <div class="history-list" v-loading="historyLoading">
+          <template v-if="filteredHistory.length > 0">
+            <div v-for="(record, i) in paginatedHistory" :key="i" class="history-item">
+              <div class="history-header">
+                <span class="history-time">{{ record.time }}</span>
+                <span class="history-operator">操作人：{{ record.operator }}</span>
+                <span class="history-type">操作类型：{{ getActionTypeName(record.actionType) }}</span>
+              </div>
+
+              <!-- 类型一：修改提成规则 -->
+              <template v-if="record.actionType === 'rule'">
+                <div class="compare-table">
+                  <div class="compare-row header">
+                    <span class="compare-field">字段</span>
+                    <span class="compare-before">修改前</span>
+                    <span class="compare-after">修改后</span>
+                  </div>
+                  <div v-for="(change, ci) in record.changes" :key="ci" class="compare-row">
+                    <span class="compare-field">{{ change.field }}</span>
+                    <span class="compare-before">{{ change.before }}</span>
+                    <span class="compare-after">{{ change.after }}</span>
+                  </div>
+                </div>
+              </template>
+
+              <!-- 类型二：新增提成方案 -->
+              <template v-else-if="record.actionType === 'add'">
+                <div class="action-card add">
+                  <div class="card-header">
+                    <span class="action-tag add">新增</span>
+                    <span class="plan-name">{{ record.planName }}</span>
+                    <span v-if="record.userCount" class="link-text" @click="showPlanDetail(record)">{{ record.userCount }} ></span>
+                  </div>
+                  <div class="card-content">
+                    <div class="tiered-content" :class="{ collapsed: record.collapsed }">
+                      <template v-if="record.tiers && record.tiers.length > 0">
+                        <div class="tier-label">员工提成：</div>
+                        <span v-for="(tier, ti) in record.tiers.slice(0, 2)" :key="ti" class="tier-item">
+                          {{ tier.label }}：{{ tier.rate }}%
+                        </span>
+                        <span v-if="record.tiers.length > 2" class="tier-item">...</span>
+                        <span v-if="record.tiers.length > 2" class="expand-btn" @click="record.collapsed = !record.collapsed">
+                          {{ record.collapsed ? '展开' : '收起' }}
+                        </span>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <!-- 类型三：删除提成方案 -->
+              <template v-else-if="record.actionType === 'delete'">
+                <div class="action-card delete">
+                  <div class="card-header">
+                    <span class="action-tag delete">删除</span>
+                    <span class="plan-name">{{ record.planName }}</span>
+                  </div>
+                  <div class="card-content">
+                    <div class="info-row">
+                      <span class="info-label">员工提成：</span>
+                      <span class="info-value">{{ record.commissionRate }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">管理提成：</span>
+                      <span class="info-value">{{ record.manageRate || '-' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <!-- 类型四：修改提成方案 -->
+              <template v-else-if="record.actionType === 'edit'">
+                <div class="compare-table">
+                  <div class="compare-row header">
+                    <span class="compare-field">字段</span>
+                    <span class="compare-before">修改前</span>
+                    <span class="compare-after">修改后</span>
+                  </div>
+                  <div v-for="(change, ci) in record.changes" :key="ci" class="compare-row">
+                    <span class="compare-field">{{ change.field }}</span>
+                    <span class="compare-before">
+                      <template v-if="change.field === '适用人员数' && change.beforeValue">
+                        <span class="link-text" @click="showPlanDetail(record)">{{ change.beforeValue }} ></span>
+                      </template>
+                      <template v-else>{{ change.before }}</template>
+                    </span>
+                    <span class="compare-after">
+                      <template v-if="change.field === '适用人员数' && change.afterValue">
+                        <span class="link-text" @click="showPlanDetail(record)">{{ change.afterValue }} ></span>
+                      </template>
+                      <template v-else>{{ change.after }}</template>
+                    </span>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- 空状态 -->
+          <div v-else class="empty-history">
+            <svg viewBox="0 0 64 64" width="64" height="64">
+              <circle cx="32" cy="32" r="28" fill="none" stroke="#d9d9d9" stroke-width="2"/>
+              <path d="M32 18c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14z" fill="none" stroke="#d9d9d9" stroke-width="2"/>
+              <path d="M32 24v8M32 36h8" stroke="#d9d9d9" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <div class="empty-text" v-if="historyFilters.planName || historyFilters.operator || historyFilters.actionType">
+              未找到匹配的修改记录，请调整筛选条件
+            </div>
+            <div class="empty-text" v-else>暂无修改记录</div>
+          </div>
+        </div>
+
+        <!-- 分页（吸底）-->
+        <div class="history-pagination">
+          <Pagination v-if="historyTotal > 0" v-model="historyPagination" :total="historyTotal" @change="handleHistoryPageChange" />
         </div>
       </div>
     </el-drawer>
@@ -301,7 +437,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import Pagination from '@/components/Pagination.vue'
 
@@ -387,11 +523,91 @@ const ruleForm = reactive({
   effectiveDate: ''
 })
 
-// 修改记录
+// 修改记录筛选
+const historyFilters = reactive({
+  operator: '',
+  actionType: '',
+  planName: ''
+})
+
+// 修改记录分页
+const historyPagination = reactive({ page: 1, pageSize: 10 })
+const historyTotal = ref(0)
+const historyLoading = ref(false)
+
+// 修改记录列表
 const historyList = ref([
-  { time: '2026-01-06 14:30:00', operator: '张三', content: '将提成基数从「结算订单实付金额」修改为「结算订单去佣金额」' },
-  { time: '2026-01-05 10:15:00', operator: '李四', content: '将提成方式从「按员工固定提成」修改为「按员工月业绩分档提成」' }
+  {
+    time: '2026-01-06 16:29:38',
+    operator: '张三',
+    actionType: 'rule',
+    changes: [
+      { field: '提成方式', before: '按员工月业绩分档提成', after: '按商品固定提成' },
+      { field: '提成基数', before: '结算订单去佣金额', after: '结算订单实付金额' }
+    ]
+  },
+  {
+    time: '2026-01-05 14:20:00',
+    operator: '李四',
+    actionType: 'add',
+    planName: '新增测试方案',
+    userCount: 5,
+    commissionRate: '12%',
+    manageRate: '15%',
+    tiers: [
+      { label: '0 < 月业绩 ≤ 2w', rate: '1' },
+      { label: '2w < 月业绩 ≤ 10w', rate: '3' },
+      { label: '10w < 月业绩', rate: '5' }
+    ],
+    collapsed: true
+  },
+  {
+    time: '2026-01-04 10:15:00',
+    operator: '王五',
+    actionType: 'delete',
+    planName: '测试删除方案',
+    commissionRate: '10%',
+    manageRate: '12%'
+  },
+  {
+    time: '2026-01-03 09:30:00',
+    operator: '张三',
+    actionType: 'edit',
+    planName: '销售部方案',
+    changes: [
+      { field: '员工提成', before: '12%', after: '15%' },
+      { field: '管理提成', before: '18%', after: '20%' }
+    ]
+  }
 ])
+
+// 筛选后的记录
+const filteredHistory = computed(() => {
+  return historyList.value.filter(item => {
+    if (historyFilters.operator && item.operator !== historyFilters.operator) return false
+    if (historyFilters.actionType && item.actionType !== historyFilters.actionType) return false
+    if (historyFilters.planName && !item.planName?.includes(historyFilters.planName)) return false
+    return true
+  })
+})
+
+// 分页后的记录
+const paginatedHistory = computed(() => {
+  const start = (historyPagination.page - 1) * historyPagination.pageSize
+  const end = start + historyPagination.pageSize
+  return filteredHistory.value.slice(start, end)
+})
+
+// 获取操作类型名称
+const getActionTypeName = (type) => {
+  const map = {
+    rule: '修改提成规则',
+    add: '新增提成方案',
+    delete: '删除提成方案',
+    edit: '修改提成方案'
+  }
+  return map[type] || type
+}
 
 // 模拟数据
 const mockPlans = [
@@ -453,6 +669,15 @@ const fetchPlans = () => {
   }, 500)
 }
 
+// 获取修改记录
+const fetchHistory = () => {
+  historyLoading.value = true
+  historyTotal.value = filteredHistory.value.length
+  setTimeout(() => {
+    historyLoading.value = false
+  }, 300)
+}
+
 // 查询
 const handleQuery = () => {
   pagination.page = 1
@@ -473,6 +698,12 @@ const handlePageChange = ({ page, pageSize }) => {
   pagination.page = page
   pagination.pageSize = pageSize
   fetchPlans()
+}
+
+// 修改记录分页变化
+const handleHistoryPageChange = ({ page, pageSize }) => {
+  historyPagination.page = page
+  historyPagination.pageSize = pageSize
 }
 
 // 新增方案
@@ -502,6 +733,11 @@ const handleEdit = (row) => {
 
 // 详情
 const handleDetail = (row) => {
+  ElMessage.info('跳转至方案详情页面')
+}
+
+// 显示方案详情
+const showPlanDetail = (record) => {
   ElMessage.info('跳转至方案详情页面')
 }
 
@@ -561,10 +797,14 @@ const handleSubmitRule = () => {
     submitting.value = false
     showRuleDrawer.value = false
     historyList.value.unshift({
-      time: new Date().toLocaleString(),
+      time: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-'),
       operator: '当前用户',
-      content: `修改提成规则：提成方式改为「${getCommissionTypeName(ruleForm.commissionType)}」`
+      actionType: 'rule',
+      changes: [
+        { field: '提成方式', before: getCommissionTypeName(currentRule.commissionType), after: getCommissionTypeName(ruleForm.commissionType) }
+      ]
     })
+    fetchHistory()
   }, 500)
 }
 
@@ -576,6 +816,14 @@ const addTier = () => {
 const removeTier = (index) => {
   planForm.tiers.splice(index, 1)
 }
+
+// 监听修改记录抽屉打开
+watch(showHistoryDrawer, (val) => {
+  if (val) {
+    historyPagination.page = 1
+    fetchHistory()
+  }
+})
 
 onMounted(() => {
   fetchPlans()
@@ -864,38 +1112,179 @@ $warning-orange: #FF7A00;
   border-top: 1px solid $divider;
 }
 
-// 修改记录
+// 修改记录抽屉
+.history-drawer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.history-filters {
+  padding: 12px 16px;
+  background: $bg;
+  border-radius: 8px;
+  margin: 16px;
+  flex-shrink: 0;
+}
+
 .history-list {
-  .history-item {
-    padding: 12px 0;
-    border-bottom: 1px solid $divider;
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-  .history-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-  }
-  .history-time {
-    font-size: 12px;
-    color: $text-3;
-  }
-  .history-operator {
-    font-size: 12px;
-    color: $primary-text;
-  }
-  .history-content {
-    font-size: 13px;
-    color: $secondary-text;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px;
+}
+
+.history-item {
+  padding: 16px 0;
+  border-bottom: 1px solid $divider;
+  &:last-child {
+    border-bottom: none;
   }
 }
 
-.empty-history {
-  text-align: center;
-  padding: 40px 0;
+.history-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.history-time {
+  font-size: 13px;
   color: $text-3;
+}
+
+.history-operator, .history-type {
+  font-size: 13px;
+  color: $secondary-text;
+}
+
+// 对比表格
+.compare-table {
+  background: $bg;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.compare-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr;
+  border-bottom: 1px solid $divider;
+  &:last-child {
+    border-bottom: none;
+  }
+  &.header {
+    background: darken($bg, 3%);
+    font-weight: 600;
+    font-size: 12px;
+    color: $primary-text;
+  }
+}
+
+.compare-field {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: $secondary-text;
+  border-right: 1px solid $divider;
+}
+
+.compare-before, .compare-after {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: $primary-text;
+}
+
+// 操作卡片
+.action-card {
+  background: $bg;
+  border-radius: 8px;
+  padding: 12px;
+  &.add {
+    border-left: 3px solid $success-green;
+  }
+  &.delete {
+    border-left: 3px solid #ff4d4f;
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.action-tag {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  &.add {
+    background: #f6ffed;
+    color: $success-green;
+  }
+  &.delete {
+    background: #fff1f0;
+    color: #ff4d4f;
+  }
+}
+
+.plan-name {
+  font-size: 13px;
+  color: $primary-text;
+  font-weight: 500;
+}
+
+.card-content {
+  padding-left: 4px;
+}
+
+.info-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.info-label {
+  font-size: 12px;
+  color: $secondary-text;
+}
+
+.info-value {
+  font-size: 12px;
+  color: $primary-text;
+}
+
+.tier-label {
+  font-size: 12px;
+  color: $secondary-text;
+  margin-bottom: 4px;
+}
+
+.tier-item {
+  display: inline-block;
+  font-size: 12px;
+  color: $text-2;
+  margin-right: 8px;
+}
+
+// 修改记录分页
+.history-pagination {
+  padding: 16px;
+  border-top: 1px solid $divider;
+  flex-shrink: 0;
+}
+
+// 空状态
+.empty-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  gap: 16px;
 }
 
 // 删除提示
