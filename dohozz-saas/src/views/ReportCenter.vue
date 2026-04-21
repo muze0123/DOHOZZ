@@ -1,7 +1,14 @@
 <template>
   <div class="report-center">
     <!-- 区域A：筛选区 -->
-    <div class="section-block filter-area">
+    <div class="section filter-section">
+      <div class="section-header">
+        <span class="section-title">查询条件</span>
+        <div class="filter-actions">
+          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
+        </div>
+      </div>
       <div class="filter-row">
         <div class="filter-item">
           <span class="filter-label">报表搜索</span>
@@ -58,22 +65,18 @@
             style="width: 320px"
           />
         </div>
-        <div class="filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
       </div>
     </div>
 
     <!-- 区域B：操作区 -->
-    <div class="action-area">
-      <el-button type="primary" @click="handleCreate">
-        <span class="btn-icon">+</span> 创建报表
-      </el-button>
-    </div>
+    <div class="section table-section">
+      <div class="section-header">
+        <span class="section-title">报表列表</span>
+        <el-button type="primary" @click="handleCreate">
+          <span class="btn-icon">+</span> 创建报表
+        </el-button>
+      </div>
 
-    <!-- 区域C：数据列表区 -->
-    <div class="section-block table-area">
       <el-table
         v-loading="loading"
         :data="tableData"
@@ -94,7 +97,7 @@
         </el-table-column>
         <el-table-column prop="filters" label="筛选条件" min-width="220">
           <template #default="{ row }">
-            <el-tooltip :content="row.filters" placement="top" :disabled="row.filters.length < 40">
+            <el-tooltip :content="row.filters" placement="top" effect="light">
               <span class="filter-text">{{ row.filters }}</span>
             </el-tooltip>
           </template>
@@ -154,18 +157,13 @@
         </div>
         <div class="empty-text">暂无报表数据</div>
       </div>
-    </div>
 
-    <!-- 区域D：分页区 -->
-    <div v-if="total > 0" class="pagination-area">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50]"
+      <!-- 分页 -->
+      <Pagination
+        v-if="total > 0"
+        v-model="pagination"
         :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handlePageChange"
+        @change="handlePageChange"
       />
     </div>
 
@@ -188,11 +186,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 const router = useRouter()
+
+// 分页
+const pagination = reactive({
+  page: 1,
+  pageSize: 10
+})
 
 // 筛选条件
 const searchKeyword = ref('')
@@ -205,8 +210,6 @@ const dateRange = ref([])
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(10)
 
 // 删除弹窗
 const deleteDialogVisible = ref(false)
@@ -302,7 +305,7 @@ const getAnalysisTypeName = (type) => {
 
 // 查询
 const handleQuery = () => {
-  currentPage.value = 1
+  pagination.page = 1
   fetchData()
 }
 
@@ -313,7 +316,7 @@ const handleReset = () => {
   analysisType.value = ''
   creator.value = ''
   dateRange.value = []
-  currentPage.value = 1
+  pagination.page = 1
   fetchData()
 }
 
@@ -352,15 +355,10 @@ const handleDownload = (row) => {
   ElMessage.success(`开始下载：${row.reportName}.xlsx`)
 }
 
-// 分页大小变化
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  fetchData()
-}
-
-// 页码变化
-const handlePageChange = (val) => {
-  currentPage.value = val
+// 分页变化
+const handlePageChange = ({ page, pageSize }) => {
+  pagination.page = page
+  pagination.pageSize = pageSize
   fetchData()
 }
 
@@ -397,37 +395,55 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 $primary: #0064E0;
-$primary-hover: #0143B5;
-$primary-light: #47A5FA;
 $white: #FFFFFF;
 $bg: #f5f7fa;
-$border: #e5e7eb;
+$divider: #e5e7eb;
 $text-1: #050505;
 $text-2: #65676B;
 $text-3: #BCC0C4;
 $primary-text: #050505;
 $secondary-text: #65676B;
-$border-radius-lg: 14px;
+$border-radius-lg: 12px;
 $success-green: #31A24C;
-$error-red: #E41E3F;
 
 .report-center {
-  padding: 16px 0;
+  padding: 16px;
   min-height: 100%;
-  background: $bg;
+}
+
+// 通用区块样式
+.section {
+  background: $white;
+  border-radius: $border-radius-lg;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid $divider;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $primary-text;
 }
 
 // 筛选区
-.filter-area {
-  padding: 16px;
-  margin: 0;
+.filter-section {
+  .section-header {
+    margin-bottom: 16px;
+  }
 }
 
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
+  gap: 24px;
 }
 
 .filter-item {
@@ -444,14 +460,7 @@ $error-red: #E41E3F;
 
 .filter-actions {
   display: flex;
-  align-items: center;
   gap: 8px;
-  margin-left: auto;
-}
-
-// 操作区
-.action-area {
-  padding: 12px 16px;
 }
 
 .btn-icon {
@@ -459,8 +468,10 @@ $error-red: #E41E3F;
 }
 
 // 表格区
-.table-area {
-  padding: 0;
+.table-section {
+  .section-header {
+    margin-bottom: 16px;
+  }
 }
 
 .report-name {
@@ -499,11 +510,10 @@ $error-red: #E41E3F;
 .filter-text {
   font-size: 13px;
   color: $secondary-text;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 200px;
-  display: inline-block;
+  cursor: pointer;
+  &:hover {
+    color: $primary;
+  }
 }
 
 .status-cell {
@@ -569,13 +579,6 @@ $error-red: #E41E3F;
   color: $text-3;
 }
 
-// 分页区
-.pagination-area {
-  display: flex;
-  justify-content: flex-end;
-  padding: 16px;
-}
-
 // 删除弹窗
 .delete-dialog-content {
   text-align: center;
@@ -586,10 +589,8 @@ $error-red: #E41E3F;
   }
 }
 
-// 表格样式覆盖
+// 表格样式
 :deep(.el-table) {
-  --el-table-border-color: #{$border};
-  --el-table-header-bg-color: #{$bg};
   th.el-table__cell {
     background-color: $bg;
     color: $primary-text;
@@ -601,9 +602,25 @@ $error-red: #E41E3F;
   }
 }
 
-// 分页样式覆盖
-:deep(.el-pagination) {
-  --el-pagination-button-bg-color: #{$white};
-  --el-pagination-hover-color: #{$primary};
+// Tooltip 样式
+:deep(.el-tooltip__popper) {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  max-width: 300px;
+  padding: 0;
+  .el-tooltip__content {
+    padding: 10px 12px;
+    color: #4e5969;
+    font-family: PingFang SC;
+    font-size: 12px;
+    line-height: 20px;
+    white-space: pre-line;
+  }
+  .el-tooltip__arrow::before {
+    background: #fff;
+    border-color: #e5e7eb;
+  }
 }
 </style>
