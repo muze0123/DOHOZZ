@@ -2,13 +2,6 @@
   <div class="report-center">
     <!-- 区域A：筛选区 -->
     <div class="section filter-section">
-      <div class="section-header">
-        <span class="section-title">查询条件</span>
-        <div class="filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
-      </div>
       <div class="filter-row">
         <div class="filter-item">
           <span class="filter-label">报表搜索</span>
@@ -64,6 +57,10 @@
             value-format="YYYY-MM-DD HH:mm:ss"
             style="width: 320px"
           />
+        </div>
+        <div class="filter-actions">
+          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
         </div>
       </div>
     </div>
@@ -445,6 +442,7 @@ $success-green: #31A24C;
 .filter-row {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 24px;
 }
 
@@ -462,7 +460,9 @@ $success-green: #31A24C;
 
 .filter-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
+  margin-left: auto;
 }
 
 .btn-icon {

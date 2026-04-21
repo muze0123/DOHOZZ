@@ -82,10 +82,10 @@
               <el-input v-model="filters.productName" placeholder="商品名称/ID" clearable style="width: 160px" />
             </div>
           </template>
-        </div>
-        <div class="filter-actions">
-          <el-button @click="handleReset">重置</el-button>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <div class="filter-actions">
+            <el-button type="primary" @click="handleQuery">查询</el-button>
+            <el-button @click="handleReset">重置</el-button>
+          </div>
         </div>
       </div>
 
@@ -957,6 +957,7 @@ $warning-orange: #FF7A00;
 .filter-row {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 16px;
 }
 
@@ -974,7 +975,9 @@ $warning-orange: #FF7A00;
 
 .filter-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
+  margin-left: auto;
 }
 
 // 未覆盖提示
