@@ -21,6 +21,24 @@ const routes = [
       requiresAuth: true,
       title: '控制台 - DOHOZZ'
     }
+  },
+  {
+    path: '/performance',
+    name: 'Performance',
+    component: () => import('@/views/Performance.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '绩效管理 - DOHOZZ'
+    }
+  },
+  {
+    path: '/report-center',
+    name: 'ReportCenter',
+    component: () => import('@/views/ReportCenter.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '报表中心 - DOHOZZ'
+    }
   }
 ]
 
