@@ -122,7 +122,7 @@
                   :key="child.name"
                   class="menu-item submenu-item"
                   :class="{ active: activeSidebarMenu === child.name }"
-                  @click="activeSidebarMenu = child.name"
+                  @click="handleSubmenuItemClick(child.name, item.name)"
                 >
                   <span>{{ child.name }}</span>
                   <span v-if="child.tag" class="new-tag">{{ child.tag }}</span>
@@ -134,7 +134,7 @@
               <div
                 class="menu-item"
                 :class="{ active: activeSidebarMenu === item.name }"
-                @click="activeSidebarMenu = item.name"
+                @click="handleMenuItemClick(item.name)"
               >
                 <div class="menu-icon">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" v-html="item.icon"></svg>
@@ -187,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, h, provide } from 'vue'
+import { ref, reactive, computed, watch, h, provide, onMounted } from 'vue'
 import { ElMessage, ElAvatar } from 'element-plus'
 import DataOverview from './DataOverview.vue'
 import Workspace from './Workspace.vue'
@@ -214,8 +214,8 @@ const handleLanguageChange = (lang) => {
 
 const currentScenario = ref('ecommerce')
 const activeNavMenu = ref('达人合作')
-const activeSidebarMenu = ref('工作台')
-const thirdLevelPage = ref('') // 用于第三层级页面，如创建报表
+const activeSidebarMenu = ref(localStorage.getItem('lastActiveMenu') || '工作台')
+const thirdLevelPage = ref(localStorage.getItem('lastThirdLevelPage') || '') // 用于第三层级页面，如创建报表
 const openSubmenus = reactive({})
 
 // 提供给子组件的方法
@@ -226,8 +226,42 @@ const setThirdLevelPage = (page) => {
 provide('setThirdLevelPage', setThirdLevelPage)
 provide('thirdLevelPage', thirdLevelPage)
 
+watch(activeSidebarMenu, (newVal) => {
+  localStorage.setItem('lastActiveMenu', newVal)
+})
+
+watch(thirdLevelPage, (newVal) => {
+  localStorage.setItem('lastThirdLevelPage', newVal)
+})
+
+onMounted(() => {
+  const lastMenu = localStorage.getItem('lastActiveMenu')
+  if (lastMenu) {
+    sidebarMenuItems.value.forEach(item => {
+      if (item.children && item.children.some(child => child.name === lastMenu)) {
+        openSubmenus[item.name] = true
+      }
+    })
+  }
+})
+
 const toggleSubmenu = (name) => {
   openSubmenus[name] = !openSubmenus[name]
+}
+
+const handleSubmenuItemClick = (childName, parentName) => {
+  activeSidebarMenu.value = childName
+  thirdLevelPage.value = ''
+  Object.keys(openSubmenus).forEach(key => {
+    if (key !== parentName) {
+      openSubmenus[key] = false
+    }
+  })
+}
+
+const handleMenuItemClick = (itemName) => {
+  activeSidebarMenu.value = itemName
+  thirdLevelPage.value = ''
 }
 
 // B区导航菜单配置
@@ -256,6 +290,7 @@ watch(activeNavMenu, (newVal) => {
   if (items.length > 0) {
     activeSidebarMenu.value = items[0].name
   }
+  thirdLevelPage.value = ''
   // 重置子菜单展开状态
   Object.keys(openSubmenus).forEach(key => {
     openSubmenus[key] = false
@@ -310,10 +345,10 @@ const sidebarMenuConfig = {
         { name: '业绩目标' }
       ]},
       { name: '找达人', icon: icons.search, children: [
-        { name: '达人库', tag: 'New' },
-        { name: '智能推荐达人', tag: 'New' },
-        { name: '商品找达人', tag: 'New' },
-        { name: '达人榜单', tag: 'New' }
+        { name: '达人库' },
+        { name: '智能推荐达人' },
+        { name: '商品找达人' },
+        { name: '达人榜单' }
       ]},
       { name: '达人管理', icon: icons.person },
       { name: '批量建联', icon: icons.group },
@@ -567,15 +602,19 @@ $transition-fast: 150ms ease;
 .c-btn-lang {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: 4px 10px;
-  border-radius: $border-radius-sm;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 16px;
+  border: 1px solid #d9d9d9;
   cursor: pointer;
   color: $secondary-text;
+  background: $white;
   transition: all $transition-fast;
 
   &:hover {
-    background: $web-wash;
+    border-color: #bfbfbf;
     color: $primary-text;
   }
 
