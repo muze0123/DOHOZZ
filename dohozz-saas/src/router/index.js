@@ -23,12 +23,48 @@ const routes = [
     }
   },
   {
+    path: '/workspace',
+    name: 'Workspace',
+    component: () => import('@/views/Workspace.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '工作台 - DOHOZZ'
+    }
+  },
+  {
+    path: '/data-overview',
+    name: 'DataOverview',
+    component: () => import('@/views/DataOverview.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '数据概览 - DOHOZZ'
+    }
+  },
+  {
     path: '/performance',
     name: 'Performance',
     component: () => import('@/views/Performance.vue'),
     meta: {
       requiresAuth: true,
       title: '绩效管理 - DOHOZZ'
+    }
+  },
+  {
+    path: '/commission',
+    name: 'Commission',
+    component: () => import('@/views/Commission.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '提成管理 - DOHOZZ'
+    }
+  },
+  {
+    path: '/performance-target',
+    name: 'PerformanceTarget',
+    component: () => import('@/views/PerformanceTarget.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '业绩目标 - DOHOZZ'
     }
   },
   {
