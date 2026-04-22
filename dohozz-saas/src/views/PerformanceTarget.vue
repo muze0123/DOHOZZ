@@ -1,8 +1,7 @@
 <template>
   <div class="performance-target">
-    <!-- 区块A：筛选区 + 操作工具栏 -->
-    <div class="section filter-section">
-      <!-- 平台Tab -->
+    <!-- 区块A：平台Tab切换栏 -->
+    <div class="platform-tabs-bar">
       <div class="platform-tabs">
         <div
           v-for="platform in platforms"
@@ -11,13 +10,68 @@
           :class="{ active: currentPlatform === platform.value }"
           @click="handlePlatformChange(platform.value)"
         >
-          <span class="platform-icon">{{ platform.icon }}</span>
-          <span class="platform-name">{{ platform.name }}</span>
+          <div class="platform-icon">{{ platform.icon }}</div>
+          <span>{{ platform.name }}</span>
         </div>
       </div>
+    </div>
 
-      <!-- 筛选条件 -->
+    <!-- 月度销售战绩区块 -->
+    <div class="section chart-section">
+      <div class="chart-header">
+        <div class="chart-title">
+          <span class="title-text">{{ currentMonthText }} 月度销售战绩</span>
+        </div>
+        <div class="chart-header-right">
+          <span class="days-left">距离月底还有 {{ daysLeft }} 天</span>
+        </div>
+      </div>
+      <div class="chart-cards">
+        <div
+          v-for="card in chartCards"
+          :key="card.key"
+          class="chart-card"
+          :class="{ selected: selectedCard === card.key }"
+          @click="handleCardClick(card.key)"
+        >
+          <div class="card-label">{{ card.name }}</div>
+          <div class="card-values">
+            <span v-if="card.type === 'money'" class="card-current">￥{{ formatMoney(card.current) }}</span>
+            <span v-else class="card-current">{{ card.current }}</span>
+            <span class="card-separator">/</span>
+            <span v-if="card.type === 'money'" class="card-target">￥{{ formatMoney(card.target) }}</span>
+            <span v-else class="card-target">{{ card.target }}</span>
+          </div>
+          <div class="card-progress">
+            <div class="progress-track">
+              <div
+                class="progress-fill"
+                :style="{ width: Math.min(card.rate, 100) + '%' }"
+                :class="{ over: card.rate > 100 }"
+              ></div>
+            </div>
+          </div>
+          <div class="card-rate" :class="{ over: card.rate > 100 }">
+            <span v-if="card.target === 0">—</span>
+            <span v-else>{{ card.rate.toFixed(2) }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 区块B：筛选区 -->
+    <div class="section filter-section">
       <div class="filter-row">
+        <div class="filter-item">
+          <span class="filter-label">目标月度</span>
+          <el-date-picker
+            v-model="filters.month"
+            type="month"
+            value-format="YYYY-MM"
+            placeholder="选择月份"
+            style="width: 130px"
+          />
+        </div>
         <div class="filter-item">
           <span class="filter-label">所属部门</span>
           <el-select v-model="filters.department" placeholder="全部部门" clearable filterable style="width: 140px">
@@ -36,119 +90,82 @@
             <el-option label="BD-王五" value="wangwu" />
           </el-select>
         </div>
-        <div class="filter-item">
-          <span class="filter-label">目标月度</span>
-          <el-date-picker
-            v-model="filters.month"
-            type="month"
-            value-format="YYYY-MM"
-            placeholder="选择月份"
-            style="width: 130px"
-          />
-        </div>
         <div class="filter-actions">
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
         </div>
       </div>
+    </div>
 
+    <!-- 区块C：数据列表 -->
+    <div class="section table-section">
       <!-- 操作工具栏 -->
       <div class="toolbar">
         <el-button type="primary" @click="handleAdd">+ 新增业绩目标</el-button>
       </div>
-    </div>
 
-    <!-- 区块B + C：数据列表 + 月度销售战绩面板 -->
-    <div class="table-chart-wrapper">
-      <!-- 区块B：数据列表 -->
-      <div class="section table-section">
-        <el-table
-          :data="tableData"
-          style="width: 100%"
-          v-loading="loading"
-          @row-click="handleRowClick"
-          :row-class-name="getRowClassName"
-          highlight-current-row
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        v-loading="loading"
+        @row-click="handleRowClick"
+        :row-class-name="getRowClassName"
+        highlight-current-row
+      >
+        <el-table-column prop="memberName" label="成员名称" width="180" fixed>
+          <template #default="{ row }">
+            <div class="member-cell">
+              <el-avatar :size="32" :src="row.avatar" />
+              <span class="member-name">{{ row.memberName }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="department" label="所属部门" width="160">
+          <template #default="{ row }">
+            <span class="department-text">{{ row.department }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-for="metric in metrics"
+          :key="metric.key"
+          :prop="metric.key"
+          :label="metric.name"
+          min-width="180"
         >
-          <el-table-column prop="memberName" label="成员名称" width="180" fixed>
-            <template #default="{ row }">
-              <div class="member-cell">
-                <el-avatar :size="32" :src="row.avatar" />
-                <span class="member-name">{{ row.memberName }}</span>
+          <template #default="{ row }">
+            <div class="metric-cell">
+              <div class="metric-value">
+                <span v-if="metric.type === 'money'" class="money">￥{{ formatMoney(row[metric.key].current) }}</span>
+                <span v-else class="number">{{ row[metric.key].current }}</span>
+                <span class="separator">/</span>
+                <span v-if="metric.type === 'money'" class="money target">￥{{ formatMoney(row[metric.key].target) }}</span>
+                <span v-else class="number target">{{ row[metric.key].target }}</span>
               </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="department" label="所属部门" width="160">
-            <template #default="{ row }">
-              <span class="department-text">{{ row.department }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            v-for="metric in metrics"
-            :key="metric.key"
-            :prop="metric.key"
-            :label="metric.name"
-            width="200"
-          >
-            <template #default="{ row }">
-              <div class="metric-cell">
-                <div class="metric-value">
-                  <span v-if="metric.type === 'money'" class="money">￥{{ formatMoney(row[metric.key].current) }}</span>
-                  <span v-else class="number">{{ row[metric.key].current }}</span>
-                  <span class="separator">/</span>
-                  <span v-if="metric.type === 'money'" class="money target">￥{{ formatMoney(row[metric.key].target) }}</span>
-                  <span v-else class="number target">{{ row[metric.key].target }}</span>
-                </div>
-                <div class="progress-bar">
-                  <div class="progress-track">
-                    <div
-                      class="progress-fill"
-                      :style="{ width: Math.min(row[metric.key].rate, 100) + '%' }"
-                      :class="{ over: row[metric.key].rate > 100 }"
-                    ></div>
-                  </div>
-                </div>
-                <div class="rate-text" :class="{ over: row[metric.key].rate > 100 }">
-                  <span v-if="row[metric.key].target === 0">—</span>
-                  <span v-else>{{ row[metric.key].rate.toFixed(2) }}%</span>
+              <div class="progress-bar">
+                <div class="progress-track">
+                  <div
+                    class="progress-fill"
+                    :style="{ width: Math.min(row[metric.key].rate, 100) + '%' }"
+                    :class="{ over: row[metric.key].rate > 100 }"
+                  ></div>
                 </div>
               </div>
-            </template>
-          </el-table-column>
-        </el-table>
+              <div class="rate-text" :class="{ over: row[metric.key].rate > 100 }">
+                <span v-if="row[metric.key].target === 0">—</span>
+                <span v-else>{{ row[metric.key].rate.toFixed(2) }}%</span>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
 
-        <!-- 分页 -->
-        <Pagination
-          v-if="total > 0"
-          v-model="pagination"
-          :total="total"
-          @change="handlePageChange"
-        />
-      </div>
-
-      <!-- 区块C：月度销售战绩面板 -->
-      <div class="section chart-section">
-        <div class="chart-header">
-          <div class="chart-title">
-            <span class="title-text">{{ currentMonthText }} 月销售战绩</span>
-            <span class="days-left">距离月底还有 {{ daysLeft }} 天</span>
-          </div>
-        </div>
-
-        <div class="chart-content">
-          <!-- 成交金额折线图 -->
-          <div class="chart-item">
-            <div class="chart-item-title">达人成交金额</div>
-            <div ref="lineChartRef" class="echarts-container line-chart"></div>
-          </div>
-
-          <!-- 其他指标条形图 -->
-          <div class="chart-item">
-            <div class="chart-item-title">其他指标完成进度</div>
-            <div ref="barChartRef" class="echarts-container bar-chart"></div>
-          </div>
-        </div>
-      </div>
+      <!-- 分页 -->
+      <Pagination
+        v-if="total > 0"
+        v-model="pagination"
+        :total="total"
+        @change="handlePageChange"
+      />
     </div>
 
     <!-- 区块D+E：绩效设置抽屉 -->
@@ -536,15 +553,34 @@
                   </div>
                 </div>
 
-                <!-- 业绩报告图表 -->
-                <div class="report-charts">
-                  <div class="report-chart-item">
-                    <div class="chart-item-title">达人成交金额</div>
-                    <div ref="detailLineChartRef" class="echarts-container line-chart"></div>
-                  </div>
-                  <div class="report-chart-item">
-                    <div class="chart-item-title">其他指标完成进度</div>
-                    <div ref="detailBarChartRef" class="echarts-container bar-chart"></div>
+                <!-- 业绩报告图表 - 横向卡片样式 -->
+                <div class="report-cards">
+                  <div
+                    v-for="card in detailChartCards"
+                    :key="card.key"
+                    class="report-card"
+                  >
+                    <div class="card-label">{{ card.name }}</div>
+                    <div class="card-values">
+                      <span v-if="card.type === 'money'" class="card-current">￥{{ formatMoney(card.current) }}</span>
+                      <span v-else class="card-current">{{ card.current }}</span>
+                      <span class="card-separator">/</span>
+                      <span v-if="card.type === 'money'" class="card-target">￥{{ formatMoney(card.target) }}</span>
+                      <span v-else class="card-target">{{ card.target }}</span>
+                    </div>
+                    <div class="card-progress">
+                      <div class="progress-track">
+                        <div
+                          class="progress-fill"
+                          :style="{ width: Math.min(card.rate, 100) + '%' }"
+                          :class="{ over: card.rate > 100 }"
+                        ></div>
+                      </div>
+                    </div>
+                    <div class="card-rate" :class="{ over: card.rate > 100 }">
+                      <span v-if="card.target === 0">—</span>
+                      <span v-else>{{ card.rate.toFixed(2) }}%</span>
+                    </div>
                   </div>
                 </div>
 
@@ -656,9 +692,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import * as echarts from 'echarts'
 import Pagination from '@/components/Pagination.vue'
 
 // 平台选项
@@ -692,6 +727,9 @@ const loading = ref(false)
 // 当前选中行
 const currentRow = ref(null)
 
+// 当前选中卡片
+const selectedCard = ref('dealAmount')
+
 // 指标配置
 const metrics = [
   { key: 'dealAmount', name: '达人成交金额', type: 'money' },
@@ -704,18 +742,6 @@ const metrics = [
 
 // 表格数据
 const tableData = ref([])
-
-// 图表实例
-let lineChart = null
-let barChart = null
-let detailLineChart = null
-let detailBarChart = null
-
-// 图表DOM引用
-const lineChartRef = ref(null)
-const barChartRef = ref(null)
-const detailLineChartRef = ref(null)
-const detailBarChartRef = ref(null)
 
 // 抽屉相关
 const drawerVisible = ref(false)
@@ -823,10 +849,34 @@ const detailUnachievedMembers = computed(() => {
   return detailMembers.value.filter(m => m.dealAmount.current < m.dealAmount.target)
 })
 
+// 月度销售战绩卡片数据
+const chartCards = computed(() => {
+  const baseData = {
+    dealAmount: { current: 12345.67, target: 100000 },
+    contactCount: { current: 35, target: 100 },
+    sampleCount: { current: 28, target: 100 },
+    orderCount: { current: 15, target: 100 },
+    deliveryVideoCount: { current: 8, target: 100 }
+  }
+
+  return [
+    { key: 'dealAmount', name: '达人成交金额', type: 'money', ...baseData.dealAmount, rate: (baseData.dealAmount.current / baseData.dealAmount.target) * 100 },
+    { key: 'contactCount', name: '建联达人数', type: 'number', ...baseData.contactCount, rate: (baseData.contactCount.current / baseData.contactCount.target) * 100 },
+    { key: 'sampleCount', name: '寄样达人数', type: 'number', ...baseData.sampleCount, rate: (baseData.sampleCount.current / baseData.sampleCount.target) * 100 },
+    { key: 'orderCount', name: '出单达人数', type: 'number', ...baseData.orderCount, rate: (baseData.orderCount.current / baseData.orderCount.target) * 100 },
+    { key: 'deliveryVideoCount', name: '交付视频数', type: 'number', ...baseData.deliveryVideoCount, rate: (baseData.deliveryVideoCount.current / baseData.deliveryVideoCount.target) * 100 }
+  ]
+})
+
+// 业绩明细图表卡片
+const detailChartCards = computed(() => {
+  return chartCards.value
+})
+
 // 格式化金额
 const formatMoney = (value) => {
   if (value === null || value === undefined) return '0.00'
-  return parseFloat(value).toFixed(2)
+  return parseFloat(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 // 生成模拟数据
@@ -934,262 +984,6 @@ const fetchData = async () => {
   loading.value = false
 }
 
-// 初始化图表
-const initCharts = () => {
-  if (lineChartRef.value) {
-    lineChart = echarts.init(lineChartRef.value)
-  }
-  if (barChartRef.value) {
-    barChart = echarts.init(barChartRef.value)
-  }
-  if (detailLineChartRef.value) {
-    detailLineChart = echarts.init(detailLineChartRef.value)
-  }
-  if (detailBarChartRef.value) {
-    detailBarChart = echarts.init(detailBarChartRef.value)
-  }
-}
-
-// 更新折线图
-const updateLineChart = () => {
-  if (!lineChart) return
-
-  const days = []
-  const targetData = []
-  const actualData = []
-  const now = new Date()
-  const currentDay = now.getDate()
-  const month = currentMonthText.value
-
-  for (let i = 1; i <= currentDay; i++) {
-    days.push(`${month}-${String(i).padStart(2, '0')}`)
-    targetData.push(5000)
-    actualData.push(Math.random() * 8000)
-  }
-
-  const option = {
-    tooltip: {
-      trigger: 'axis'
-    },
-    legend: {
-      data: ['目标', '实际'],
-      bottom: 0
-    },
-    grid: {
-      left: 60,
-      right: 20,
-      top: 20,
-      bottom: 40
-    },
-    xAxis: {
-      type: 'category',
-      data: days,
-      boundaryGap: false
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        formatter: (value) => `¥${(value / 1000).toFixed(1)}k`
-      }
-    },
-    series: [
-      {
-        name: '目标',
-        type: 'line',
-        data: targetData,
-        smooth: true,
-        lineStyle: { color: '#FF9500', width: 2 },
-        itemStyle: { color: '#FF9500' }
-      },
-      {
-        name: '实际',
-        type: 'line',
-        data: actualData,
-        smooth: true,
-        lineStyle: { color: '#31A24C', width: 2 },
-        itemStyle: { color: '#31A24C' }
-      }
-    ]
-  }
-
-  lineChart.setOption(option)
-}
-
-// 更新条形图
-const updateBarChart = () => {
-  if (!barChart) return
-
-  const metricsData = [
-    { name: '建联达人数', current: 75, target: 100 },
-    { name: '寄样达人数', current: 62, target: 100 },
-    { name: '出单达人数', current: 48, target: 100 },
-    { name: '交付视频数', current: 35, target: 100 },
-    { name: '出单视频数', current: 28, target: 100 }
-  ]
-
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' }
-    },
-    grid: {
-      left: 100,
-      right: 60,
-      top: 10,
-      bottom: 30
-    },
-    xAxis: {
-      type: 'value',
-      max: 100
-    },
-    yAxis: {
-      type: 'category',
-      data: metricsData.map(d => d.name)
-    },
-    series: [
-      {
-        name: '完成进度',
-        type: 'bar',
-        data: metricsData.map(d => ({
-          value: Math.min(d.current, 100),
-          itemStyle: { color: d.current >= d.target ? '#31A24C' : '#0064E0' }
-        })),
-        barWidth: 16,
-        label: {
-          show: true,
-          position: 'right',
-          formatter: (params) => `${metricsData[params.dataIndex].current}%`
-        }
-      }
-    ]
-  }
-
-  barChart.setOption(option)
-}
-
-// 更新业绩明细折线图
-const updateDetailLineChart = () => {
-  if (!detailLineChart) return
-
-  const days = []
-  const targetData = []
-  const actualData = []
-  const now = new Date()
-  const currentDay = now.getDate()
-  const month = detailForm.month || currentMonthText.value
-
-  for (let i = 1; i <= currentDay; i++) {
-    days.push(`${month}-${String(i).padStart(2, '0')}`)
-    targetData.push(5000)
-    actualData.push(Math.random() * 8000)
-  }
-
-  const option = {
-    tooltip: {
-      trigger: 'axis'
-    },
-    legend: {
-      data: ['目标', '实际'],
-      bottom: 0
-    },
-    grid: {
-      left: 60,
-      right: 20,
-      top: 20,
-      bottom: 40
-    },
-    xAxis: {
-      type: 'category',
-      data: days,
-      boundaryGap: false
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        formatter: (value) => `¥${(value / 1000).toFixed(1)}k`
-      }
-    },
-    series: [
-      {
-        name: '目标',
-        type: 'line',
-        data: targetData,
-        smooth: true,
-        lineStyle: { color: '#FF9500', width: 2 },
-        itemStyle: { color: '#FF9500' }
-      },
-      {
-        name: '实际',
-        type: 'line',
-        data: actualData,
-        smooth: true,
-        lineStyle: { color: '#31A24C', width: 2 },
-        itemStyle: { color: '#31A24C' }
-      }
-    ]
-  }
-
-  detailLineChart.setOption(option)
-}
-
-// 更新业绩明细条形图
-const updateDetailBarChart = () => {
-  if (!detailBarChart) return
-
-  const metricsData = [
-    { name: '建联达人数', current: 75, target: 100 },
-    { name: '寄样达人数', current: 62, target: 100 },
-    { name: '出单达人数', current: 48, target: 100 }
-  ]
-
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' }
-    },
-    grid: {
-      left: 100,
-      right: 60,
-      top: 10,
-      bottom: 30
-    },
-    xAxis: {
-      type: 'value',
-      max: 100
-    },
-    yAxis: {
-      type: 'category',
-      data: metricsData.map(d => d.name)
-    },
-    series: [
-      {
-        name: '完成进度',
-        type: 'bar',
-        data: metricsData.map(d => ({
-          value: Math.min(d.current, 100),
-          itemStyle: { color: d.current >= d.target ? '#31A24C' : '#0064E0' }
-        })),
-        barWidth: 16,
-        label: {
-          show: true,
-          position: 'right',
-          formatter: (params) => `${metricsData[params.dataIndex].current}%`
-        }
-      }
-    ]
-  }
-
-  detailBarChart.setOption(option)
-}
-
-// 窗口resize处理
-const handleResize = () => {
-  lineChart?.resize()
-  barChart?.resize()
-  detailLineChart?.resize()
-  detailBarChart?.resize()
-}
-
 // 平台切换
 const handlePlatformChange = (platform) => {
   currentPlatform.value = platform
@@ -1200,10 +994,6 @@ const handlePlatformChange = (platform) => {
 const handleQuery = () => {
   pagination.page = 1
   fetchData()
-  nextTick(() => {
-    updateLineChart()
-    updateBarChart()
-  })
 }
 
 // 重置
@@ -1237,10 +1027,11 @@ const handleAdd = () => {
 // 行点击
 const handleRowClick = (row) => {
   currentRow.value = row
-  nextTick(() => {
-    updateLineChart()
-    updateBarChart()
-  })
+}
+
+// 卡片点击
+const handleCardClick = (key) => {
+  selectedCard.value = key
 }
 
 // 行样式
@@ -1276,10 +1067,6 @@ const handleOrgNodeClick = (data) => {
 // 业绩明细组织架构树节点点击
 const handleDetailOrgNodeClick = (data) => {
   detailMembers.value = generateDetailMembers()
-  nextTick(() => {
-    updateDetailLineChart()
-    updateDetailBarChart()
-  })
 }
 
 // 抽屉关闭
@@ -1313,25 +1100,11 @@ onMounted(() => {
   }
   detailForm.month = filters.month
   fetchData()
-  nextTick(() => {
-    initCharts()
-    updateLineChart()
-    updateBarChart()
-  })
-  window.addEventListener('resize', handleResize)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-  lineChart?.dispose()
-  barChart?.dispose()
-  detailLineChart?.dispose()
-  detailBarChart?.dispose()
 })
 </script>
 
 <style lang="scss" scoped>
-$primary: #0064E0;
+$meta-blue: #0064E0;
 $white: #FFFFFF;
 $bg: #f5f7fa;
 $divider: #e5e7eb;
@@ -1342,6 +1115,8 @@ $primary-text: #050505;
 $secondary-text: #65676B;
 $border-radius-lg: 12px;
 $success: #31A24C;
+
+$transition-fast: 150ms ease;
 
 .performance-target {
   padding: 16px 0 24px;
@@ -1358,66 +1133,185 @@ $success: #31A24C;
 }
 
 // 平台Tab
+.platform-tabs-bar {
+  background: $white;
+  border: 1px solid $divider;
+  border-bottom: none;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
+  padding: 0 16px;
+  margin-top: 16px;
+}
+
 .platform-tabs {
   display: flex;
-  gap: 0;
-  border: 1px solid $divider;
-  border-radius: 8px;
-  overflow: hidden;
-  width: fit-content;
-  margin-bottom: 16px;
+  gap: 24px;
 }
 
 .platform-tab {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
+  gap: 8px;
+  padding: 12px 0;
+  color: $secondary-text;
   cursor: pointer;
-  border-right: 1px solid $divider;
-  transition: all 0.2s;
-
-  &:last-child {
-    border-right: none;
-  }
+  border-bottom: 2px solid transparent;
+  transition: all $transition-fast;
+  position: relative;
+  top: 1px;
 
   &:hover {
-    background: $bg;
+    color: $primary-text;
   }
 
   &.active {
-    background: $primary;
+    color: $meta-blue;
+    font-weight: 500;
+    border-bottom-color: $meta-blue;
+  }
 
-    .platform-icon {
-      background: $white;
-      color: $primary;
-    }
+  .platform-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: $bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: $text-2;
 
-    .platform-name {
+    .active & {
+      background: $meta-blue;
       color: $white;
     }
   }
 }
 
-.platform-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  background: $bg;
-  font-size: 10px;
-  font-weight: 600;
-  color: $text-2;
+// 月度销售战绩区块
+.chart-section {
+  margin-bottom: 16px;
 }
 
-.platform-name {
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.chart-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: $primary-text;
+}
+
+.chart-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.days-left {
   font-size: 13px;
-  color: $text-2;
+  color: $secondary-text;
+}
+
+.chart-cards {
+  display: flex;
+  gap: 16px;
+}
+
+.chart-card {
+  flex: 1;
+  background: $bg;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: darken($bg, 2%);
+  }
+
+  &.selected {
+    background: #e6f0ff;
+    border: 1px solid $meta-blue;
+  }
+}
+
+.card-label {
+  font-size: 13px;
+  color: $secondary-text;
+  margin-bottom: 8px;
+}
+
+.card-values {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.card-current {
+  font-size: 16px;
+  font-weight: 600;
+  color: $primary-text;
+}
+
+.card-separator {
+  color: $text-3;
+  margin: 0 2px;
+}
+
+.card-target {
+  font-size: 13px;
+  color: $text-3;
+}
+
+.card-progress {
+  margin-bottom: 4px;
+}
+
+.progress-track {
+  height: 6px;
+  background: darken($bg, 5%);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: $meta-blue;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+
+  &.over {
+    background: $success;
+  }
+}
+
+.card-rate {
+  font-size: 12px;
+  color: $secondary-text;
+
+  &.over {
+    color: $success;
+    font-weight: 500;
+  }
 }
 
 // 筛选区
+.filter-section {
+  margin-bottom: 16px;
+}
+
 .filter-row {
   display: flex;
   align-items: center;
@@ -1444,77 +1338,12 @@ $success: #31A24C;
   margin-left: auto;
 }
 
-// 操作工具栏
-.toolbar {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid $divider;
-}
-
-// 表格和图表包装
-.table-chart-wrapper {
-  display: flex;
-  gap: 16px;
-}
-
+// 表格区块
 .table-section {
-  flex: 1;
-  min-width: 0;
-  margin-right: 0;
-}
-
-.chart-section {
-  width: 400px;
-  flex-shrink: 0;
-}
-
-// 图表区
-.chart-header {
-  margin-bottom: 16px;
-}
-
-.chart-title {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.title-text {
-  font-size: 15px;
-  font-weight: 600;
-  color: $primary-text;
-}
-
-.days-left {
-  font-size: 12px;
-  color: $secondary-text;
-}
-
-.chart-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.chart-item {
-  .chart-item-title {
-    font-size: 13px;
-    color: $primary-text;
-    font-weight: 500;
-    margin-bottom: 8px;
+  // 操作工具栏
+  .toolbar {
+    margin-bottom: 16px;
   }
-}
-
-.echarts-container {
-  width: 100%;
-}
-
-.line-chart {
-  height: 180px;
-}
-
-.bar-chart {
-  height: 200px;
 }
 
 // 成员名称
@@ -1584,7 +1413,7 @@ $success: #31A24C;
 
 .progress-fill {
   height: 100%;
-  background: $primary;
+  background: $meta-blue;
   border-radius: 3px;
   transition: width 0.3s ease;
 
@@ -1598,7 +1427,7 @@ $success: #31A24C;
   color: $secondary-text;
 
   &.over {
-    color: $primary;
+    color: $meta-blue;
     font-weight: 500;
   }
 }
@@ -1652,9 +1481,9 @@ $success: #31A24C;
   transition: all 0.2s;
 
   &.active {
-    color: $primary;
+    color: $meta-blue;
     font-weight: 600;
-    border-bottom-color: $primary;
+    border-bottom-color: $meta-blue;
   }
 }
 
@@ -1750,7 +1579,7 @@ $success: #31A24C;
 }
 
 .selected-org {
-  color: $primary;
+  color: $meta-blue;
   font-weight: normal;
 }
 
@@ -1812,7 +1641,7 @@ $success: #31A24C;
   justify-content: center;
   width: 14px;
   height: 14px;
-  background: $primary;
+  background: $meta-blue;
   color: $white;
   border-radius: 50%;
   font-size: 10px;
@@ -1859,17 +1688,24 @@ $success: #31A24C;
   margin-bottom: 24px;
 }
 
-.report-charts {
+.report-cards {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   margin-bottom: 24px;
+}
+
+.report-card {
+  flex: 1;
+  background: $bg;
+  border-radius: 8px;
+  padding: 12px 16px;
 }
 
 .report-chart-item {
   background: $bg;
   border-radius: 8px;
   padding: 16px;
+  margin-bottom: 16px;
 
   .chart-item-title {
     font-size: 14px;
