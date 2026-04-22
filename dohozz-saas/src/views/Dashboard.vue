@@ -157,6 +157,9 @@
         <!-- 绩效管理页面 -->
         <Performance v-else-if="activeSidebarMenu === '绩效管理'" />
 
+        <!-- 业绩目标页面 -->
+        <PerformanceTarget v-else-if="activeSidebarMenu === '业绩目标'" />
+
         <!-- 创建报表页面（第三层级） -->
         <CreateReport v-else-if="thirdLevelPage === 'create'" />
 
@@ -189,6 +192,7 @@ import { ElMessage, ElAvatar } from 'element-plus'
 import DataOverview from './DataOverview.vue'
 import Workspace from './Workspace.vue'
 import Performance from './Performance.vue'
+import PerformanceTarget from './PerformanceTarget.vue'
 import ReportCenter from './ReportCenter.vue'
 import CreateReport from './CreateReport.vue'
 import Commission from './Commission.vue'
