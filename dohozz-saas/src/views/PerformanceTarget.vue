@@ -1,7 +1,7 @@
 <template>
   <div class="performance-target">
     <!-- 区块A：平台Tab + 筛选区（合并为一个区块） -->
-    <div class="section filter-section">
+    <div class="filter-area">
       <!-- 平台Tab -->
       <div class="platform-tabs-bar">
         <div class="platform-tabs">
@@ -19,41 +19,42 @@
       </div>
 
       <!-- 筛选区 -->
-      <div class="filter-row">
-        <div class="filter-item">
-          <span class="filter-label">目标月度</span>
-          <el-date-picker
-            v-model="filters.month"
-            type="month"
-            value-format="YYYY-MM"
-            placeholder="选择月份"
-            style="width: 130px"
-          />
-        </div>
-        <div class="filter-item">
-          <span class="filter-label">所属部门</span>
-          <el-select v-model="filters.department" placeholder="全部部门" clearable filterable style="width: 140px">
-            <el-option label="全部部门" value="" />
-            <el-option label="销售一部" value="sales1" />
-            <el-option label="销售二部" value="sales2" />
-            <el-option label="运营部" value="ops" />
-          </el-select>
-        </div>
-        <div class="filter-item">
-          <span class="filter-label">所属BD</span>
-          <el-select v-model="filters.bd" placeholder="全部BD" clearable filterable style="width: 140px">
-            <el-option label="全部BD" value="" />
-            <el-option label="BD-张三" value="zhangsan" />
-            <el-option label="BD-李四" value="lisi" />
-            <el-option label="BD-王五" value="wangwu" />
-          </el-select>
-        </div>
-        <div class="filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
-        <div class="toolbar-right">
-          <el-button type="primary" @click="handleAdd">+ 新增业绩目标</el-button>
+      <div class="filter-toolbar sticky-filter-bar">
+        <div class="filter-row">
+          <div class="filter-item">
+            <span class="filter-label">目标月度</span>
+            <el-date-picker
+              v-model="filters.month"
+              type="month"
+              value-format="YYYY-MM"
+              placeholder="选择月份"
+              size="small"
+              style="width: 130px"
+            />
+          </div>
+          <div class="filter-item">
+            <span class="filter-label">所属部门</span>
+            <el-select v-model="filters.department" placeholder="全部部门" clearable filterable size="small" style="width: 140px">
+              <el-option label="全部部门" value="" />
+              <el-option label="销售一部" value="sales1" />
+              <el-option label="销售二部" value="sales2" />
+              <el-option label="运营部" value="ops" />
+            </el-select>
+          </div>
+          <div class="filter-item">
+            <span class="filter-label">所属BD</span>
+            <el-select v-model="filters.bd" placeholder="全部BD" clearable filterable size="small" style="width: 140px">
+              <el-option label="全部BD" value="" />
+              <el-option label="BD-张三" value="zhangsan" />
+              <el-option label="BD-李四" value="lisi" />
+              <el-option label="BD-王五" value="wangwu" />
+            </el-select>
+          </div>
+          <div class="filter-item date-filter">
+            <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
+            <el-button size="small" @click="handleReset">重置</el-button>
+            <el-button type="primary" size="small" @click="handleAdd">+ 新增业绩目标</el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -1123,24 +1124,15 @@ $transition-fast: 150ms ease;
   background: $bg;
 }
 
-// 通用区块样式
-.section {
+// ===== 区块A：筛选区 =====
+.filter-area { margin: 16px 0 0; }
+
+.platform-tabs-bar {
   background: $white;
   border: 1px solid $divider;
-  border-radius: $border-radius-lg;
-}
-
-// 筛选区（包含平台Tab）
-.filter-section {
-  padding: 0 16px 16px;
-  margin-top: 16px;
-}
-
-// 平台Tab
-.platform-tabs-bar {
-  margin: 0 -16px;
+  border-bottom: none;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
-  border-bottom: 1px solid $divider;
 }
 
 .platform-tabs {
@@ -1168,25 +1160,71 @@ $transition-fast: 150ms ease;
     color: $meta-blue;
     font-weight: 500;
     border-bottom-color: $meta-blue;
-  }
 
-  .platform-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    background: $bg;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 600;
-    color: $text-2;
-
-    .active & {
+    .platform-icon {
       background: $meta-blue;
       color: $white;
     }
   }
+
+  .platform-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: $bg;
+    font-size: 10px;
+    font-weight: 600;
+    color: $text-2;
+  }
+}
+
+.filter-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid $divider;
+  border-top: none;
+  border-radius: 0 0 $border-radius-lg $border-radius-lg;
+  background: $white;
+}
+
+.sticky-filter-bar {
+  position: sticky;
+  top: 48px;
+  z-index: 90;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.filter-label {
+  font-size: 13px;
+  color: $text-1;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filter-item.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
 }
 
 // 月度销售战绩区块
@@ -1308,42 +1346,9 @@ $transition-fast: 150ms ease;
   }
 }
 
-.filter-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-top: 16px;
-}
-
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.filter-label {
-  font-size: 13px;
-  color: $secondary-text;
-  white-space: nowrap;
-}
-
-.filter-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.toolbar-right {
-  margin-left: auto;
-}
-
 // 表格区块
 .table-section {
   margin-top: 16px;
-  .toolbar {
-    margin-bottom: 16px;
-  }
 }
 
 // 成员名称
