@@ -53,7 +53,6 @@
           <div class="filter-item date-filter">
             <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
             <el-button size="small" @click="handleReset">重置</el-button>
-            <el-button type="primary" size="small" @click="handleAdd">+ 新增业绩目标</el-button>
           </div>
         </div>
       </div>
@@ -74,8 +73,6 @@
           v-for="card in chartCards"
           :key="card.key"
           class="chart-card"
-          :class="{ selected: selectedCard === card.key }"
-          @click="handleCardClick(card.key)"
         >
           <div class="card-label">{{ card.name }}</div>
           <div class="card-values">
@@ -104,6 +101,9 @@
 
     <!-- 区块C：数据列表 -->
     <div class="section table-section">
+      <div class="toolbar">
+        <el-button type="primary" @click="handleAdd">+ 新增业绩目标</el-button>
+      </div>
       <el-table
         :data="tableData"
         style="width: 100%"
@@ -727,9 +727,6 @@ const loading = ref(false)
 // 当前选中行
 const currentRow = ref(null)
 
-// 当前选中卡片
-const selectedCard = ref('dealAmount')
-
 // 指标配置
 const metrics = [
   { key: 'dealAmount', name: '达人成交金额', type: 'money' },
@@ -1029,11 +1026,6 @@ const handleRowClick = (row) => {
   currentRow.value = row
 }
 
-// 卡片点击
-const handleCardClick = (key) => {
-  selectedCard.value = key
-}
-
 // 行样式
 const getRowClassName = ({ row }) => {
   return currentRow.value && currentRow.value.id === row.id ? 'current-row' : ''
@@ -1125,7 +1117,15 @@ $transition-fast: 150ms ease;
 }
 
 // ===== 区块A：筛选区 =====
-.filter-area { margin: 16px 0 0; }
+.filter-area { margin: 0; }
+
+// 通用区块样式
+.section {
+  background: $white;
+  border: 1px solid $divider;
+  border-radius: $border-radius-lg;
+  padding: 16px;
+}
 
 .platform-tabs-bar {
   background: $white;
@@ -1229,7 +1229,7 @@ $transition-fast: 150ms ease;
 
 // 月度销售战绩区块
 .chart-section {
-  margin-bottom: 16px;
+  margin-top: 16px;
 }
 
 .chart-header {
@@ -1272,17 +1272,6 @@ $transition-fast: 150ms ease;
   background: $bg;
   border-radius: 8px;
   padding: 12px 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background: darken($bg, 2%);
-  }
-
-  &.selected {
-    background: #e6f0ff;
-    border: 1px solid $meta-blue;
-  }
 }
 
 .card-label {
@@ -1349,6 +1338,10 @@ $transition-fast: 150ms ease;
 // 表格区块
 .table-section {
   margin-top: 16px;
+
+  .toolbar {
+    margin-bottom: 16px;
+  }
 }
 
 // 成员名称
