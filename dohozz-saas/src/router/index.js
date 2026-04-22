@@ -48,6 +48,15 @@ const routes = [
       requiresAuth: true,
       title: '创建报表 - DOHOZZ'
     }
+  },
+  {
+    path: '/commission/help',
+    name: 'CommissionHelp',
+    component: () => import('@/views/CommissionHelp.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '功能说明 - DOHOZZ'
+    }
   }
 ]
 

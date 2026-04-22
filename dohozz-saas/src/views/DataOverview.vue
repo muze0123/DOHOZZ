@@ -808,30 +808,6 @@ $fast: 150ms ease;
 .trend-down { color: #f5222d; }
 .trend-flat { color: $text-3; }
 
-// ===== 数据指标 Tooltip 样式 =====
-:deep(.el-tooltip__popper) {
-  background: #fff !important;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 300px;
-  padding: 0;
-  .el-tooltip__content {
-    padding: 10px 12px;
-    color: #4e5969;
-    font-family: PingFang SC;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 20px;
-    white-space: pre-line;
-  }
-  .el-tooltip__arrow::before {
-    background: #fff;
-    border-color: #e5e7eb;
-  }
-}
-
 // 趋势图
 .trend-chart-area { margin-top: 12px; }
 .trend-chart { width: 100%; height: 220px; }

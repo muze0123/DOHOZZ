@@ -5,8 +5,8 @@
       <div class="section-header">
         <span class="section-title">提成规则</span>
         <div class="header-actions">
-          <span class="help-link">功能说明</span>
-          <el-button type="primary" size="small" @click="showRuleDrawer = true">修改规则</el-button>
+          <span class="help-link" @click="handleHelpClick">功能说明</span>
+          <span class="action-link" @click="showRuleDrawer = true">修改规则</span>
           <span class="history-link" @click="showHistoryDrawer = true">修改记录</span>
         </div>
       </div>
@@ -239,36 +239,130 @@
     </el-drawer>
 
     <!-- 区域D：设置提成规则抽屉 -->
-    <el-drawer v-model="showRuleDrawer" title="设置提成规则" size="500px" direction="rtl">
-      <div class="drawer-form">
-        <div class="form-item">
-          <label class="form-label">提成方式 <span class="required">*</span></label>
-          <el-select v-model="ruleForm.commissionType" style="width: 100%">
-            <el-option label="按员工固定提成" value="employee" />
-            <el-option label="按员工月业绩分档提成" value="tiered" />
-            <el-option label="按商品固定提成" value="product" />
-          </el-select>
-          <div class="form-tip">改变提成方式将影响方案内容，请谨慎操作</div>
+    <el-drawer v-model="showRuleDrawer" title="设置提成规则" size="800px" direction="rtl">
+      <div class="rule-drawer-content">
+        <!-- 左侧列 -->
+        <div class="drawer-left">
+          <!-- 提成方式选择区 -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-title">提成方式 <span class="required">*</span></span>
+              <el-tooltip content="「提成方式」决定是按照「商品」还是「员工」来给定提成比例" placement="top">
+                <span class="help-icon">?</span>
+              </el-tooltip>
+            </div>
+            <div class="commission-type-options">
+              <div
+                v-for="type in commissionTypes"
+                :key="type.value"
+                class="type-option"
+                :class="{ active: ruleForm.commissionType === type.value }"
+                @click="handleCommissionTypeChange(type.value)"
+              >
+                <el-radio v-model="ruleForm.commissionType" :label="type.value">
+                  {{ type.label }}
+                </el-radio>
+                <el-tooltip placement="top" effect="light" trigger="hover">
+                  <template #content>
+                    <div v-html="type.example"></div>
+                  </template>
+                  <span class="view-example">查看示例</span>
+                </el-tooltip>
+              </div>
+            </div>
+          </div>
+
+          <!-- 管理提成开关 -->
+          <div class="form-section">
+            <div class="manage-commission-row">
+              <span class="section-title">管理提成</span>
+              <el-tooltip content="开启后，每笔订单将多计算一份【管理提成】指定给部门负责人。管理提成 = 本部门（不包含子级部门）的员工业绩 × 管理提成比例（扣除负责人本人的员工业绩）" placement="top">
+                <span class="help-icon">?</span>
+              </el-tooltip>
+              <el-switch v-model="ruleForm.manageCommissionEnabled" @change="handleManageCommissionChange" />
+            </div>
+          </div>
         </div>
-        <div class="form-item">
-          <label class="form-label">提成基数 <span class="required">*</span></label>
-          <el-select v-model="ruleForm.commissionBase" style="width: 100%">
-            <el-option label="收货订单实付金额" value="收货订单实付金额" />
-            <el-option label="收货订单去佣金额" value="收货订单去佣金额" />
-            <el-option label="结算订单实付金额" value="结算订单实付金额" />
-            <el-option label="结算订单去佣金额" value="结算订单去佣金额" />
-            <el-option label="付款订单去退金额" value="付款订单去退金额" />
-          </el-select>
-        </div>
-        <div class="form-item">
-          <label class="form-label">生效日期 <span class="required">*</span></label>
-          <el-date-picker v-model="ruleForm.effectiveDate" type="date" value-format="YYYY-MM-DD" placeholder="选择日期" style="width: 100%" />
+
+        <!-- 右侧列 -->
+        <div class="drawer-right">
+          <!-- 提成基数选择区 -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-title">提成基数 <span class="required">*</span></span>
+            </div>
+            <div class="commission-base-options">
+              <el-radio-group v-model="ruleForm.commissionBase">
+                <div
+                  v-for="base in commissionBases"
+                  :key="base.value"
+                  class="base-option"
+                >
+                  <el-radio :label="base.value">{{ base.label }}</el-radio>
+                  <el-tooltip :content="base.tooltip" placement="top">
+                    <span class="help-icon">?</span>
+                  </el-tooltip>
+                </div>
+              </el-radio-group>
+            </div>
+          </div>
+
+          <!-- 生效时间配置区 -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-title">生效时间 <span class="required">*</span></span>
+              <el-tooltip content="生效日期 0 点后的订单，将按照以下设置的提成方案计算提成" placement="top">
+                <span class="help-icon">?</span>
+              </el-tooltip>
+            </div>
+            <el-date-picker
+              v-model="ruleForm.effectiveDate"
+              :type="ruleForm.commissionType === 'tiered' ? 'month' : 'date'"
+              :value-format="ruleForm.commissionType === 'tiered' ? 'YYYY-MM' : 'YYYY-MM-DD'"
+              :placeholder="ruleForm.commissionType === 'tiered' ? '选择月份' : '选择日期'"
+              style="width: 100%"
+            />
+          </div>
         </div>
       </div>
+
+      <!-- 底部提示 -->
+      <div class="drawer-tip">
+        生效日期最长往前 3 个月，保存后将对生效日期及之后的订单重新计算提成，之前的提成金额不变
+      </div>
+
+      <!-- 底部操作栏 -->
       <div class="drawer-footer">
         <el-button @click="showRuleDrawer = false">取消</el-button>
         <el-button type="primary" :loading="submitting" @click="handleSubmitRule">保存</el-button>
       </div>
+
+      <!-- 切换提成方式确认弹窗 -->
+      <el-dialog v-model="showTypeChangeDialog" title="确认更改提成方式吗？" width="400px" center>
+        <p>若更改提成方式，原提成方案列表将清空，需重新设置提成比例方案。</p>
+        <template #footer>
+          <el-button @click="showTypeChangeDialog = false">取消</el-button>
+          <el-button type="primary" @click="confirmTypeChange">确定</el-button>
+        </template>
+      </el-dialog>
+
+      <!-- 关闭管理提成确认弹窗 -->
+      <el-dialog v-model="showManageCommissionDialog" title="确认关闭管理提成吗？" width="400px" center>
+        <p>关闭后，已设置的管理提成比例将置为 0，所有页面将不显示「管理提成」数据。</p>
+        <template #footer>
+          <el-button @click="showManageCommissionDialog = false">取消</el-button>
+          <el-button type="primary" @click="confirmManageCommissionChange">确定</el-button>
+        </template>
+      </el-dialog>
+
+      <!-- 保存确认弹窗 -->
+      <el-dialog v-model="showSaveDialog" title="确认保存提成规则吗？" width="400px" center>
+        <p>规则保存后，生效日期 <strong>{{ ruleForm.effectiveDate }}</strong> 0 点后的订单将按照最新规则重新计算提成，之前的订单提成不变（数据次日更新）。</p>
+        <template #footer>
+          <el-button @click="showSaveDialog = false">取消</el-button>
+          <el-button type="primary" @click="confirmSave">确定</el-button>
+        </template>
+      </el-dialog>
     </el-drawer>
 
     <!-- 区域E：修改记录抽屉 -->
@@ -437,9 +531,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, inject } from 'vue'
 import { ElMessage } from 'element-plus'
 import Pagination from '@/components/Pagination.vue'
+
+const setThirdLevelPage = inject('setThirdLevelPage')
 
 // 提成规则
 const currentRule = reactive({
@@ -520,8 +616,82 @@ const planForm = reactive({
 const ruleForm = reactive({
   commissionType: 'employee',
   commissionBase: '结算订单去佣金额',
-  effectiveDate: ''
+  effectiveDate: '',
+  manageCommissionEnabled: true
 })
+
+// 提成方式选项
+const commissionTypes = [
+  {
+    value: 'employee',
+    label: '按员工固定提成',
+    example: `<div style="min-width: 280px;">
+      <p style="margin: 0 0 8px; font-weight: 600;">计算公式</p>
+      <p style="margin: 0 0 12px; color: #65676B;">提成 = 提成比例 × 提成基数</p>
+      <p style="margin: 0 0 8px; font-weight: 600;">示例</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">适用人员</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工A</td></tr>
+        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成比例</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">6%</td></tr>
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工A订单提成基数</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">¥100w</td></tr>
+        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成计算</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">100w × 6% = <strong>¥6w</strong></td></tr>
+      </table>
+      <p style="margin: 12px 0 8px; font-weight: 600;">方案数据列表字段示例</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">方案名称</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">管理提成</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">适用人员数</td></tr>
+        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">示例方案</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">20%</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">10%</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">20</td></tr>
+      </table>
+    </div>`
+  },
+  {
+    value: 'tiered',
+    label: '按员工月业绩分档提成',
+    example: `<div style="min-width: 280px;">
+      <p style="margin: 0 0 8px; font-weight: 600;">计算公式</p>
+      <p style="margin: 0 0 12px; color: #65676B;">提成 = 提成比例 × 提成基数（按月业绩分档取对应比例）</p>
+      <p style="margin: 0 0 8px; font-weight: 600;">月业绩分档</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">月业绩分档</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成比例</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">管理提成比例</td></tr>
+        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">0 &lt; 月业绩 ≤ 10w</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">2%</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">1%</td></tr>
+        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">10w &lt; 月业绩 ≤ 20w</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">4%</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">2%</td></tr>
+      </table>
+      <p style="margin: 12px 0 8px; font-weight: 600;">提成计算示例</p>
+      <p style="margin: 0 0 4px; color: #65676B; font-size: 12px;">提成基数：¥15w（落在第二档 10w &lt; 业绩 ≤ 20w）</p>
+      <p style="margin: 0 0 4px; font-size: 12px;">员工提成：¥15w × 4% = <strong>¥0.6w</strong></p>
+      <p style="margin: 0; font-size: 12px;">管理提成：¥15w × 2% = <strong>¥0.3w</strong></p>
+    </div>`
+  },
+  {
+    value: 'product',
+    label: '按商品固定提成',
+    example: `<div style="min-width: 280px;">
+      <p style="margin: 0 0 8px; font-weight: 600;">计算公式</p>
+      <p style="margin: 0 0 12px; color: #65676B;">提成 = 提成比例 × 提成基数</p>
+      <p style="margin: 0 0 8px; font-weight: 600;">示例</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">适用商品</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">该商品提成基数</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成比例</td></tr>
+        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">商品A</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">100w</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">6%</td></tr>
+        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">商品B</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">50w</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">2%</td></tr>
+      </table>
+      <p style="margin: 12px 0 4px; font-size: 12px;">提成基数 = 商品A 100w + 商品B 50w = <strong>150w</strong></p>
+      <p style="margin: 0; font-size: 12px;">员工提成：实际按各商品独立计算后汇总</p>
+    </div>`
+  }
+]
+
+// 提成基数选项
+const commissionBases = [
+  { value: '收货订单实付金额', label: '收货订单实付金额', tooltip: '统计所选时间付款且「已确认收货」订单的实付金额之和' },
+  { value: '收货订单去佣金额', label: '收货订单去佣金额', tooltip: '统计所选时间付款且「已确认收货」订单的「实付金额 - 达人预估佣金 - 团长预估服务费」之和' },
+  { value: '结算订单实付金额', label: '结算订单实付金额', tooltip: '统计所选时间付款且「已结算」订单的实付金额之和' },
+  { value: '结算订单去佣金额', label: '结算订单去佣金额', tooltip: '统计所选时间付款且「已结算」订单的「实付金额 - 达人结算佣金 - 团长结算服务费」之和' },
+  { value: '付款订单去退金额', label: '付款订单去退金额', tooltip: '统计所选时间付款的订单实付金额之和，剔除退款订单' }
+]
+
+// 弹窗状态
+const showTypeChangeDialog = ref(false)
+const showManageCommissionDialog = ref(false)
+const showSaveDialog = ref(false)
+const pendingCommissionType = ref('')
 
 // 修改记录筛选
 const historyFilters = reactive({
@@ -678,6 +848,11 @@ const fetchHistory = () => {
   }, 300)
 }
 
+// 功能说明
+const handleHelpClick = () => {
+  setThirdLevelPage('commissionHelp')
+}
+
 // 查询
 const handleQuery = () => {
   pagination.page = 1
@@ -781,18 +956,70 @@ const handleSubmitPlan = () => {
   }, 500)
 }
 
+// 切换提成方式
+const handleCommissionTypeChange = (newType) => {
+  if (newType === ruleForm.commissionType) return
+  pendingCommissionType.value = newType
+  showTypeChangeDialog.value = true
+}
+
+// 确认切换提成方式
+const confirmTypeChange = () => {
+  ruleForm.commissionType = pendingCommissionType.value
+  showTypeChangeDialog.value = false
+  ElMessage.info('已切换提成方式，请重新配置提成方案')
+}
+
+// 管理提成开关变化
+const handleManageCommissionChange = (enabled) => {
+  if (!enabled) {
+    showManageCommissionDialog.value = true
+  }
+}
+
+// 确认关闭管理提成
+const confirmManageCommissionChange = () => {
+  ruleForm.manageCommissionEnabled = false
+  showManageCommissionDialog.value = false
+  ElMessage.success('关闭提成模式成功')
+}
+
+// 确认保存
+const confirmSave = () => {
+  showSaveDialog.value = false
+  submitRuleForm()
+}
+
 // 提交规则
 const handleSubmitRule = () => {
+  if (!ruleForm.commissionBase) {
+    ElMessage.warning('请选择提成基数')
+    return
+  }
   if (!ruleForm.effectiveDate) {
     ElMessage.warning('请选择生效日期')
     return
   }
+  // 校验生效日期不能早于3个月前
+  const now = new Date()
+  const threeMonthsAgo = new Date()
+  threeMonthsAgo.setMonth(now.getMonth() - 3)
+  const effectiveDate = new Date(ruleForm.effectiveDate)
+  if (effectiveDate < threeMonthsAgo) {
+    ElMessage.warning('生效日期不可早于3个月前')
+    return
+  }
+  showSaveDialog.value = true
+}
 
+// 实际提交表单
+const submitRuleForm = () => {
   submitting.value = true
   setTimeout(() => {
     currentRule.commissionType = ruleForm.commissionType
     currentRule.commissionBase = ruleForm.commissionBase
     currentRule.effectiveDate = ruleForm.effectiveDate
+    currentRule.enabled = ruleForm.manageCommissionEnabled
     ElMessage.success('保存成功')
     submitting.value = false
     showRuleDrawer.value = false
@@ -845,7 +1072,7 @@ $success-green: #31A24C;
 $warning-orange: #FF7A00;
 
 .commission-management {
-  padding: 16px;
+  padding: 16px 0 24px;
   min-height: 100%;
 }
 
@@ -854,7 +1081,7 @@ $warning-orange: #FF7A00;
   background: $white;
   border-radius: $border-radius-lg;
   padding: 16px;
-  margin-bottom: 16px;
+  margin: 0 0 16px 0;
   border: 1px solid $divider;
 }
 
@@ -879,7 +1106,7 @@ $warning-orange: #FF7A00;
     gap: 16px;
   }
 
-  .help-link, .history-link {
+  .help-link, .history-link, .action-link {
     font-size: 13px;
     color: $primary;
     cursor: pointer;
@@ -1065,6 +1292,123 @@ $warning-orange: #FF7A00;
 // 抽屉表单
 .drawer-form {
   padding: 0 16px;
+}
+
+// 设置提成规则抽屉
+.rule-drawer-content {
+  display: flex;
+  gap: 24px;
+  padding: 16px;
+}
+
+.drawer-left,
+.drawer-right {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $primary-text;
+}
+
+.required {
+  color: #ff4d4f;
+}
+
+// 提成方式选项
+.commission-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.type-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: $bg;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: darken($bg, 3%);
+  }
+
+  &.active {
+    background: #e6f4ff;
+    border: 1px solid $primary;
+  }
+}
+
+.view-example {
+  font-size: 12px;
+  color: $primary;
+  margin-left: auto;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// 管理提成行
+.manage-commission-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: $bg;
+  border-radius: 8px;
+}
+
+// 提成基数选项
+.commission-base-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.base-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: $bg;
+  border-radius: 6px;
+}
+
+// 抽屉底部提示
+.drawer-tip {
+  padding: 12px 16px;
+  font-size: 12px;
+  color: $warning-orange;
+  background: #fff7e6;
+  border-radius: 4px;
+  margin: 0 16px 16px;
+}
+
+// 抽屉底部操作栏
+.drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px;
+  border-top: 1px solid $divider;
 }
 
 .form-item {
@@ -1296,27 +1640,6 @@ $warning-orange: #FF7A00;
   color: $text-2;
   line-height: 1.6;
   padding: 20px 0;
-}
-
-// Tooltip 样式
-:deep(.el-tooltip__popper) {
-  background: #fff !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  max-width: 280px;
-  padding: 0;
-  .el-tooltip__content {
-    padding: 10px 12px;
-    color: #4e5969;
-    font-family: PingFang SC;
-    font-size: 12px;
-    line-height: 20px;
-  }
-  .el-tooltip__arrow::before {
-    background: #fff;
-    border-color: #e5e7eb;
-  }
 }
 
 // 表格样式

@@ -157,11 +157,14 @@
         <!-- 绩效管理页面 -->
         <Performance v-else-if="activeSidebarMenu === '绩效管理'" />
 
-        <!-- 报表中心页面 -->
-        <ReportCenter v-else-if="activeSidebarMenu === '报表中心'" />
-
         <!-- 创建报表页面（第三层级） -->
         <CreateReport v-else-if="thirdLevelPage === 'create'" />
+
+        <!-- 功能说明页面（第三层级） -->
+        <CommissionHelp v-else-if="thirdLevelPage === 'commissionHelp'" />
+
+        <!-- 报表中心页面 -->
+        <ReportCenter v-else-if="activeSidebarMenu === '报表中心'" />
 
         <!-- 提成管理页面 -->
         <Commission v-else-if="activeSidebarMenu === '提成管理'" />
@@ -189,6 +192,7 @@ import Performance from './Performance.vue'
 import ReportCenter from './ReportCenter.vue'
 import CreateReport from './CreateReport.vue'
 import Commission from './Commission.vue'
+import CommissionHelp from './CommissionHelp.vue'
 
 const UserIcon = {
   render() {

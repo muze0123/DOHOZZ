@@ -406,7 +406,7 @@ $border-radius-lg: 12px;
 $success-green: #31A24C;
 
 .report-center {
-  padding: 16px;
+  padding: 16px 0 24px;
   min-height: 100%;
 }
 
@@ -415,7 +415,7 @@ $success-green: #31A24C;
   background: $white;
   border-radius: $border-radius-lg;
   padding: 16px;
-  margin-bottom: 16px;
+  margin: 0 0 16px 0;
   border: 1px solid $divider;
 }
 
@@ -604,25 +604,4 @@ $success-green: #31A24C;
   }
 }
 
-// Tooltip 样式
-:deep(.el-tooltip__popper) {
-  background: #fff !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  max-width: 300px;
-  padding: 0;
-  .el-tooltip__content {
-    padding: 10px 12px;
-    color: #4e5969;
-    font-family: PingFang SC;
-    font-size: 12px;
-    line-height: 20px;
-    white-space: pre-line;
-  }
-  .el-tooltip__arrow::before {
-    background: #fff;
-    border-color: #e5e7eb;
-  }
-}
 </style>
