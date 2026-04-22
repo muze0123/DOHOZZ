@@ -58,68 +58,607 @@
       </div>
     </div>
 
-    <!-- 区块B：数据列表 -->
-    <div class="section table-section">
-      <el-table :data="tableData" style="width: 100%" v-loading="loading">
-        <el-table-column prop="memberName" label="成员名称" width="180" fixed>
-          <template #default="{ row }">
-            <div class="member-cell">
-              <el-avatar :size="32" :src="row.avatar" />
-              <span class="member-name">{{ row.memberName }}</span>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="department" label="所属部门" width="160">
-          <template #default="{ row }">
-            <span class="department-text">{{ row.department }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-for="metric in metrics"
-          :key="metric.key"
-          :prop="metric.key"
-          :label="metric.name"
-          width="200"
+    <!-- 区块B + C：数据列表 + 月度销售战绩面板 -->
+    <div class="table-chart-wrapper">
+      <!-- 区块B：数据列表 -->
+      <div class="section table-section">
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+          v-loading="loading"
+          @row-click="handleRowClick"
+          :row-class-name="getRowClassName"
+          highlight-current-row
         >
-          <template #default="{ row }">
-            <div class="metric-cell">
-              <div class="metric-value">
-                <span v-if="metric.type === 'money'" class="money">￥{{ row[metric.key].current }}</span>
-                <span v-else class="number">{{ row[metric.key].current }}</span>
-                <span class="separator">/</span>
-                <span v-if="metric.type === 'money'" class="money target">￥{{ row[metric.key].target }}</span>
-                <span v-else class="number target">{{ row[metric.key].target }}</span>
+          <el-table-column prop="memberName" label="成员名称" width="180" fixed>
+            <template #default="{ row }">
+              <div class="member-cell">
+                <el-avatar :size="32" :src="row.avatar" />
+                <span class="member-name">{{ row.memberName }}</span>
               </div>
-              <div class="progress-bar">
-                <div class="progress-track">
-                  <div
-                    class="progress-fill"
-                    :style="{ width: Math.min(row[metric.key].rate, 100) + '%' }"
-                  ></div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="department" label="所属部门" width="160">
+            <template #default="{ row }">
+              <span class="department-text">{{ row.department }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            v-for="metric in metrics"
+            :key="metric.key"
+            :prop="metric.key"
+            :label="metric.name"
+            width="200"
+          >
+            <template #default="{ row }">
+              <div class="metric-cell">
+                <div class="metric-value">
+                  <span v-if="metric.type === 'money'" class="money">￥{{ formatMoney(row[metric.key].current) }}</span>
+                  <span v-else class="number">{{ row[metric.key].current }}</span>
+                  <span class="separator">/</span>
+                  <span v-if="metric.type === 'money'" class="money target">￥{{ formatMoney(row[metric.key].target) }}</span>
+                  <span v-else class="number target">{{ row[metric.key].target }}</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-track">
+                    <div
+                      class="progress-fill"
+                      :style="{ width: Math.min(row[metric.key].rate, 100) + '%' }"
+                      :class="{ over: row[metric.key].rate > 100 }"
+                    ></div>
+                  </div>
+                </div>
+                <div class="rate-text" :class="{ over: row[metric.key].rate > 100 }">
+                  <span v-if="row[metric.key].target === 0">—</span>
+                  <span v-else>{{ row[metric.key].rate.toFixed(2) }}%</span>
                 </div>
               </div>
-              <div class="rate-text" :class="{ over: row[metric.key].rate > 100 }">
-                {{ row[metric.key].rate.toFixed(2) }}%
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- 分页 -->
+        <Pagination
+          v-if="total > 0"
+          v-model="pagination"
+          :total="total"
+          @change="handlePageChange"
+        />
+      </div>
+
+      <!-- 区块C：月度销售战绩面板 -->
+      <div class="section chart-section">
+        <div class="chart-header">
+          <div class="chart-title">
+            <span class="title-text">{{ currentMonthText }} 月销售战绩</span>
+            <span class="days-left">距离月底还有 {{ daysLeft }} 天</span>
+          </div>
+        </div>
+
+        <div class="chart-content">
+          <!-- 成交金额折线图 -->
+          <div class="chart-item">
+            <div class="chart-item-title">达人成交金额</div>
+            <div ref="lineChartRef" class="echarts-container line-chart"></div>
+          </div>
+
+          <!-- 其他指标条形图 -->
+          <div class="chart-item">
+            <div class="chart-item-title">其他指标完成进度</div>
+            <div ref="barChartRef" class="echarts-container bar-chart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 区块D+E：绩效设置抽屉 -->
+    <el-drawer
+      v-model="drawerVisible"
+      :title="null"
+      size="90%"
+      :before-close="handleDrawerClose"
+      class="performance-drawer"
+    >
+      <template #default>
+        <div class="drawer-content">
+          <!-- 抽屉标题区 -->
+          <div class="drawer-header">
+            <div class="drawer-tabs">
+              <div
+                class="drawer-tab"
+                :class="{ active: drawerTab === 'setting' }"
+                @click="drawerTab = 'setting'"
+              >
+                绩效设置
+              </div>
+              <div
+                class="drawer-tab"
+                :class="{ active: drawerTab === 'detail' }"
+                @click="drawerTab = 'detail'"
+              >
+                业绩明细
               </div>
             </div>
-          </template>
-        </el-table-column>
-      </el-table>
+          </div>
 
-      <!-- 分页 -->
-      <Pagination
-        v-if="total > 0"
-        v-model="pagination"
-        :total="total"
-        @change="handlePageChange"
-      />
-    </div>
+          <!-- 绩效设置Tab -->
+          <div v-if="drawerTab === 'setting'" class="drawer-body setting-body">
+            <!-- 顶部配置项 -->
+            <div class="setting-config">
+              <div class="config-row">
+                <div class="config-item">
+                  <span class="config-label">绩效月份</span>
+                  <el-date-picker
+                    v-model="settingForm.month"
+                    type="month"
+                    value-format="YYYY-MM"
+                    placeholder="选择月份"
+                    style="width: 140px"
+                  />
+                </div>
+                <div class="config-item">
+                  <span class="config-label">绩效方式</span>
+                  <el-radio-group v-model="settingForm.type" class="type-radio">
+                    <el-radio value="department">部门业绩</el-radio>
+                    <el-radio value="member">员工业绩</el-radio>
+                  </el-radio-group>
+                </div>
+                <div class="config-item" v-if="settingForm.type === 'department'">
+                  <el-checkbox v-model="settingForm.distributeEqually">
+                    部门目标平均分配给成员
+                  </el-checkbox>
+                </div>
+              </div>
+              <div class="config-hint" v-if="settingForm.type === 'department' && settingForm.distributeEqually">
+                将部门业绩平均分配给所属员工，一级部门会减去二级部门的绩效，再平均给所属员工。若不勾选此项，则本次目标仅对部门生效，员工绩效需单独填写。
+              </div>
+            </div>
+
+            <!-- 左侧组织架构树 + 右侧目标配置 -->
+            <div class="setting-main">
+              <div class="org-tree-panel">
+                <div class="panel-title">选择部门</div>
+                <el-tree
+                  :data="orgTreeData"
+                  :props="{ label: 'name', children: 'children' }"
+                  node-key="id"
+                  :default-expand-all="false"
+                  :expand-on-click-node="false"
+                  @node-click="handleOrgNodeClick"
+                  highlight-current
+                >
+                  <template #default="{ node, data }">
+                    <span class="org-tree-node">
+                      <span>{{ data.name }}</span>
+                      <span v-if="data.memberCount" class="member-count">({{ data.memberCount }})</span>
+                    </span>
+                  </template>
+                </el-tree>
+              </div>
+
+              <div class="target-config-panel">
+                <div class="panel-title">
+                  {{ settingForm.type === 'department' ? '部门业绩目标设置' : '员工业绩目标设置' }}
+                  <span v-if="selectedOrgNode" class="selected-org">- {{ selectedOrgNode.name }}</span>
+                </div>
+
+                <!-- 部门业绩模式 -->
+                <div v-if="settingForm.type === 'department'" class="target-table-wrapper">
+                  <table class="target-table">
+                    <thead>
+                      <tr>
+                        <th class="col-org">部门/成员</th>
+                        <th>达人成交金额（元）</th>
+                        <th>建联达人数</th>
+                        <th>寄样达人数</th>
+                        <th>出单达人数</th>
+                        <th>交付视频数 <el-tooltip content="按【视频交付时间】统计所选时间内交付成功的视频数量" placement="top"><span class="hint-icon">?</span></el-tooltip></th>
+                        <th>出单视频数 <el-tooltip content="按【出单时间】统计所选时间内出单的视频数量" placement="top"><span class="hint-icon">?</span></el-tooltip></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="department-total-row" v-if="selectedOrgNode">
+                        <td class="col-org">{{ selectedOrgNode.name }}（部门目标）</td>
+                        <td class="money-cell">
+                          <el-input-number
+                            v-model="targetForm.departmentTarget.dealAmount"
+                            :precision="2"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="targetForm.departmentTarget.contactCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="targetForm.departmentTarget.sampleCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="targetForm.departmentTarget.orderCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="targetForm.departmentTarget.deliveryVideoCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="targetForm.departmentTarget.orderVideoCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                      </tr>
+                      <tr v-for="member in targetForm.members" :key="member.id">
+                        <td class="col-org member-cell">
+                          <el-avatar :size="24" :src="member.avatar" />
+                          <span>{{ member.name }}</span>
+                        </td>
+                        <td class="money-cell">
+                          <el-input-number
+                            v-model="member.dealAmount"
+                            :precision="2"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.contactCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.sampleCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.orderCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.deliveryVideoCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.orderVideoCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                      </tr>
+                      <tr class="total-row">
+                        <td class="col-org">合计</td>
+                        <td class="money-cell">{{ formatMoney(targetForm.total.dealAmount) }}</td>
+                        <td>{{ targetForm.total.contactCount }}</td>
+                        <td>{{ targetForm.total.sampleCount }}</td>
+                        <td>{{ targetForm.total.orderCount }}</td>
+                        <td>{{ targetForm.total.deliveryVideoCount }}</td>
+                        <td>{{ targetForm.total.orderVideoCount }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- 员工业绩模式 -->
+                <div v-else class="target-table-wrapper">
+                  <table class="target-table">
+                    <thead>
+                      <tr>
+                        <th class="col-org">成员</th>
+                        <th>达人成交金额（元）</th>
+                        <th>建联达人数</th>
+                        <th>寄样达人数</th>
+                        <th>出单达人数</th>
+                        <th>交付视频数 <el-tooltip content="按【视频交付时间】统计所选时间内交付成功的视频数量" placement="top"><span class="hint-icon">?</span></el-tooltip></th>
+                        <th>出单视频数 <el-tooltip content="按【出单时间】统计所选时间内出单的视频数量" placement="top"><span class="hint-icon">?</span></el-tooltip></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="member in targetForm.members" :key="member.id">
+                        <td class="col-org member-cell">
+                          <el-avatar :size="24" :src="member.avatar" />
+                          <span>{{ member.name }}</span>
+                        </td>
+                        <td class="money-cell">
+                          <el-input-number
+                            v-model="member.dealAmount"
+                            :precision="2"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.contactCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.sampleCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.orderCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.deliveryVideoCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                        <td>
+                          <el-input-number
+                            v-model="member.orderVideoCount"
+                            :precision="0"
+                            :min="0"
+                            controls-position="right"
+                            placeholder="请输入"
+                          />
+                        </td>
+                      </tr>
+                      <tr class="total-row">
+                        <td class="col-org">合计</td>
+                        <td class="money-cell">{{ formatMoney(targetForm.total.dealAmount) }}</td>
+                        <td>{{ targetForm.total.contactCount }}</td>
+                        <td>{{ targetForm.total.sampleCount }}</td>
+                        <td>{{ targetForm.total.orderCount }}</td>
+                        <td>{{ targetForm.total.deliveryVideoCount }}</td>
+                        <td>{{ targetForm.total.orderVideoCount }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- 保存按钮 -->
+            <div class="setting-footer">
+              <el-button @click="handleDrawerClose">取消</el-button>
+              <el-button type="primary" @click="handleSaveDepartment" v-if="settingForm.type === 'department'">
+                保存部门业绩目标
+              </el-button>
+              <el-button type="primary" @click="handleSaveMember" v-else>
+                保存员工业绩目标
+              </el-button>
+            </div>
+          </div>
+
+          <!-- 业绩明细Tab -->
+          <div v-if="drawerTab === 'detail'" class="drawer-body detail-body">
+            <div class="detail-main">
+              <!-- 左侧部门树 -->
+              <div class="dept-tree-panel">
+                <div class="panel-title">选择部门</div>
+                <el-tree
+                  :data="orgTreeData"
+                  :props="{ label: 'name', children: 'children' }"
+                  node-key="id"
+                  :default-expand-all="false"
+                  :expand-on-click-node="false"
+                  @node-click="handleDetailOrgNodeClick"
+                  highlight-current
+                >
+                  <template #default="{ node, data }">
+                    <span class="org-tree-node">
+                      <span>{{ data.name }}</span>
+                      <span v-if="data.memberCount" class="member-count">({{ data.memberCount }})</span>
+                    </span>
+                  </template>
+                </el-tree>
+              </div>
+
+              <!-- 右侧业绩报告 -->
+              <div class="report-panel">
+                <!-- 报告配置 -->
+                <div class="report-config">
+                  <div class="config-row">
+                    <div class="config-item">
+                      <span class="config-label">选择平台</span>
+                      <el-select v-model="detailForm.platform" style="width: 120px">
+                        <el-option v-for="p in platforms" :key="p.value" :label="p.name" :value="p.value" />
+                      </el-select>
+                    </div>
+                    <div class="config-item">
+                      <span class="config-label">业绩月份</span>
+                      <el-date-picker
+                        v-model="detailForm.month"
+                        type="month"
+                        value-format="YYYY-MM"
+                        style="width: 140px"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 业绩报告图表 -->
+                <div class="report-charts">
+                  <div class="report-chart-item">
+                    <div class="chart-item-title">达人成交金额</div>
+                    <div ref="detailLineChartRef" class="echarts-container line-chart"></div>
+                  </div>
+                  <div class="report-chart-item">
+                    <div class="chart-item-title">其他指标完成进度</div>
+                    <div ref="detailBarChartRef" class="echarts-container bar-chart"></div>
+                  </div>
+                </div>
+
+                <!-- 成员明细列表 -->
+                <div class="member-detail-list">
+                  <div class="detail-group">
+                    <div class="group-title达成">
+                      <span class="dot达成"></span>
+                      达成目标（{{ detailAchievedMembers.length }}人）
+                    </div>
+                    <el-table :data="detailAchievedMembers" size="small">
+                      <el-table-column prop="memberName" label="成员" width="140">
+                        <template #default="{ row }">
+                          <div class="member-cell">
+                            <el-avatar :size="24" :src="row.avatar" />
+                            <span>{{ row.memberName }}</span>
+                          </div>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="department" label="所属部门" width="140" />
+                      <el-table-column label="成交金额" width="140">
+                        <template #default="{ row }">
+                          <span class="metric-value">
+                            <span class="money">￥{{ formatMoney(row.dealAmount.current) }}</span>
+                            <span class="separator">/</span>
+                            <span class="money target">￥{{ formatMoney(row.dealAmount.target) }}</span>
+                          </span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="建联达人" width="120">
+                        <template #default="{ row }">
+                          <span class="metric-value">
+                            {{ row.contactCount.current }} / {{ row.contactCount.target }}
+                          </span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="寄样达人" width="120">
+                        <template #default="{ row }">
+                          <span class="metric-value">
+                            {{ row.sampleCount.current }} / {{ row.sampleCount.target }}
+                          </span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="出单达人" width="120">
+                        <template #default="{ row }">
+                          <span class="metric-value">
+                            {{ row.orderCount.current }} / {{ row.orderCount.target }}
+                          </span>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </div>
+
+                  <div class="detail-group">
+                    <div class="group-title未达成">
+                      <span class="dot未达成"></span>
+                      未达成目标（{{ detailUnachievedMembers.length }}人）
+                    </div>
+                    <el-table :data="detailUnachievedMembers" size="small">
+                      <el-table-column prop="memberName" label="成员" width="140">
+                        <template #default="{ row }">
+                          <div class="member-cell">
+                            <el-avatar :size="24" :src="row.avatar" />
+                            <span>{{ row.memberName }}</span>
+                          </div>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="department" label="所属部门" width="140" />
+                      <el-table-column label="成交金额" width="140">
+                        <template #default="{ row }">
+                          <span class="metric-value">
+                            <span class="money">￥{{ formatMoney(row.dealAmount.current) }}</span>
+                            <span class="separator">/</span>
+                            <span class="money target">￥{{ formatMoney(row.dealAmount.target) }}</span>
+                          </span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="建联达人" width="120">
+                        <template #default="{ row }">
+                          <span class="metric-value">
+                            {{ row.contactCount.current }} / {{ row.contactCount.target }}
+                          </span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="寄样达人" width="120">
+                        <template #default="{ row }">
+                          <span class="metric-value">
+                            {{ row.sampleCount.current }} / {{ row.sampleCount.target }}
+                          </span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="出单达人" width="120">
+                        <template #default="{ row }">
+                          <span class="metric-value">
+                            {{ row.orderCount.current }} / {{ row.orderCount.target }}
+                          </span>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
+import * as echarts from 'echarts'
 import Pagination from '@/components/Pagination.vue'
 
 // 平台选项
@@ -150,6 +689,9 @@ const total = ref(0)
 // 加载状态
 const loading = ref(false)
 
+// 当前选中行
+const currentRow = ref(null)
+
 // 指标配置
 const metrics = [
   { key: 'dealAmount', name: '达人成交金额', type: 'money' },
@@ -163,6 +705,130 @@ const metrics = [
 // 表格数据
 const tableData = ref([])
 
+// 图表实例
+let lineChart = null
+let barChart = null
+let detailLineChart = null
+let detailBarChart = null
+
+// 图表DOM引用
+const lineChartRef = ref(null)
+const barChartRef = ref(null)
+const detailLineChartRef = ref(null)
+const detailBarChartRef = ref(null)
+
+// 抽屉相关
+const drawerVisible = ref(false)
+const drawerTab = ref('setting')
+
+// 绩效设置表单
+const settingForm = reactive({
+  month: '',
+  type: 'department',
+  distributeEqually: false
+})
+
+// 目标配置表单
+const targetForm = reactive({
+  departmentTarget: {
+    dealAmount: 0,
+    contactCount: 0,
+    sampleCount: 0,
+    orderCount: 0,
+    deliveryVideoCount: 0,
+    orderVideoCount: 0
+  },
+  members: [],
+  get total() {
+    let dealAmount = 0
+    let contactCount = 0
+    let sampleCount = 0
+    let orderCount = 0
+    let deliveryVideoCount = 0
+    let orderVideoCount = 0
+    this.members.forEach(m => {
+      dealAmount += m.dealAmount || 0
+      contactCount += m.contactCount || 0
+      sampleCount += m.sampleCount || 0
+      orderCount += m.orderCount || 0
+      deliveryVideoCount += m.deliveryVideoCount || 0
+      orderVideoCount += m.orderVideoCount || 0
+    })
+    return { dealAmount, contactCount, sampleCount, orderCount, deliveryVideoCount, orderVideoCount }
+  }
+})
+
+// 选中组织架构节点
+const selectedOrgNode = ref(null)
+
+// 组织架构树数据
+const orgTreeData = ref([
+  {
+    id: 1,
+    name: '销售部',
+    memberCount: 12,
+    children: [
+      { id: 11, name: '销售一部', memberCount: 4 },
+      { id: 12, name: '销售二部', memberCount: 5 },
+      { id: 13, name: '销售三部', memberCount: 3 }
+    ]
+  },
+  {
+    id: 2,
+    name: '运营部',
+    memberCount: 8,
+    children: [
+      { id: 21, name: '运营一组', memberCount: 4 },
+      { id: 22, name: '运营二组', memberCount: 4 }
+    ]
+  },
+  {
+    id: 3,
+    name: '市场部',
+    memberCount: 6,
+    children: []
+  }
+])
+
+// 业绩明细表单
+const detailForm = reactive({
+  platform: 'tiktok',
+  month: ''
+})
+
+// 业绩明细成员数据
+const detailMembers = ref([])
+
+// 计算当月剩余天数
+const daysLeft = computed(() => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth()
+  const lastDay = new Date(year, month + 1, 0).getDate()
+  return lastDay - now.getDate()
+})
+
+// 当前月份文本
+const currentMonthText = computed(() => {
+  return filters.month || new Date().toISOString().slice(0, 7)
+})
+
+// 达成目标成员
+const detailAchievedMembers = computed(() => {
+  return detailMembers.value.filter(m => m.dealAmount.current >= m.dealAmount.target)
+})
+
+// 未达成目标成员
+const detailUnachievedMembers = computed(() => {
+  return detailMembers.value.filter(m => m.dealAmount.current < m.dealAmount.target)
+})
+
+// 格式化金额
+const formatMoney = (value) => {
+  if (value === null || value === undefined) return '0.00'
+  return parseFloat(value).toFixed(2)
+}
+
 // 生成模拟数据
 const generateMockData = () => {
   const data = []
@@ -170,14 +836,17 @@ const generateMockData = () => {
   const departments = ['销售一部 / A组', '销售一部 / B组', '销售二部 / C组', '运营部 / D组']
 
   for (let i = 0; i < 8; i++) {
+    const dealTarget = 100000
+    const dealCurrent = Math.random() * 150000
     const row = {
+      id: i + 1,
       memberName: names[i],
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${names[i]}`,
       department: departments[i % departments.length],
       dealAmount: {
-        current: (Math.random() * 100).toFixed(2),
-        target: 100,
-        rate: Math.random() * 150
+        current: dealCurrent,
+        target: dealTarget,
+        rate: (dealCurrent / dealTarget) * 100
       },
       contactCount: {
         current: Math.floor(Math.random() * 100),
@@ -210,6 +879,52 @@ const generateMockData = () => {
   return data
 }
 
+// 生成业绩明细模拟数据
+const generateDetailMembers = () => {
+  const data = []
+  const names = ['张三', '李四', '王五', '赵六', '钱七', '孙八', '周九', '吴十', '郑十一', '刘十二']
+  const departments = ['销售一部', '销售二部', '运营部', '市场部']
+
+  for (let i = 0; i < names.length; i++) {
+    const dealTarget = 100000 + Math.floor(Math.random() * 50000)
+    const dealCurrent = Math.random() * 150000
+    const contactTarget = 100
+    const contactCurrent = Math.floor(Math.random() * 120)
+    const sampleTarget = 80
+    const sampleCurrent = Math.floor(Math.random() * 100)
+    const orderTarget = 60
+    const orderCurrent = Math.floor(Math.random() * 80)
+
+    data.push({
+      id: i + 1,
+      memberName: names[i],
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${names[i]}`,
+      department: departments[i % departments.length],
+      dealAmount: {
+        current: dealCurrent,
+        target: dealTarget,
+        rate: (dealCurrent / dealTarget) * 100
+      },
+      contactCount: {
+        current: contactCurrent,
+        target: contactTarget,
+        rate: (contactCurrent / contactTarget) * 100
+      },
+      sampleCount: {
+        current: sampleCurrent,
+        target: sampleTarget,
+        rate: (sampleCurrent / sampleTarget) * 100
+      },
+      orderCount: {
+        current: orderCurrent,
+        target: orderTarget,
+        rate: (orderCurrent / orderTarget) * 100
+      }
+    })
+  }
+  return data
+}
+
 // 获取数据
 const fetchData = async () => {
   loading.value = true
@@ -217,6 +932,262 @@ const fetchData = async () => {
   tableData.value = generateMockData()
   total.value = 40
   loading.value = false
+}
+
+// 初始化图表
+const initCharts = () => {
+  if (lineChartRef.value) {
+    lineChart = echarts.init(lineChartRef.value)
+  }
+  if (barChartRef.value) {
+    barChart = echarts.init(barChartRef.value)
+  }
+  if (detailLineChartRef.value) {
+    detailLineChart = echarts.init(detailLineChartRef.value)
+  }
+  if (detailBarChartRef.value) {
+    detailBarChart = echarts.init(detailBarChartRef.value)
+  }
+}
+
+// 更新折线图
+const updateLineChart = () => {
+  if (!lineChart) return
+
+  const days = []
+  const targetData = []
+  const actualData = []
+  const now = new Date()
+  const currentDay = now.getDate()
+  const month = currentMonthText.value
+
+  for (let i = 1; i <= currentDay; i++) {
+    days.push(`${month}-${String(i).padStart(2, '0')}`)
+    targetData.push(5000)
+    actualData.push(Math.random() * 8000)
+  }
+
+  const option = {
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      data: ['目标', '实际'],
+      bottom: 0
+    },
+    grid: {
+      left: 60,
+      right: 20,
+      top: 20,
+      bottom: 40
+    },
+    xAxis: {
+      type: 'category',
+      data: days,
+      boundaryGap: false
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: (value) => `¥${(value / 1000).toFixed(1)}k`
+      }
+    },
+    series: [
+      {
+        name: '目标',
+        type: 'line',
+        data: targetData,
+        smooth: true,
+        lineStyle: { color: '#FF9500', width: 2 },
+        itemStyle: { color: '#FF9500' }
+      },
+      {
+        name: '实际',
+        type: 'line',
+        data: actualData,
+        smooth: true,
+        lineStyle: { color: '#31A24C', width: 2 },
+        itemStyle: { color: '#31A24C' }
+      }
+    ]
+  }
+
+  lineChart.setOption(option)
+}
+
+// 更新条形图
+const updateBarChart = () => {
+  if (!barChart) return
+
+  const metricsData = [
+    { name: '建联达人数', current: 75, target: 100 },
+    { name: '寄样达人数', current: 62, target: 100 },
+    { name: '出单达人数', current: 48, target: 100 },
+    { name: '交付视频数', current: 35, target: 100 },
+    { name: '出单视频数', current: 28, target: 100 }
+  ]
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' }
+    },
+    grid: {
+      left: 100,
+      right: 60,
+      top: 10,
+      bottom: 30
+    },
+    xAxis: {
+      type: 'value',
+      max: 100
+    },
+    yAxis: {
+      type: 'category',
+      data: metricsData.map(d => d.name)
+    },
+    series: [
+      {
+        name: '完成进度',
+        type: 'bar',
+        data: metricsData.map(d => ({
+          value: Math.min(d.current, 100),
+          itemStyle: { color: d.current >= d.target ? '#31A24C' : '#0064E0' }
+        })),
+        barWidth: 16,
+        label: {
+          show: true,
+          position: 'right',
+          formatter: (params) => `${metricsData[params.dataIndex].current}%`
+        }
+      }
+    ]
+  }
+
+  barChart.setOption(option)
+}
+
+// 更新业绩明细折线图
+const updateDetailLineChart = () => {
+  if (!detailLineChart) return
+
+  const days = []
+  const targetData = []
+  const actualData = []
+  const now = new Date()
+  const currentDay = now.getDate()
+  const month = detailForm.month || currentMonthText.value
+
+  for (let i = 1; i <= currentDay; i++) {
+    days.push(`${month}-${String(i).padStart(2, '0')}`)
+    targetData.push(5000)
+    actualData.push(Math.random() * 8000)
+  }
+
+  const option = {
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      data: ['目标', '实际'],
+      bottom: 0
+    },
+    grid: {
+      left: 60,
+      right: 20,
+      top: 20,
+      bottom: 40
+    },
+    xAxis: {
+      type: 'category',
+      data: days,
+      boundaryGap: false
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: (value) => `¥${(value / 1000).toFixed(1)}k`
+      }
+    },
+    series: [
+      {
+        name: '目标',
+        type: 'line',
+        data: targetData,
+        smooth: true,
+        lineStyle: { color: '#FF9500', width: 2 },
+        itemStyle: { color: '#FF9500' }
+      },
+      {
+        name: '实际',
+        type: 'line',
+        data: actualData,
+        smooth: true,
+        lineStyle: { color: '#31A24C', width: 2 },
+        itemStyle: { color: '#31A24C' }
+      }
+    ]
+  }
+
+  detailLineChart.setOption(option)
+}
+
+// 更新业绩明细条形图
+const updateDetailBarChart = () => {
+  if (!detailBarChart) return
+
+  const metricsData = [
+    { name: '建联达人数', current: 75, target: 100 },
+    { name: '寄样达人数', current: 62, target: 100 },
+    { name: '出单达人数', current: 48, target: 100 }
+  ]
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' }
+    },
+    grid: {
+      left: 100,
+      right: 60,
+      top: 10,
+      bottom: 30
+    },
+    xAxis: {
+      type: 'value',
+      max: 100
+    },
+    yAxis: {
+      type: 'category',
+      data: metricsData.map(d => d.name)
+    },
+    series: [
+      {
+        name: '完成进度',
+        type: 'bar',
+        data: metricsData.map(d => ({
+          value: Math.min(d.current, 100),
+          itemStyle: { color: d.current >= d.target ? '#31A24C' : '#0064E0' }
+        })),
+        barWidth: 16,
+        label: {
+          show: true,
+          position: 'right',
+          formatter: (params) => `${metricsData[params.dataIndex].current}%`
+        }
+      }
+    ]
+  }
+
+  detailBarChart.setOption(option)
+}
+
+// 窗口resize处理
+const handleResize = () => {
+  lineChart?.resize()
+  barChart?.resize()
+  detailLineChart?.resize()
+  detailBarChart?.resize()
 }
 
 // 平台切换
@@ -229,6 +1200,10 @@ const handlePlatformChange = (platform) => {
 const handleQuery = () => {
   pagination.page = 1
   fetchData()
+  nextTick(() => {
+    updateLineChart()
+    updateBarChart()
+  })
 }
 
 // 重置
@@ -242,7 +1217,35 @@ const handleReset = () => {
 
 // 新增
 const handleAdd = () => {
-  ElMessage.info('新增业绩目标功能待提供PRD后开发')
+  drawerTab.value = 'setting'
+  settingForm.month = filters.month || new Date().toISOString().slice(0, 7)
+  settingForm.type = 'department'
+  settingForm.distributeEqually = false
+  targetForm.departmentTarget = {
+    dealAmount: 0,
+    contactCount: 0,
+    sampleCount: 0,
+    orderCount: 0,
+    deliveryVideoCount: 0,
+    orderVideoCount: 0
+  }
+  targetForm.members = []
+  selectedOrgNode.value = null
+  drawerVisible.value = true
+}
+
+// 行点击
+const handleRowClick = (row) => {
+  currentRow.value = row
+  nextTick(() => {
+    updateLineChart()
+    updateBarChart()
+  })
+}
+
+// 行样式
+const getRowClassName = ({ row }) => {
+  return currentRow.value && currentRow.value.id === row.id ? 'current-row' : ''
 }
 
 // 分页变化
@@ -252,8 +1255,78 @@ const handlePageChange = ({ page, pageSize }) => {
   fetchData()
 }
 
+// 组织架构树节点点击
+const handleOrgNodeClick = (data) => {
+  selectedOrgNode.value = data
+  // 生成成员模拟数据
+  const memberNames = ['张三', '李四', '王五', '赵六']
+  targetForm.members = memberNames.map((name, index) => ({
+    id: data.id * 100 + index,
+    name,
+    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+    dealAmount: 0,
+    contactCount: 0,
+    sampleCount: 0,
+    orderCount: 0,
+    deliveryVideoCount: 0,
+    orderVideoCount: 0
+  }))
+}
+
+// 业绩明细组织架构树节点点击
+const handleDetailOrgNodeClick = (data) => {
+  detailMembers.value = generateDetailMembers()
+  nextTick(() => {
+    updateDetailLineChart()
+    updateDetailBarChart()
+  })
+}
+
+// 抽屉关闭
+const handleDrawerClose = () => {
+  drawerVisible.value = false
+}
+
+// 保存部门业绩目标
+const handleSaveDepartment = () => {
+  const deptTotal = targetForm.departmentTarget.dealAmount
+  const membersTotal = targetForm.members.reduce((sum, m) => sum + (m.dealAmount || 0), 0)
+
+  if (membersTotal > deptTotal && settingForm.distributeEqually) {
+    ElMessage.error('部门的绩效不能小于成员绩效累计之和')
+    return
+  }
+
+  ElMessage.success('保存成功')
+  drawerVisible.value = false
+}
+
+// 保存员工业绩目标
+const handleSaveMember = () => {
+  ElMessage.success('保存成功')
+  drawerVisible.value = false
+}
+
 onMounted(() => {
+  if (!filters.month) {
+    filters.month = new Date().toISOString().slice(0, 7)
+  }
+  detailForm.month = filters.month
   fetchData()
+  nextTick(() => {
+    initCharts()
+    updateLineChart()
+    updateBarChart()
+  })
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+  lineChart?.dispose()
+  barChart?.dispose()
+  detailLineChart?.dispose()
+  detailBarChart?.dispose()
 })
 </script>
 
@@ -268,6 +1341,7 @@ $text-3: #BCC0C4;
 $primary-text: #050505;
 $secondary-text: #65676B;
 $border-radius-lg: 12px;
+$success: #31A24C;
 
 .performance-target {
   padding: 16px 0 24px;
@@ -280,7 +1354,6 @@ $border-radius-lg: 12px;
   background: $white;
   border-radius: $border-radius-lg;
   padding: 16px;
-  margin: 0 0 16px 0;
   border: 1px solid $divider;
 }
 
@@ -378,6 +1451,72 @@ $border-radius-lg: 12px;
   border-top: 1px solid $divider;
 }
 
+// 表格和图表包装
+.table-chart-wrapper {
+  display: flex;
+  gap: 16px;
+}
+
+.table-section {
+  flex: 1;
+  min-width: 0;
+  margin-right: 0;
+}
+
+.chart-section {
+  width: 400px;
+  flex-shrink: 0;
+}
+
+// 图表区
+.chart-header {
+  margin-bottom: 16px;
+}
+
+.chart-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: $primary-text;
+}
+
+.days-left {
+  font-size: 12px;
+  color: $secondary-text;
+}
+
+.chart-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chart-item {
+  .chart-item-title {
+    font-size: 13px;
+    color: $primary-text;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+}
+
+.echarts-container {
+  width: 100%;
+}
+
+.line-chart {
+  height: 180px;
+}
+
+.bar-chart {
+  height: 200px;
+}
+
 // 成员名称
 .member-cell {
   display: flex;
@@ -448,6 +1587,10 @@ $border-radius-lg: 12px;
   background: $primary;
   border-radius: 3px;
   transition: width 0.3s ease;
+
+  &.over {
+    background: $success;
+  }
 }
 
 .rate-text {
@@ -456,6 +1599,7 @@ $border-radius-lg: 12px;
 
   &.over {
     color: $primary;
+    font-weight: 500;
   }
 }
 
@@ -470,5 +1614,323 @@ $border-radius-lg: 12px;
   td.el-table__cell {
     font-size: 13px;
   }
+
+  .current-row {
+    background-color: #e6f0ff;
+  }
+}
+
+// 抽屉样式
+.performance-drawer {
+  :deep(.el-drawer__body) {
+    padding: 0;
+  }
+}
+
+.drawer-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid $divider;
+}
+
+.drawer-tabs {
+  display: flex;
+  gap: 32px;
+}
+
+.drawer-tab {
+  font-size: 15px;
+  color: $secondary-text;
+  cursor: pointer;
+  padding-bottom: 12px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+
+  &.active {
+    color: $primary;
+    font-weight: 600;
+    border-bottom-color: $primary;
+  }
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+// 绩效设置
+.setting-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.setting-config {
+  background: $bg;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.config-label {
+  font-size: 13px;
+  color: $secondary-text;
+}
+
+.config-hint {
+  margin-top: 12px;
+  font-size: 12px;
+  color: $secondary-text;
+  line-height: 1.5;
+}
+
+.type-radio {
+  :deep(.el-radio) {
+    margin-right: 16px;
+  }
+}
+
+.setting-main {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 400px;
+}
+
+.org-tree-panel {
+  width: 240px;
+  flex-shrink: 0;
+  background: $bg;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $primary-text;
+  margin-bottom: 12px;
+}
+
+.org-tree-node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .member-count {
+    color: $secondary-text;
+    font-size: 12px;
+  }
+}
+
+.target-config-panel {
+  flex: 1;
+  background: $bg;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.selected-org {
+  color: $primary;
+  font-weight: normal;
+}
+
+.target-table-wrapper {
+  overflow-x: auto;
+}
+
+.target-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th, td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid $divider;
+  }
+
+  th {
+    background: $white;
+    font-weight: 600;
+    color: $primary-text;
+    white-space: nowrap;
+  }
+
+  .col-org {
+    width: 180px;
+  }
+
+  .money-cell {
+    width: 140px;
+  }
+
+  .member-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .department-total-row {
+    background: $white;
+    font-weight: 600;
+  }
+
+  .total-row {
+    background: $white;
+    font-weight: 600;
+
+    td {
+      border-top: 2px solid $divider;
+    }
+  }
+}
+
+.hint-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  background: $primary;
+  color: $white;
+  border-radius: 50%;
+  font-size: 10px;
+  cursor: help;
+  margin-left: 4px;
+}
+
+.setting-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid $divider;
+}
+
+// 业绩明细
+.detail-body {
+  padding: 0;
+}
+
+.detail-main {
+  display: flex;
+  height: 100%;
+}
+
+.dept-tree-panel {
+  width: 240px;
+  flex-shrink: 0;
+  background: $bg;
+  padding: 16px;
+  border-right: 1px solid $divider;
+}
+
+.report-panel {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.report-config {
+  background: $bg;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.report-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.report-chart-item {
+  background: $bg;
+  border-radius: 8px;
+  padding: 16px;
+
+  .chart-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: $primary-text;
+    margin-bottom: 12px;
+  }
+}
+
+.member-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detail-group {
+  .group-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: $primary-text;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .dot达成 {
+    background: $success;
+  }
+
+  .dot未达成 {
+    background: #FF9500;
+  }
+
+  .group-title达成 {
+    color: $success;
+  }
+
+  .group-title未达成 {
+    color: #FF9500;
+  }
+}
+
+// 输入框样式
+:deep(.el-input-number) {
+  width: 120px;
+
+  .el-input__inner {
+    text-align: left;
+  }
+}
+
+// 分页样式
+:deep(.el-pagination) {
+  margin-top: 16px;
+  justify-content: flex-end;
 }
 </style>
