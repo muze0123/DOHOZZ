@@ -1,17 +1,59 @@
 <template>
   <div class="performance-target">
-    <!-- 区块A：平台Tab切换栏 -->
-    <div class="platform-tabs-bar">
-      <div class="platform-tabs">
-        <div
-          v-for="platform in platforms"
-          :key="platform.value"
-          class="platform-tab"
-          :class="{ active: currentPlatform === platform.value }"
-          @click="handlePlatformChange(platform.value)"
-        >
-          <div class="platform-icon">{{ platform.icon }}</div>
-          <span>{{ platform.name }}</span>
+    <!-- 区块A：平台Tab + 筛选区（合并为一个区块） -->
+    <div class="section filter-section">
+      <!-- 平台Tab -->
+      <div class="platform-tabs-bar">
+        <div class="platform-tabs">
+          <div
+            v-for="platform in platforms"
+            :key="platform.value"
+            class="platform-tab"
+            :class="{ active: currentPlatform === platform.value }"
+            @click="handlePlatformChange(platform.value)"
+          >
+            <div class="platform-icon">{{ platform.icon }}</div>
+            <span>{{ platform.name }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 筛选区 -->
+      <div class="filter-row">
+        <div class="filter-item">
+          <span class="filter-label">目标月度</span>
+          <el-date-picker
+            v-model="filters.month"
+            type="month"
+            value-format="YYYY-MM"
+            placeholder="选择月份"
+            style="width: 130px"
+          />
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">所属部门</span>
+          <el-select v-model="filters.department" placeholder="全部部门" clearable filterable style="width: 140px">
+            <el-option label="全部部门" value="" />
+            <el-option label="销售一部" value="sales1" />
+            <el-option label="销售二部" value="sales2" />
+            <el-option label="运营部" value="ops" />
+          </el-select>
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">所属BD</span>
+          <el-select v-model="filters.bd" placeholder="全部BD" clearable filterable style="width: 140px">
+            <el-option label="全部BD" value="" />
+            <el-option label="BD-张三" value="zhangsan" />
+            <el-option label="BD-李四" value="lisi" />
+            <el-option label="BD-王五" value="wangwu" />
+          </el-select>
+        </div>
+        <div class="filter-actions">
+          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
+        </div>
+        <div class="toolbar-right">
+          <el-button type="primary" @click="handleAdd">+ 新增业绩目标</el-button>
         </div>
       </div>
     </div>
@@ -59,51 +101,8 @@
       </div>
     </div>
 
-    <!-- 区块B：筛选区 -->
-    <div class="section filter-section">
-      <div class="filter-row">
-        <div class="filter-item">
-          <span class="filter-label">目标月度</span>
-          <el-date-picker
-            v-model="filters.month"
-            type="month"
-            value-format="YYYY-MM"
-            placeholder="选择月份"
-            style="width: 130px"
-          />
-        </div>
-        <div class="filter-item">
-          <span class="filter-label">所属部门</span>
-          <el-select v-model="filters.department" placeholder="全部部门" clearable filterable style="width: 140px">
-            <el-option label="全部部门" value="" />
-            <el-option label="销售一部" value="sales1" />
-            <el-option label="销售二部" value="sales2" />
-            <el-option label="运营部" value="ops" />
-          </el-select>
-        </div>
-        <div class="filter-item">
-          <span class="filter-label">所属BD</span>
-          <el-select v-model="filters.bd" placeholder="全部BD" clearable filterable style="width: 140px">
-            <el-option label="全部BD" value="" />
-            <el-option label="BD-张三" value="zhangsan" />
-            <el-option label="BD-李四" value="lisi" />
-            <el-option label="BD-王五" value="wangwu" />
-          </el-select>
-        </div>
-        <div class="filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
-      </div>
-    </div>
-
     <!-- 区块C：数据列表 -->
     <div class="section table-section">
-      <!-- 操作工具栏 -->
-      <div class="toolbar">
-        <el-button type="primary" @click="handleAdd">+ 新增业绩目标</el-button>
-      </div>
-
       <el-table
         :data="tableData"
         style="width: 100%"
@@ -1127,19 +1126,21 @@ $transition-fast: 150ms ease;
 // 通用区块样式
 .section {
   background: $white;
-  border-radius: $border-radius-lg;
-  padding: 16px;
   border: 1px solid $divider;
+  border-radius: $border-radius-lg;
+}
+
+// 筛选区（包含平台Tab）
+.filter-section {
+  padding: 0 16px 16px;
+  margin-top: 16px;
 }
 
 // 平台Tab
 .platform-tabs-bar {
-  background: $white;
-  border: 1px solid $divider;
-  border-bottom: none;
-  border-radius: $border-radius-lg $border-radius-lg 0 0;
+  margin: 0 -16px;
   padding: 0 16px;
-  margin-top: 16px;
+  border-bottom: 1px solid $divider;
 }
 
 .platform-tabs {
@@ -1307,16 +1308,12 @@ $transition-fast: 150ms ease;
   }
 }
 
-// 筛选区
-.filter-section {
-  margin-bottom: 16px;
-}
-
 .filter-row {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  padding-top: 16px;
 }
 
 .filter-item {
@@ -1335,12 +1332,15 @@ $transition-fast: 150ms ease;
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.toolbar-right {
   margin-left: auto;
 }
 
 // 表格区块
 .table-section {
-  // 操作工具栏
+  margin-top: 16px;
   .toolbar {
     margin-bottom: 16px;
   }
