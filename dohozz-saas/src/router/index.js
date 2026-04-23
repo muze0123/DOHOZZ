@@ -120,6 +120,15 @@ const routes = [
       requiresAuth: true,
       title: '智能推荐达人 - DOHOZZ'
     }
+  },
+  {
+    path: '/influencer-public-pool',
+    name: 'InfluencerPublicPool',
+    component: () => import('@/views/InfluencerPublicPool.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '达人公海 - DOHOZZ'
+    }
   }
 ]
 
