@@ -107,43 +107,55 @@
 
     <!-- 数据列表 -->
     <div class="data-table">
-      <el-table :data="tableData" @selection-change="handleSelectionChange" scrollbar-always-on>
-        <el-table-column type="selection" width="50" fixed />
-        <el-table-column label="达人" min-width="160" fixed>
+      <el-table :data="tableData" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="50" :selectable="checkSelectable" />
+        <el-table-column label="达人信息" min-width="200">
           <template #default="{ row }">
             <div class="influencer-cell">
-              <el-avatar :size="40" :src="row.avatar" class="influencer-avatar" />
-              <div class="influencer-info">
-                <div class="influencer-name">
-                  {{ row.name }}
-                  <el-icon v-if="row.verified" class="verified-icon"><CircleCheck /></el-icon>
-                  <span class="level-tag">LV{{ row.level }}</span>
+              <el-avatar :size="48" :src="row.avatar" class="inf-avatar" />
+              <div class="inf-info">
+                <div class="inf-name">
+                  <span class="clickable">{{ row.name }}</span>
+                  <el-tag size="small" class="level-tag">LV{{ row.level }}</el-tag>
+                  <el-tag v-if="row.salesType === 'video'" size="small" type="info">视频</el-tag>
+                  <el-tag v-else size="small" type="warning">直播</el-tag>
                 </div>
-                <div class="influencer-username">{{ row.username }}</div>
+                <div class="inf-username">{{ row.username }}</div>
+                <div class="inf-country">
+                  <span>{{ row.countryFlag }}</span> {{ row.country }}
+                </div>
               </div>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="地区" width="80">
+        <el-table-column label="粉丝数" width="120" sortable prop="followers">
           <template #default="{ row }">
-            <span class="region-tag" v-if="row.region">{{ row.region }}</span>
+            <span class="clickable">{{ formatNumber(row.followers) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="粉丝数" width="100" sortable prop="followers">
-          <template #default="{ row }">{{ formatNumber(row.followers) }}</template>
-        </el-table-column>
-        <el-table-column label="带货类目" width="100">
+        <el-table-column label="带货类目" width="140">
           <template #default="{ row }">
-            <span class="category-tag">{{ row.category }}</span>
+            <div class="category-tags">
+              <el-tag v-for="(cat, idx) in (row.categories || [row.category]).slice(0, 2)" :key="idx" size="small">{{ cat }}</el-tag>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column label="近30日成交" width="120" sortable prop="gmv30d">
-          <template #default="{ row }">¥{{ formatNumber(row.gmv30d) }}</template>
+        <el-table-column label="国家地区" width="120">
+          <template #default="{ row }">
+            <span>{{ row.countryFlag }} {{ row.country }}</span>
+          </template>
         </el-table-column>
-        <el-table-column label="近30日销量" width="100" sortable prop="sales30d">
-          <template #default="{ row }">{{ formatSales(row.sales30d) }}</template>
+        <el-table-column label="近30日成交金额" prop="gmv30d" width="140" sortable>
+          <template #default="{ row }">
+            <span>¥{{ formatNumber(row.gmv30d) }}</span>
+          </template>
         </el-table-column>
-        <el-table-column label="跟进状态" width="90">
+        <el-table-column label="近30日销量" prop="sales30d" width="120" sortable>
+          <template #default="{ row }">
+            <span>{{ formatSales(row.sales30d) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="跟进状态" width="100">
           <template #default="{ row }">
             <span class="status-cell" :class="row.followStatus">
               <span class="status-dot"></span>
@@ -151,7 +163,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="公海状态" width="90">
+        <el-table-column label="公海状态" width="100">
           <template #default="{ row }">
             <span class="status-cell" :class="row.publicStatus">
               <span class="status-dot"></span>
@@ -159,11 +171,11 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="操作人" width="90" prop="operator" />
-        <el-table-column label="导入时间" width="160" sortable prop="importTime">
+        <el-table-column label="操作人" width="100" prop="operator" />
+        <el-table-column label="导入时间" width="180" sortable prop="importTime">
           <template #default="{ row }">{{ row.importTime }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="130" fixed="right">
+        <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link @click="handleAssign(row)">分配</el-button>
             <el-button type="primary" link @click="handleToPublic(row)">放入公海</el-button>
@@ -273,13 +285,14 @@ const tableData = ref([
     username: '@food_recommend',
     verified: true,
     level: '8',
-    region: '广东',
+    country: '中国',
+    countryFlag: '🇨🇳',
+    salesType: 'video',
     followers: 1210100,
-    category: '食品饮料',
+    categories: ['食品饮料', '生鲜蔬果'],
     gmv30d: 3125800,
     sales30d: 15800,
     avgLikes: 56000,
-    products: [{ id: '120931023', name: '零食大礼包', image: 'https://via.placeholder.com/46' }],
     followStatus: 'pending',
     publicStatus: 'not_in',
     operator: '张三',
@@ -292,13 +305,14 @@ const tableData = ref([
     username: '@beauty_lili',
     verified: true,
     level: '7',
-    region: '浙江',
+    country: '美国',
+    countryFlag: '🇺🇸',
+    salesType: 'live',
     followers: 895600,
-    category: '美妆个护',
+    categories: ['美妆个护', '护肤彩妆'],
     gmv30d: 2236000,
     sales30d: 12300,
     avgLikes: 89000,
-    products: [{ id: '220931024', name: '护肤套装', image: 'https://via.placeholder.com/46' }],
     followStatus: 'followed',
     publicStatus: 'in',
     operator: '李四',
@@ -440,38 +454,35 @@ $white: #FFFFFF;
 // 平台切换栏
 .platform-tabs {
   display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-left: 40px;
   gap: 24px;
 }
 
 .platform-tab {
   display: flex;
   align-items: center;
-  height: 26px;
-  padding: 0 12px;
+  padding: 12px 0;
+  color: #666;
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: all 0.3s;
+  transition: all 0.2s;
+  position: relative;
+  top: 1px;
+  font-size: 14px;
 
   .tab-text {
     font-size: 14px;
-    color: $text-secondary;
+    color: inherit;
     margin-left: 8px;
   }
 
-  &:hover .tab-text {
-    color: $primary;
+  &:hover {
+    color: #333;
   }
 
   &.active {
-    border-bottom-color: $text-primary;
-
-    .tab-text {
-      color: $text-primary;
-      font-weight: bold;
-    }
+    color: #1677ff;
+    font-weight: 500;
+    border-bottom-color: #1677ff;
   }
 }
 
@@ -539,70 +550,70 @@ $white: #FFFFFF;
 // 数据表格
 .data-table {
   margin-bottom: 16px;
+
+  :deep(.el-table) {
+    .el-table__header th {
+      background: #fafafa;
+      font-weight: 600;
+      color: #333;
+    }
+  }
 }
 
 .influencer-cell {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-.influencer-info {
+.inf-avatar {
+  flex-shrink: 0;
+}
+
+.inf-info {
   flex: 1;
   min-width: 0;
 }
 
-.influencer-name {
-  font-size: 13px;
-  color: $text-primary;
+.inf-name {
   display: flex;
   align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+
+  .clickable {
+    cursor: pointer;
+    &:hover {
+      color: #1677ff;
+    }
+  }
+}
+
+.level-tag {
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  color: #fff;
+  border: none;
+}
+
+.inf-username {
+  font-size: 12px;
+  color: #999;
+  cursor: pointer;
+  &:hover {
+    color: #1677ff;
+  }
+}
+
+.inf-country {
+  font-size: 12px;
+  color: #666;
+}
+
+.category-tags {
+  display: flex;
   gap: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  .verified-icon {
-    color: $primary;
-    flex-shrink: 0;
-  }
-
-  .level-tag {
-    background: $secondary;
-    color: $white;
-    padding: 0 4px;
-    border-radius: 8px;
-    font-size: 11px;
-    flex-shrink: 0;
-  }
-}
-
-.influencer-username {
-  font-size: 12px;
-  color: $text-hint;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.region-tag {
-  display: inline-block;
-  margin-top: 4px;
-  padding: 2px 8px;
-  background: #FFF0E6;
-  color: $secondary;
-  border-radius: 12px;
-  font-size: 12px;
-}
-
-.category-tag {
-  display: inline-block;
-  padding: 2px 6px;
-  background: $bg-section;
-  color: $text-secondary;
-  border-radius: 10px;
-  font-size: 12px;
-  white-space: nowrap;
+  flex-wrap: wrap;
 }
 
 .status-cell {
@@ -618,19 +629,26 @@ $white: #FFFFFF;
   }
 
   &.pending, &.not_in {
-    color: $secondary;
+    color: #FF6600;
 
     .status-dot {
-      background: $secondary;
+      background: #FF6600;
     }
   }
 
   &.followed, &.in {
-    color: $text-hint;
+    color: #999;
 
     .status-dot {
-      background: $text-hint;
+      background: #999;
     }
+  }
+}
+
+.clickable {
+  cursor: pointer;
+  &:hover {
+    color: #1677ff;
   }
 }
 
