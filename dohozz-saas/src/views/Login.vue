@@ -145,7 +145,10 @@ const handleLogin = async () => {
 
   try {
     const valid = await loginFormRef.value.validate()
-    if (!valid) return
+    if (!valid) {
+      ElMessage.error('请检查输入信息是否正确')
+      return
+    }
 
     loading.value = true
     await new Promise(resolve => setTimeout(resolve, 2000))
@@ -157,6 +160,9 @@ const handleLogin = async () => {
     }
 
     ElMessage.success('登录成功！正在跳转...')
+
+    // 设置认证令牌
+    localStorage.setItem('auth_token', 'logged_in')
 
     setTimeout(() => {
       router.push('/dashboard')
