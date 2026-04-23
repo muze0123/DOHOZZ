@@ -184,6 +184,9 @@
         <!-- 自然出单达人页面 -->
         <NaturalOrderInfluencer v-else-if="activeSidebarMenu === '自然出单达人'" />
 
+        <!-- 导入达人线索页面 -->
+        <ImportInfluencerLeads v-else-if="activeSidebarMenu === '导入达人线索'" />
+
         <!-- 商品找达人页面 -->
         <ProductSearchInfluencer v-else-if="activeSidebarMenu === '商品找达人'" />
 
@@ -217,6 +220,7 @@ import BrandDiscovery from './BrandDiscovery.vue'
 import NaturalOrderInfluencer from './NaturalOrderInfluencer.vue'
 import ProductSearchInfluencer from './ProductSearchInfluencer.vue'
 import SmartRecommendation from './SmartRecommendation.vue'
+import ImportInfluencerLeads from './ImportInfluencerLeads.vue'
 
 const UserIcon = {
   render() {
@@ -266,7 +270,16 @@ onMounted(() => {
 })
 
 const toggleSubmenu = (name) => {
-  openSubmenus[name] = !openSubmenus[name]
+  // 如果当前菜单已展开，则收起
+  if (openSubmenus[name]) {
+    openSubmenus[name] = false
+    return
+  }
+  // 否则展开所选菜单，收起其他所有菜单
+  Object.keys(openSubmenus).forEach(key => {
+    openSubmenus[key] = false
+  })
+  openSubmenus[name] = true
 }
 
 const handleSubmenuItemClick = (childName, parentName) => {
@@ -282,6 +295,10 @@ const handleSubmenuItemClick = (childName, parentName) => {
 const handleMenuItemClick = (itemName) => {
   activeSidebarMenu.value = itemName
   thirdLevelPage.value = ''
+  // 收起所有展开的子菜单
+  Object.keys(openSubmenus).forEach(key => {
+    openSubmenus[key] = false
+  })
 }
 
 // B区导航菜单配置
@@ -305,7 +322,7 @@ watch(currentScenario, (newVal) => {
 })
 
 // 当B区菜单切换时，重置左侧激活菜单
-watch(activeNavMenu, (newVal) => {
+watch(activeNavMenu, () => {
   const items = sidebarMenuItems.value
   if (items.length > 0) {
     activeSidebarMenu.value = items[0].name
@@ -370,7 +387,7 @@ const sidebarMenuConfig = {
         { name: '品牌找达人' },
         { name: '商品找达人' },
         { name: '自然出单达人' },
-        { name: '达人榜单' }
+        { name: '导入达人线索' }
       ]},
       { name: '达人管理', icon: icons.person },
       { name: '批量建联', icon: icons.group },
