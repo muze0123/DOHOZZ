@@ -353,36 +353,79 @@
       v-model="showStrategyDrawer"
       title="调整推荐方案"
       direction="rtl"
-      :size="400"
+      size="480px"
     >
-      <div class="strategy-form">
-        <div class="form-section">
-          <div class="section-title">达人来源</div>
-          <el-slider v-model="influencerSource" range :min="0" :max="100" />
+      <div class="strategy-drawer-content">
+        <!-- 达人来源占比 -->
+        <div class="drawer-section">
+          <div class="section-title">达人来源占比</div>
+          <div class="section-desc">拖动手柄可调节偏好达人的推荐强度</div>
+          <div class="source-sliders">
+            <div v-for="source in sourceTypes" :key="source.key" class="source-item">
+              <span class="source-label">{{ source.label }}</span>
+              <el-slider v-model="source.weight" :min="0" :max="100" :show-input="true" />
+            </div>
+          </div>
         </div>
-        <div class="form-section">
-          <div class="section-title">粉丝画像</div>
-          <el-select v-model="followerGender" placeholder="选择性别" class="form-select">
-            <el-option label="不限" value="" />
-            <el-option label="女性居多" value="female" />
-            <el-option label="男性居多" value="male" />
-          </el-select>
+
+        <!-- 达人粉丝量级 -->
+        <div class="drawer-section">
+          <div class="section-title">达人粉丝量级</div>
+          <div class="follower-levels">
+            <div v-for="level in followerLevels" :key="level.range" class="level-bar">
+              <span class="level-range">{{ level.range }}</span>
+              <div class="level-progress">
+                <div class="level-fill" :style="{ width: level.percent + '%' }"></div>
+              </div>
+              <span class="level-percent">{{ level.percent }}%</span>
+            </div>
+          </div>
         </div>
-        <div class="form-section">
-          <div class="section-title">带货类目</div>
-          <el-select v-model="带货类目" placeholder="选择类目" class="form-select">
-            <el-option label="不限" value="" />
-            <el-option label="食品饮料" value="food" />
-            <el-option label="服装" value="clothing" />
-            <el-option label="美妆" value="beauty" />
-          </el-select>
+
+        <!-- 潜在竞品 -->
+        <div class="drawer-section">
+          <div class="section-title">潜在竞品</div>
+          <div class="competitor-tags">
+            <el-tag
+              v-for="(comp, idx) in competitors"
+              :key="idx"
+              closable
+              @close="removeCompetitor(idx)"
+            >
+              {{ comp.name }}
+            </el-tag>
+          </div>
+          <el-button size="small" @click="addCompetitor">+ 添加竞品</el-button>
         </div>
-        <div class="form-tip">修改后的推荐策略将在保存第二日开始生效</div>
+
+        <!-- 达人带货表现 -->
+        <div class="drawer-section">
+          <div class="section-title">达人带货表现</div>
+          <div class="performance-inputs">
+            <div class="input-row">
+              <span class="input-label">直播达人场均GMV：超过</span>
+              <el-input v-model="performance.liveGmv" placeholder="请输入" style="width: 120px" />
+              <span class="input-unit">万</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">视频达人平均成交金额：超过</span>
+              <el-input v-model="performance.videoSales" placeholder="请输入" style="width: 120px" />
+              <span class="input-unit">万</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-footer-tip">
+          <el-icon><Warning /></el-icon>
+          修改后的推荐策略将在保存第二日开始生效
+        </div>
+
+        <div class="drawer-actions">
+          <el-button link @click="resetToDefault">采用默认策略</el-button>
+          <el-button @click="showStrategyDrawer = false">取消</el-button>
+          <el-button type="primary" @click="saveStrategy">保存</el-button>
+        </div>
       </div>
-      <template #footer>
-        <el-button @click="showStrategyDrawer = false">取消</el-button>
-        <el-button type="primary" @click="saveStrategy">保存</el-button>
-      </template>
     </el-drawer>
   </div>
 </template>
@@ -390,7 +433,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { ArrowDown, QuestionFilled } from '@element-plus/icons-vue'
+import { ArrowDown, QuestionFilled, Warning } from '@element-plus/icons-vue'
 
 // Tab state
 const activeTab = ref('shop')
@@ -666,9 +709,32 @@ const dislikeOptions = [
 
 // Strategy drawer
 const showStrategyDrawer = ref(false)
-const influencerSource = ref([20, 80])
-const followerGender = ref('')
-const 带货类目 = ref('')
+const sourceTypes = reactive([
+  { key: 'shop_match', label: '店铺画像匹配达人', weight: 50 },
+  { key: 'default', label: '默认推荐', weight: 50 },
+  { key: 'competitor', label: '竞品优质合作达人', weight: 30 },
+  { key: 'category', label: '商品类目优质达人', weight: 30 }
+])
+
+const followerLevels = ref([
+  { range: '0-1w', percent: 54 },
+  { range: '1-10w', percent: 28 },
+  { range: '10-100w', percent: 13 },
+  { range: '100-500w', percent: 4 },
+  { range: '500w+', percent: 1 }
+])
+
+const competitors = ref([
+  { name: 'PLANNER/珀兰娜' },
+  { name: 'BEINIDAR' },
+  { name: 'sellion/雪尔妮兰' },
+  { name: 'Florasis/花西子' }
+])
+
+const performance = reactive({
+  liveGmv: '',
+  videoSales: ''
+})
 
 // Methods
 const handleTabChange = (tab) => {
@@ -739,8 +805,25 @@ const handleAssign = (card) => {
 }
 
 const saveStrategy = () => {
-  showStrategyDrawer.value = false
+  console.log('保存推荐策略:', {
+    shopId: currentShop.value?.id,
+    sourceTypes: sourceTypes.map(s => ({ key: s.key, weight: s.weight })),
+    performance: performance
+  })
   ElMessage.success('策略保存成功')
+  showStrategyDrawer.value = false
+}
+
+const removeCompetitor = (idx) => {
+  competitors.value.splice(idx, 1)
+}
+
+const addCompetitor = () => {
+  // placeholder - could open an input dialog
+}
+
+const resetToDefault = () => {
+  sourceTypes.forEach(s => s.weight = 50)
 }
 
 // Sticky scroll handling
@@ -1300,30 +1383,120 @@ onUnmounted(() => {
 }
 
 /* Strategy Drawer */
-.strategy-form {
+.strategy-drawer-content {
   padding: 0 16px;
 }
 
-.form-section {
+.drawer-section {
   margin-bottom: 24px;
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #262626;
+    margin-bottom: 8px;
+  }
+
+  .section-desc {
+    font-size: 12px;
+    color: #8C8C8C;
+    margin-bottom: 12px;
+  }
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-primary);
+.source-item {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .source-label {
+    width: 120px;
+    font-size: 12px;
+    color: #595959;
+    flex-shrink: 0;
+  }
+}
+
+.follower-levels {
+  .level-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .level-range {
+    width: 60px;
+    font-size: 12px;
+    color: #595959;
+  }
+
+  .level-progress {
+    flex: 1;
+    height: 8px;
+    background: #F0F0F0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .level-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5B8DEF, #3B6EE8);
+    border-radius: 4px;
+  }
+
+  .level-percent {
+    width: 40px;
+    font-size: 12px;
+    color: #1677FF;
+    text-align: right;
+  }
+}
+
+.competitor-tags {
   margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.form-select {
-  width: 100%;
+.performance-inputs {
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .input-label {
+    font-size: 12px;
+    color: #595959;
+  }
+
+  .input-unit {
+    font-size: 12px;
+    color: #595959;
+  }
 }
 
-.form-tip {
-  font-size: 12px;
-  color: var(--color-text-placeholder);
-  padding: 12px;
-  background: #fafafa;
+.drawer-footer-tip {
+  font-size: 11px;
+  color: #FAAD14;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: #FFFBF0;
   border-radius: 4px;
+}
+
+.drawer-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 12px;
+  border-top: 1px solid #F0F0F0;
 }
 </style>
