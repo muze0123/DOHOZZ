@@ -104,6 +104,15 @@ const routes = [
     }
   },
   {
+    path: '/brand-discovery',
+    name: 'BrandDiscovery',
+    component: () => import('@/views/BrandDiscovery.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '品牌找达人 - DOHOZZ'
+    }
+  },
+  {
     path: '/smart-recommendation',
     name: 'SmartRecommendation',
     component: () => import('@/views/SmartRecommendation.vue'),
