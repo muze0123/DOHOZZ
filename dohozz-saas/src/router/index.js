@@ -93,6 +93,24 @@ const routes = [
       requiresAuth: true,
       title: '功能说明 - DOHOZZ'
     }
+  },
+  {
+    path: '/influencer-database',
+    name: 'InfluencerDatabase',
+    component: () => import('@/views/InfluencerDatabase.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '达人库 - DOHOZZ'
+    }
+  },
+  {
+    path: '/smart-recommendation',
+    name: 'SmartRecommendation',
+    component: () => import('@/views/SmartRecommendation.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '智能推荐达人 - DOHOZZ'
+    }
   }
 ]
 
@@ -106,6 +124,16 @@ router.beforeEach((to, from, next) => {
   if (title) {
     document.title = title
   }
+
+  // 认证守卫
+  if (to.meta.requiresAuth) {
+    const token = localStorage.getItem('auth_token')
+    if (!token) {
+      next({ name: 'Login' })
+      return
+    }
+  }
+
   next()
 })
 

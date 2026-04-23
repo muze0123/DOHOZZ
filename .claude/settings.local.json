@@ -19,7 +19,10 @@
       "WebFetch(domain:minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com)",
       "Bash(curl:*)",
       "Bash(ls:*)",
-      "Bash(file:*)"
+      "Bash(file:*)",
+      "Bash(npm list:*)",
+      "Bash(npm install:*)",
+      "Bash(git reset:*)"
     ]
   }
 }
