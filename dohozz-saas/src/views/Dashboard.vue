@@ -389,7 +389,9 @@ const sidebarMenuConfig = {
         { name: '自然出单达人' },
         { name: '导入达人线索' }
       ]},
-      { name: '达人管理', icon: icons.person },
+      { name: '达人管理', icon: icons.person, children: [
+        { name: '达人公海' }
+      ]},
       { name: '批量建联', icon: icons.group },
       { name: '样品管理', icon: icons.sample },
       { name: '视频履约', icon: icons.video },
@@ -428,7 +430,9 @@ const sidebarMenuConfig = {
     '内容合作': [
       { name: '数据概览', icon: icons.overview },
       { name: '营销计划', icon: icons.plan },
-      { name: '达人管理', icon: icons.person },
+      { name: '达人管理', icon: icons.person, children: [
+        { name: '达人公海' }
+      ]},
       { name: '合作内容', icon: icons.content },
       { name: '绩效管理', icon: icons.performance },
       { name: '店铺商品', icon: icons.shop }
