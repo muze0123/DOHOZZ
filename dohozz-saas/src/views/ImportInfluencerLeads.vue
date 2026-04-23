@@ -107,12 +107,12 @@
 
     <!-- 数据列表 -->
     <div class="data-table">
-      <el-table :data="tableData" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="40" />
-        <el-table-column label="达人" width="200" fixed>
+      <el-table :data="tableData" @selection-change="handleSelectionChange" scrollbar-always-on>
+        <el-table-column type="selection" width="50" fixed />
+        <el-table-column label="达人" min-width="160" fixed>
           <template #default="{ row }">
             <div class="influencer-cell">
-              <el-avatar :size="46" :src="row.avatar" class="influencer-avatar" />
+              <el-avatar :size="40" :src="row.avatar" class="influencer-avatar" />
               <div class="influencer-info">
                 <div class="influencer-name">
                   {{ row.name }}
@@ -120,40 +120,30 @@
                   <span class="level-tag">LV{{ row.level }}</span>
                 </div>
                 <div class="influencer-username">{{ row.username }}</div>
-                <div class="region-tag" v-if="row.region">{{ row.region }}</div>
               </div>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="粉丝数" width="120" sortable prop="followers">
+        <el-table-column label="地区" width="80">
+          <template #default="{ row }">
+            <span class="region-tag" v-if="row.region">{{ row.region }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="粉丝数" width="100" sortable prop="followers">
           <template #default="{ row }">{{ formatNumber(row.followers) }}</template>
         </el-table-column>
-        <el-table-column label="带货类目" width="120">
+        <el-table-column label="带货类目" width="100">
           <template #default="{ row }">
             <span class="category-tag">{{ row.category }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="近30日成交金额" width="140" sortable prop="gmv30d">
+        <el-table-column label="近30日成交" width="120" sortable prop="gmv30d">
           <template #default="{ row }">¥{{ formatNumber(row.gmv30d) }}</template>
         </el-table-column>
-        <el-table-column label="近30日销量" width="120" sortable prop="sales30d">
+        <el-table-column label="近30日销量" width="100" sortable prop="sales30d">
           <template #default="{ row }">{{ formatSales(row.sales30d) }}</template>
         </el-table-column>
-        <el-table-column label="平均点赞量" width="120" sortable prop="avgLikes">
-          <template #default="{ row }">{{ formatNumber(row.avgLikes) }}</template>
-        </el-table-column>
-        <el-table-column label="带货商品" width="200">
-          <template #default="{ row }">
-            <div class="product-cell" v-if="row.products && row.products.length">
-              <el-image :src="row.products[0].image" :width="46" :height="46" fit="cover" class="product-image" />
-              <div class="product-info">
-                <div class="product-name">{{ row.products[0].name }}</div>
-                <div class="product-id">ID: {{ row.products[0].id }}</div>
-              </div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="跟进状态" width="100">
+        <el-table-column label="跟进状态" width="90">
           <template #default="{ row }">
             <span class="status-cell" :class="row.followStatus">
               <span class="status-dot"></span>
@@ -161,7 +151,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="公海状态" width="100">
+        <el-table-column label="公海状态" width="90">
           <template #default="{ row }">
             <span class="status-cell" :class="row.publicStatus">
               <span class="status-dot"></span>
@@ -169,11 +159,11 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="操作人" width="120" prop="operator" />
-        <el-table-column label="导入时间" width="180" sortable prop="importTime">
+        <el-table-column label="操作人" width="90" prop="operator" />
+        <el-table-column label="导入时间" width="160" sortable prop="importTime">
           <template #default="{ row }">{{ row.importTime }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="130" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link @click="handleAssign(row)">分配</el-button>
             <el-button type="primary" link @click="handleToPublic(row)">放入公海</el-button>
@@ -554,7 +544,7 @@ $white: #FFFFFF;
 .influencer-cell {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .influencer-info {
@@ -563,29 +553,36 @@ $white: #FFFFFF;
 }
 
 .influencer-name {
-  font-size: 14px;
+  font-size: 13px;
   color: $text-primary;
   display: flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   .verified-icon {
     color: $primary;
+    flex-shrink: 0;
   }
 
   .level-tag {
     background: $secondary;
     color: $white;
-    padding: 0 6px;
-    border-radius: 10px;
-    font-size: 12px;
+    padding: 0 4px;
+    border-radius: 8px;
+    font-size: 11px;
+    flex-shrink: 0;
   }
 }
 
 .influencer-username {
   font-size: 12px;
   color: $text-hint;
-  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .region-tag {
@@ -600,35 +597,12 @@ $white: #FFFFFF;
 
 .category-tag {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 2px 6px;
   background: $bg-section;
   color: $text-secondary;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 12px;
-}
-
-.product-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.product-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.product-name {
-  font-size: 14px;
-  color: $text-primary;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.product-id {
-  font-size: 12px;
-  color: $text-hint;
 }
 
 .status-cell {
