@@ -103,7 +103,7 @@
               <el-avatar :src="card.avatar" :size="48" class="influencer-avatar" />
               <div class="influencer-name-row">
                 <span class="influencer-name">{{ card.name }}</span>
-                <span v-if="card.contactAvailable" class="contact-icon">
+                <span v-if="card.contactAvailable" class="contact-icon" @click="handleContactClick(card)">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M7 7a2 2 0 100-4 2 2 0 000 4z" fill="#FFD700"/>
                     <path d="M7 5v4M5 7h4" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round"/>
@@ -140,21 +140,31 @@
                 <span class="stat-item">近30天销量 <span class="highlight">{{ card.recentSalesAmount }}</span></span>
               </div>
               <el-popover
+                v-model:visible="categoryPopoverVisible"
                 placement="bottom"
                 :width="400"
                 trigger="click"
               >
                 <template #reference>
-                  <span class="view-link">查看关联类目 ></span>
+                  <span class="view-link" @click="showCategoryPopover(card, $event)">查看关联类目 ></span>
                 </template>
-                <div class="category-table">
-                  <p class="table-title">关联类目详情</p>
-                  <el-table :data="[]" border>
-                    <el-table-column prop="category" label="类目" />
-                    <el-table-column prop="percentage" label="占比" />
-                    <el-table-column prop="avgPrice" label="均价" />
-                    <el-table-column prop="salesAmount" label="30天销售额" />
-                  </el-table>
+                <div class="category-popover">
+                  <table class="popover-table">
+                    <thead>
+                      <tr>
+                        <th>类目</th>
+                        <th>均价</th>
+                        <th>成交金额</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(cat, idx) in categoryDetails" :key="idx">
+                        <td>{{ cat.name }}</td>
+                        <td>{{ cat.price }}</td>
+                        <td>{{ cat.sales }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </el-popover>
             </div>
@@ -186,6 +196,13 @@
               <div class="stat-column">
                 <div class="stat-value">{{ card.stats.avgViewers }}</div>
                 <div class="stat-label">平均场观</div>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-column stat-column-clickable">
+                <div class="stat-value stat-sub" @click="showFollowerPopover(card, $event)">
+                  {{ card.stats.followerGender }} >
+                </div>
+                <div class="stat-label">粉丝画像</div>
               </div>
             </div>
           </div>
@@ -345,6 +362,60 @@
         >
           提交
         </el-button>
+      </div>
+    </el-popover>
+
+    <!-- Category Popover -->
+    <el-popover
+      v-model:visible="categoryPopoverVisible"
+      placement="bottom"
+      :width="400"
+      trigger="click"
+    >
+      <div class="category-popover">
+        <table class="popover-table">
+          <thead>
+            <tr>
+              <th>类目</th>
+              <th>均价</th>
+              <th>成交金额</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(cat, idx) in categoryDetails" :key="idx">
+              <td>{{ cat.name }}</td>
+              <td>{{ cat.price }}</td>
+              <td>{{ cat.sales }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </el-popover>
+
+    <!-- Follower Profile Popover -->
+    <el-popover
+      v-model:visible="followerPopoverVisible"
+      placement="bottom"
+      :width="280"
+      trigger="click"
+    >
+      <div class="follower-popover">
+        <table class="popover-table">
+          <tbody>
+            <tr>
+              <td class="popover-label">粉丝数量</td>
+              <td>{{ currentFollowerStats.followers }}</td>
+            </tr>
+            <tr>
+              <td class="popover-label">粉丝性别</td>
+              <td>{{ currentFollowerStats.gender }}</td>
+            </tr>
+            <tr>
+              <td class="popover-label">粉丝年龄</td>
+              <td>{{ currentFollowerStats.age }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </el-popover>
 
@@ -698,6 +769,22 @@ const selectedDislike = ref('')
 const dislikeOtherReason = ref('')
 const currentDislikeCard = ref(null)
 
+// Category popover
+const categoryPopoverVisible = ref(false)
+const categoryDetails = ref([
+  { name: '食品饮料/饮料/乳品/咖啡/麦片/冲调', price: '¥25-¥50', sales: '¥750-¥1w' },
+  { name: '食品饮料/粮油米面/南北干货/调味品', price: '¥5-¥50', sales: '—' },
+  { name: '食品饮料/方便速食', price: '—', sales: '—' }
+])
+
+// Follower profile popover
+const followerPopoverVisible = ref(false)
+const currentFollowerStats = ref({
+  followers: '10.22w',
+  gender: '女性 51%',
+  age: '25-34、18-24 居多'
+})
+
 const dislikeOptions = [
   { label: '视频搬运', value: 'video_pirated' },
   { label: '视频质量差', value: 'low_quality' },
@@ -797,6 +884,23 @@ const submitDislike = () => {
   })
   ElMessage.success('感谢反馈，系统将记录该操作并持续修正推荐结果')
   dislikePopoverVisible.value = false
+}
+
+const showCategoryPopover = (card, event) => {
+  categoryPopoverVisible.value = true
+}
+
+const showFollowerPopover = (card, event) => {
+  currentFollowerStats.value = {
+    followers: card.stats.followers,
+    gender: card.stats.followerGender,
+    age: '25-34、18-24 居多'
+  }
+  followerPopoverVisible.value = true
+}
+
+const handleContactClick = (card) => {
+  ElMessage.info('联系方式功能开发中')
 }
 
 const handleAssign = (card) => {
@@ -1498,5 +1602,53 @@ onUnmounted(() => {
   justify-content: flex-end;
   padding-top: 12px;
   border-top: 1px solid #F0F0F0;
+}
+
+/* Category and Follower Popovers */
+.category-popover,
+.follower-popover {
+  min-width: 280px;
+  background: #fff;
+  border: 1px solid #E8E8E8;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  padding: 12px;
+}
+
+.popover-table {
+  width: 100%;
+  font-size: 12px;
+
+  th {
+    color: #8C8C8C;
+    font-weight: 400;
+    padding: 4px 8px;
+    text-align: left;
+  }
+
+  td {
+    color: #262626;
+    padding: 6px 8px;
+    border-top: 1px solid #F0F0F0;
+  }
+
+  .popover-label {
+    color: #8C8C8C;
+    width: 80px;
+  }
+}
+
+/* Clickable stat column */
+.stat-column-clickable {
+  cursor: pointer;
+}
+
+.stat-sub {
+  cursor: pointer;
+  color: var(--color-primary);
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>
