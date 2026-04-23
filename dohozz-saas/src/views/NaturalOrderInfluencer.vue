@@ -683,6 +683,7 @@ $error: #E41E3F;
   width: 100%;
   min-height: 100%;
   background: $bg-page;
+  padding: 16px 0 24px;
 }
 
 .page-container {

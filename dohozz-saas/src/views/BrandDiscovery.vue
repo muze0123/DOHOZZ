@@ -550,6 +550,7 @@ $bg-card: #FFFFFF;
   width: 100%;
   min-height: 100%;
   background: $bg-card;
+  padding: 16px 0 24px;
 }
 
 // 初始态样式
