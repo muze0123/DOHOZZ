@@ -233,7 +233,7 @@
               />
             </svg>
             <div class="gauge-value">
-              <span class="gauge-score">{{ card.matchScore }}</span>
+              <span class="gauge-score" :style="{ color: getGaugeColor(card.matchScore) }">{{ card.matchScore }}</span>
               <span class="gauge-label">匹配分</span>
             </div>
           </div>
@@ -363,33 +363,6 @@
         >
           提交
         </el-button>
-      </div>
-    </el-popover>
-
-    <!-- Category Popover -->
-    <el-popover
-      v-model:visible="categoryPopoverVisible"
-      placement="bottom"
-      :width="400"
-      trigger="click"
-    >
-      <div class="category-popover">
-        <table class="popover-table">
-          <thead>
-            <tr>
-              <th>类目</th>
-              <th>均价</th>
-              <th>成交金额</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(cat, idx) in categoryDetails" :key="idx">
-              <td>{{ cat.name }}</td>
-              <td>{{ cat.price }}</td>
-              <td>{{ cat.sales }}</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </el-popover>
 
@@ -940,7 +913,8 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  height: 48px;
+  padding: 0 16px;
   background: #fff;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -988,7 +962,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 16px 24px;
   background: #fff;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -1150,11 +1124,12 @@ onUnmounted(() => {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin: 0 24px 12px;
 }
 
 .card-main {
   flex: 1;
-  padding: 20px;
+  padding: 16px 20px;
 }
 
 .card-row1 {
@@ -1307,7 +1282,7 @@ onUnmounted(() => {
 /* Card Match Area */
 .card-match {
   width: 280px;
-  padding: 20px;
+  padding: 16px;
   background: var(--color-bg-match);
   display: flex;
   flex-direction: column;
@@ -1329,7 +1304,7 @@ onUnmounted(() => {
 
 .gauge-score {
   display: block;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--color-deep-blue);
 }
@@ -1394,6 +1369,11 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 4px;
+
+  &:hover {
+    color: #1677FF;
+    border-color: #1677FF;
+  }
 }
 
 .btn-icon {
@@ -1402,10 +1382,18 @@ onUnmounted(() => {
 
 .assign-btn {
   flex: 2;
+
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
 .follow-btn {
   flex: 1;
+
+  &:not(:disabled):hover {
+    opacity: 0.85;
+  }
 }
 
 /* Pagination */
