@@ -314,33 +314,39 @@
       />
     </div>
 
-    <!-- Dislike Dialog -->
-    <el-dialog
-      v-model="dislikeDialogVisible"
-      title="反馈原因"
-      width="400px"
+    <el-popover
+      v-model:visible="dislikePopoverVisible"
+      placement="top"
+      :width="280"
+      trigger="click"
     >
-      <div class="dislike-reasons">
-        <el-radio-group v-model="selectedReason">
-          <el-radio label="类型不符">类型不符</el-radio>
-          <el-radio label="质量较差">质量较差</el-radio>
-          <el-radio label="已有合作">已有合作</el-radio>
-          <el-radio label="其他原因">其他原因</el-radio>
-        </el-radio-group>
-        <el-input
-          v-if="selectedReason === '其他原因'"
-          v-model="otherReason"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入其他原因"
+      <div class="dislike-popover">
+        <div class="dislike-title">不推荐该达人的主要原因是？</div>
+        <div
+          v-for="option in dislikeOptions"
+          :key="option.value"
+          class="dislike-option"
+          :class="{ selected: selectedDislike === option.value }"
+          @click="selectedDislike = option.value"
+        >
+          {{ option.label }}
+        </div>
+        <textarea
+          v-if="selectedDislike === 'other'"
+          v-model="dislikeOtherReason"
           class="other-reason-input"
+          placeholder="请输入原因（限200字）"
+          maxlength="200"
         />
+        <el-button
+          class="btn-submit-dislike"
+          type="primary"
+          @click="submitDislike"
+        >
+          提交
+        </el-button>
       </div>
-      <template #footer>
-        <el-button @click="dislikeDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitDislike">提交</el-button>
-      </template>
-    </el-dialog>
+    </el-popover>
 
     <!-- Strategy Drawer -->
     <el-drawer
@@ -643,11 +649,20 @@ const cardList = ref([
   }
 ])
 
-// Dislike dialog
-const dislikeDialogVisible = ref(false)
-const selectedReason = ref('')
-const otherReason = ref('')
+// Dislike popover
+const dislikePopoverVisible = ref(false)
+const selectedDislike = ref('')
+const dislikeOtherReason = ref('')
 const currentDislikeCard = ref(null)
+
+const dislikeOptions = [
+  { label: '视频搬运', value: 'video_pirated' },
+  { label: '视频质量差', value: 'low_quality' },
+  { label: '不与品牌方合作', value: 'no_brand_coop' },
+  { label: '创作能力不足', value: 'low_creativity' },
+  { label: '不是目标达人', value: 'not_target' },
+  { label: '其他原因', value: 'other' }
+]
 
 // Strategy drawer
 const showStrategyDrawer = ref(false)
@@ -694,20 +709,28 @@ const handleFollow = (card) => {
 
 const handleDislike = (card) => {
   currentDislikeCard.value = card
-  selectedReason.value = ''
-  otherReason.value = ''
-  dislikeDialogVisible.value = true
+  selectedDislike.value = ''
+  dislikeOtherReason.value = ''
+  dislikePopoverVisible.value = true
 }
 
 const submitDislike = () => {
-  if (!selectedReason.value) {
+  if (!selectedDislike.value) {
     ElMessage.warning('请选择反馈原因')
     return
   }
-  // Submit feedback
-  console.log('Submit dislike:', currentDislikeCard.value.id, selectedReason.value, otherReason.value)
+  if (selectedDislike.value === 'other' && !dislikeOtherReason.value.trim()) {
+    ElMessage.warning('请输入原因')
+    return
+  }
+  // API placeholder
+  console.log('提交踩反馈:', {
+    influencerId: currentDislikeCard.value.id,
+    reason: selectedDislike.value,
+    otherReason: dislikeOtherReason.value
+  })
   ElMessage.success('感谢反馈，系统将记录该操作并持续修正推荐结果')
-  dislikeDialogVisible.value = false
+  dislikePopoverVisible.value = false
 }
 
 const handleAssign = (card) => {
@@ -1216,14 +1239,63 @@ onUnmounted(() => {
   margin-top: 24px;
 }
 
-/* Dislike Dialog */
-.dislike-reasons {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* Dislike Popover */
+.dislike-popover {
+  padding: 16px;
+}
+
+.dislike-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 12px;
+}
+
+.dislike-option {
+  padding: 8px 10px;
+  border: 1px solid #D9D9D9;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #595959;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: #1677FF;
+  }
+
+  &.selected {
+    border-color: #1677FF;
+    background: #EBF3FF;
+    color: #1677FF;
+  }
 }
 
 .other-reason-input {
+  width: 100%;
+  height: 64px;
+  border: 1px solid #D9D9D9;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 12px;
+  resize: none;
+  margin-top: 8px;
+
+  &:focus {
+    outline: none;
+    border-color: #1677FF;
+  }
+}
+
+.btn-submit-dislike {
+  width: 100%;
+  height: 32px;
+  background: #1677FF;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
   margin-top: 12px;
 }
 
