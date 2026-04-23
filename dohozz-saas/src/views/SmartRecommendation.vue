@@ -29,28 +29,29 @@
     <div class="shop-info-bar" :class="{ 'is-sticky': isSticky }">
       <div class="shop-info-left">
         <el-popover
+          v-model:visible="showShopPopover"
           placement="bottom-start"
-          :width="320"
+          :width="280"
           trigger="click"
-          v-model:visible="shopPopoverVisible"
         >
           <template #reference>
-            <div class="shop-selector">
+            <div class="shop-name-row" :class="{ 'no-arrow': isSticky }">
               <img :src="currentShop.logo" alt="logo" class="shop-logo" />
               <span class="shop-name">{{ currentShop.name }}</span>
               <el-icon><ArrowDown /></el-icon>
             </div>
           </template>
-          <div class="shop-list">
+          <div class="shop-list-popover">
             <div
               v-for="shop in authorizedShops"
               :key="shop.id"
               class="shop-item"
               :class="{ active: shop.id === currentShop.id }"
-              @click="handleShopChange(shop)"
+              @click="selectShop(shop)"
             >
-              <img :src="shop.logo" alt="logo" class="shop-logo" />
-              <span class="shop-name">{{ shop.name }}</span>
+              <img :src="shop.logo" class="shop-item-logo" />
+              <span class="shop-item-name">{{ shop.name }}</span>
+              <el-icon v-if="shop.id === currentShop.id"><Check /></el-icon>
             </div>
           </div>
         </el-popover>
@@ -504,7 +505,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { ArrowDown, QuestionFilled, Warning } from '@element-plus/icons-vue'
+import { ArrowDown, Check, QuestionFilled, Warning } from '@element-plus/icons-vue'
 
 // Tab state
 const activeTab = ref('shop')
@@ -513,48 +514,20 @@ const todayDate = computed(() => {
   return `${now.getMonth() + 1}月${now.getDate()}日`
 })
 
-// Shop info
-const currentShop = ref({
-  id: '1',
-  logo: 'https://via.placeholder.com/32',
-  name: '示例店铺',
-  strategy: {
-    avgOrderPrice: '89',
-    mainCategory: '食品饮料',
-    followerGender: '女性居多',
-    followerAge: '25-35岁',
-    followerRegion: '江浙沪'
-  }
-})
-
+const showShopPopover = ref(false)
 const authorizedShops = ref([
-  {
-    id: '1',
-    logo: 'https://via.placeholder.com/32',
-    name: '示例店铺',
-    strategy: {
-      avgOrderPrice: '89',
-      mainCategory: '食品饮料',
-      followerGender: '女性居多',
-      followerAge: '25-35岁',
-      followerRegion: '江浙沪'
-    }
-  },
-  {
-    id: '2',
-    logo: 'https://via.placeholder.com/32',
-    name: '示例店铺2',
-    strategy: {
-      avgOrderPrice: '120',
-      mainCategory: '生鲜蔬果',
-      followerGender: '男性居多',
-      followerAge: '30-40岁',
-      followerRegion: '广东'
-    }
-  }
+  { id: '1', logo: 'https://via.placeholder.com/32', name: '官方旗舰店' },
+  { id: '2', logo: 'https://via.placeholder.com/32', name: '美妆专营店' },
+  { id: '3', logo: 'https://via.placeholder.com/32', name: '食品专营店' }
 ])
+const currentShop = ref(authorizedShops.value[0])
 
-const shopPopoverVisible = ref(false)
+const selectShop = (shop) => {
+  currentShop.value = shop
+  showShopPopover.value = false
+  // Refresh recommendation list (placeholder for now)
+  ElMessage.success('已切换到店铺：' + shop.name)
+}
 const isSticky = ref(false)
 
 // Recommendation stats
@@ -829,12 +802,6 @@ const handleTabChange = (tab) => {
   currentPage.value = 1
 }
 
-const handleShopChange = (shop) => {
-  currentShop.value = shop
-  shopPopoverVisible.value = false
-  currentPage.value = 1
-}
-
 const handlePageChange = (page) => {
   currentPage.value = page
 }
@@ -1029,12 +996,25 @@ onUnmounted(() => {
 }
 
 .shop-info-bar.is-sticky {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 24px;
-  right: 24px;
   z-index: 100;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .shop-name-row {
+    .shop-logo {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+
+.shop-name-row {
+  &.no-arrow {
+    .el-icon {
+      display: none;
+    }
+  }
 }
 
 .shop-info-left {
@@ -1043,17 +1023,17 @@ onUnmounted(() => {
   gap: 16px;
 }
 
-.shop-selector {
+.shop-name-row {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 4px;
-}
 
-.shop-selector:hover {
-  background: #f5f5f5;
+  &:hover {
+    background: #f5f5f5;
+  }
 }
 
 .shop-logo {
@@ -1068,27 +1048,36 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-.shop-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.shop-list-popover {
+  padding: 8px 0;
 }
 
 .shop-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 8px 12px;
   cursor: pointer;
-}
+  transition: background 0.15s;
 
-.shop-item:hover {
-  background: #f5f5f5;
-}
+  &:hover {
+    background: #F5F5F5;
+  }
 
-.shop-item.active {
-  background: var(--color-bg-tag);
+  &.active {
+    color: #1677FF;
+  }
+
+  .shop-item-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+  }
+
+  .shop-item-name {
+    flex: 1;
+    font-size: 14px;
+  }
 }
 
 .strategy-tags {
