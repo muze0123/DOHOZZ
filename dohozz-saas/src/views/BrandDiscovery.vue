@@ -549,7 +549,7 @@ $bg-card: #FFFFFF;
 .brand-discovery {
   width: 100%;
   min-height: 100%;
-  background: $bg-card;
+  background: $bg-page;
   padding: 16px 0 24px;
 }
 
@@ -721,13 +721,17 @@ $bg-card: #FFFFFF;
   flex-direction: column;
   align-items: center;
   background: $bg-card;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid #e8e8e8;
+  border-bottom: none;
 }
 
 .filter-area {
   width: 100%;
   padding: 0 24px;
-  background: $bg-page;
-  border-bottom: 1px solid #F0F0F0;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-top: none;
 }
 
 .filter-row {
@@ -920,8 +924,11 @@ $bg-card: #FFFFFF;
 }
 
 .table-container {
-  padding: 0 24px;
+  padding: 16px 24px;
   background: #fff;
+  border: 1px solid #e8e8e8;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
 }
 
 .state-loading {
@@ -1061,10 +1068,13 @@ $bg-card: #FFFFFF;
 .pagination-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   padding: 16px 24px;
   gap: 8px;
   background: #fff;
+  border: 1px solid #e8e8e8;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
 }
 
 .page-item {

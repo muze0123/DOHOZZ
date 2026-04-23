@@ -683,13 +683,14 @@ $bg-card: #FFFFFF;
 .product-search-influencer {
   width: 100%;
   min-height: 100%;
-  background: $bg-page;
+  background: #f5f5f5;
   padding: 16px 0 24px;
 }
 
 .page-wrapper {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 24px;
 }
 
 // 初始态样式
@@ -852,15 +853,19 @@ $bg-card: #FFFFFF;
   flex-direction: column;
   align-items: center;
   padding-bottom: 16px;
-  background: $bg-card;
+  background: #fff;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid #e8e8e8;
+  border-bottom: none;
 }
 
 .filter-area {
   position: relative;
   width: 100%;
   padding: 0 16px;
-  background: $bg-card;
-  border-top: 1px solid $border-light;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-top: none;
 }
 
 .filter-row {
@@ -1079,8 +1084,11 @@ $bg-card: #FFFFFF;
 
 .table-container {
   padding: 16px;
-  background: $bg-card;
+  background: #fff;
   min-height: 400px;
+  border: 1px solid #e8e8e8;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
 }
 
 .loading-state {
@@ -1216,11 +1224,13 @@ $bg-card: #FFFFFF;
 
 .pagination-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 16px;
-  background: $bg-card;
-  border-top: 1px solid $border-light;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
 }
 
 .pagination-info {

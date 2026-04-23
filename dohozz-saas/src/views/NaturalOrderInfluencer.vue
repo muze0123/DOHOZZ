@@ -682,18 +682,19 @@ $error: #E41E3F;
 .natural-order-influencer {
   width: 100%;
   min-height: 100%;
-  background: $bg-page;
+  background: #f5f5f5;
   padding: 16px 0 24px;
 }
 
 .page-container {
-  padding: 16px 24px;
+  padding: 0 0 0;
 }
 
 .content-card {
   background: $bg-card;
   border-radius: 8px;
   padding: 16px;
+  border: 1px solid #e8e8e8;
 }
 
 // 筛选区

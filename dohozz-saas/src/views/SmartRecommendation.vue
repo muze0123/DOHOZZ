@@ -489,9 +489,24 @@ const todayDate = computed(() => {
 
 const showShopPopover = ref(false)
 const authorizedShops = ref([
-  { id: '1', logo: 'https://via.placeholder.com/32', name: '官方旗舰店' },
-  { id: '2', logo: 'https://via.placeholder.com/32', name: '美妆专营店' },
-  { id: '3', logo: 'https://via.placeholder.com/32', name: '食品专营店' }
+  {
+    id: '1',
+    logo: 'https://via.placeholder.com/32',
+    name: '官方旗舰店',
+    strategy: { avgOrderPrice: '35', mainCategory: '食品饮料', followerGender: '女性居多', followerAge: '25-35岁', followerRegion: '广东' }
+  },
+  {
+    id: '2',
+    logo: 'https://via.placeholder.com/32',
+    name: '美妆专营店',
+    strategy: { avgOrderPrice: '68', mainCategory: '美妆护肤', followerGender: '女性居多', followerAge: '20-30岁', followerRegion: '浙江' }
+  },
+  {
+    id: '3',
+    logo: 'https://via.placeholder.com/32',
+    name: '食品专营店',
+    strategy: { avgOrderPrice: '45', mainCategory: '零食坚果', followerGender: '女性居多', followerAge: '18-28岁', followerRegion: '上海' }
+  }
 ])
 const currentShop = ref(authorizedShops.value[0])
 
@@ -887,9 +902,9 @@ onUnmounted(() => {
 
 <style scoped>
 .smart-recommendation {
-  background: #FAFAFA;
+  background: #f5f5f5;
   min-height: 100vh;
-  padding: 16px 24px;
+  padding: 16px 0 24px;
 }
 
 /* Colors per PRD */
@@ -1121,10 +1136,11 @@ onUnmounted(() => {
 .recommendation-card {
   display: flex;
   background: var(--color-bg-card);
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  margin: 0 24px 12px;
+  margin: 0 0 12px;
+  border: 1px solid #e8e8e8;
 }
 
 .card-main {
