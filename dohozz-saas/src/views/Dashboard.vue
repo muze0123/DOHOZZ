@@ -178,6 +178,9 @@
         <!-- 品牌找达人页面 -->
         <BrandDiscovery v-else-if="activeSidebarMenu === '品牌找达人'" />
 
+        <!-- 自然出单达人页面 -->
+        <NaturalOrderInfluencer v-else-if="activeSidebarMenu === '自然出单达人'" />
+
         <!-- 其他菜单页面占位 -->
         <div v-else class="empty-page">
           <div class="empty-content">
@@ -205,6 +208,7 @@ import Commission from './Commission.vue'
 import CommissionHelp from './CommissionHelp.vue'
 import InfluencerDatabase from './InfluencerDatabase.vue'
 import BrandDiscovery from './BrandDiscovery.vue'
+import NaturalOrderInfluencer from './NaturalOrderInfluencer.vue'
 
 const UserIcon = {
   render() {
@@ -357,6 +361,7 @@ const sidebarMenuConfig = {
         { name: '智能推荐达人' },
         { name: '品牌找达人' },
         { name: '商品找达人' },
+        { name: '自然出单达人' },
         { name: '达人榜单' }
       ]},
       { name: '达人管理', icon: icons.person },
