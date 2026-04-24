@@ -80,7 +80,7 @@
 
           <!-- 消息中心 -->
           <el-tooltip content="消息中心" placement="bottom" :show-after="300">
-            <div class="c-btn-circle has-badge">
+            <div class="c-btn-circle has-badge" @click="handleMessageCenterClick">
               <svg class="c-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                 <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
               </svg>
@@ -100,7 +100,7 @@
 
     <div class="main-wrapper">
       <!-- 左侧导航栏 -->
-      <aside class="left-sidebar">
+      <aside class="left-sidebar" v-if="!showMessageCenter">
         <div class="sidebar-menu">
           <template v-for="item in sidebarMenuItems" :key="item.name">
             <!-- 带子菜单的项 -->
@@ -253,6 +253,9 @@
         <!-- 汇率设置页面 -->
         <ExchangeRate v-else-if="activeSidebarMenu === '汇率设置'" />
 
+        <!-- 消息中心页面 -->
+        <MessageCenter v-else-if="showMessageCenter" />
+
         <!-- 其他菜单页面占位 -->
         <div v-else class="empty-page">
           <div class="empty-content">
@@ -273,6 +276,7 @@
 <script setup>
 import { ref, reactive, computed, watch, h, provide, onMounted, nextTick } from 'vue'
 import { ElMessage, ElAvatar } from 'element-plus'
+import router from '@/router'
 import DataOverview from './DataOverview.vue'
 import Workspace from './Workspace.vue'
 import Performance from './Performance.vue'
@@ -308,6 +312,7 @@ import DepartmentManagement from './DepartmentManagement.vue'
 import RoleManagement from './RoleManagement.vue'
 import BusinessConfig from './BusinessConfig.vue'
 import ExchangeRate from './ExchangeRate.vue'
+import MessageCenter from './MessageCenter.vue'
 import TaskCenter from './components/TaskCenter.vue'
 
 const UserIcon = {
@@ -331,6 +336,24 @@ const thirdLevelPage = ref(localStorage.getItem('lastThirdLevelPage') || '') // 
 const openSubmenus = reactive({})
 const isRestoring = ref(false) // 标记是否正在恢复保存的菜单状态
 const showTaskCenter = ref(false) // 控制任务中心抽屉显示
+const showMessageCenter = ref(false) // 控制消息中心页面显示
+
+// 消息中心点击处理
+const handleMessageCenterClick = () => {
+  if (showMessageCenter.value) {
+    // 已经打开消息中心，关闭并显示左侧菜单，选中第一个菜单
+    showMessageCenter.value = false
+    activeSidebarMenu.value = '成员管理'
+    nextTick(() => {
+      Object.keys(openSubmenus).forEach(key => {
+        openSubmenus[key] = false
+      })
+    })
+  } else {
+    activeSidebarMenu.value = '系统设置'
+    showMessageCenter.value = true
+  }
+}
 
 // 提供给子组件的方法
 const setThirdLevelPage = (page) => {
@@ -400,6 +423,7 @@ const toggleSubmenu = (name) => {
 const handleSubmenuItemClick = (childName, parentName) => {
   activeSidebarMenu.value = childName
   thirdLevelPage.value = ''
+  showMessageCenter.value = false
   Object.keys(openSubmenus).forEach(key => {
     if (key !== parentName) {
       openSubmenus[key] = false
@@ -410,10 +434,16 @@ const handleSubmenuItemClick = (childName, parentName) => {
 const handleMenuItemClick = (itemName) => {
   activeSidebarMenu.value = itemName
   thirdLevelPage.value = ''
+  showMessageCenter.value = false
   // 收起所有展开的子菜单
   Object.keys(openSubmenus).forEach(key => {
     openSubmenus[key] = false
   })
+  // 如果点击的是系统设置，展开子菜单并选中第一个
+  if (itemName === '系统设置') {
+    openSubmenus['系统设置'] = true
+    activeSidebarMenu.value = '成员管理'
+  }
 }
 
 // B区导航菜单配置

@@ -147,6 +147,15 @@ const routes = [
       requiresAuth: true,
       title: '汇率设置 - DOHOZZ'
     }
+  },
+  {
+    path: '/message-center',
+    name: 'MessageCenter',
+    component: () => import('@/views/MessageCenter.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '消息中心 - DOHOZZ'
+    }
   }
 ]
 

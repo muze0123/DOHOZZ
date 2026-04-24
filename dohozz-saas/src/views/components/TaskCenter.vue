@@ -3,7 +3,7 @@
     v-model="visible"
     title="任务列表"
     direction="rtl"
-    size="700px"
+    size="1200px"
     :before-close="handleClose"
     class="task-center-drawer"
   >
