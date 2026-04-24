@@ -129,6 +129,24 @@ const routes = [
       requiresAuth: true,
       title: '达人公海 - DOHOZZ'
     }
+  },
+  {
+    path: '/business-config',
+    name: 'BusinessConfig',
+    component: () => import('@/views/BusinessConfig.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '业务配置 - DOHOZZ'
+    }
+  },
+  {
+    path: '/exchange-rate',
+    name: 'ExchangeRate',
+    component: () => import('@/views/ExchangeRate.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '汇率设置 - DOHOZZ'
+    }
   }
 ]
 

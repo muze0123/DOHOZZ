@@ -1,0 +1,137 @@
+<h2>达人公海页面 - 整体布局方案</h2>
+<p class="subtitle">基于 PRD 设计的页面结构，确认是否符合您的预期</p>
+
+<div class="mockup">
+  <div class="mockup-header">达人公海页面布局</div>
+  <div class="mockup-body">
+    <!-- 页面容器 -->
+    <div style="background:#fff;border:1px solid #ddd;padding:16px;border-radius:4px;">
+      <!-- 顶部平台Tab + 搜索区 -->
+      <div style="border-bottom:1px solid #eee;padding-bottom:16px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:24px;margin-bottom:12px;">
+          <span style="font-weight:bold;color:#333;">平台:</span>
+          <span style="padding:6px 16px;background:#f5f7fa;border-bottom:2px solid #333;font-size:14px;">TikTok</span>
+          <span style="padding:6px 16px;color:#666;">Instagram</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <input class="mock-input" placeholder="搜索达人名称/ID" style="width:320px;">
+          <button class="mock-button" style="background:#0066ff;color:#fff;border:none;padding:6px 24px;">搜索</button>
+          <span style="margin-left:auto;color:#999;font-size:12px;cursor:pointer;">收起筛选 ↑</span>
+        </div>
+      </div>
+
+      <!-- 筛选区 (展开状态) -->
+      <div style="padding:12px 0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span class="label" style="color:#666;">国家地区</span>
+          <span class="mock-button" style="background:#f5f7fa;border:1px solid #f5f7fa;padding:4px 12px;font-size:12px;">全部</span>
+          <span style="background:#fff;border:1px solid #e8e8e8;padding:4px 12px;font-size:12px;color:#666;border-radius:4px;">美国 ×</span>
+          <span style="background:#fff;border:1px solid #e8e8e8;padding:4px 12px;font-size:12px;color:#666;border-radius:4px;">马来西亚 ×</span>
+          <span style="color:#999;font-size:12px;cursor:pointer;">展开 ↓</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span class="label" style="color:#666;">带货分类</span>
+          <span class="mock-button" style="background:#f5f7fa;border:1px solid #f5f7fa;padding:4px 12px;font-size:12px;">全部</span>
+          <span style="background:#fff;border:1px solid #e8e8e8;padding:4px 12px;font-size:12px;color:#666;border-radius:4px;">美妆个护 ×</span>
+          <span style="background:#fff;border:1px solid #e8e8e8;padding:4px 12px;font-size:12px;color:#666;border-radius:4px;">鲜花绿植 ×</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="label" style="color:#666;">带货信息</span>
+          <span style="border:1px solid #e8e8e8;padding:4px 12px;font-size:12px;color:#666;border-radius:4px;display:flex;align-items:center;gap:4px;">带货水平 ▼</span>
+          <span style="border:1px solid #e8e8e8;padding:4px 12px;font-size:12px;color:#666;border-radius:4px;display:flex;align-items:center;gap:4px;">平均互动率 ▼</span>
+          <span style="border:1px solid #e8e8e8;padding:4px 12px;font-size:12px;color:#666;border-radius:4px;display:flex;align-items:center;gap:4px;">🏷️ 筛选标签</span>
+        </div>
+      </div>
+
+      <!-- 工具栏 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;">
+        <div>
+          <span style="font-weight:bold;color:#333;">达人公海</span>
+          <span style="color:#999;font-size:14px;margin-left:8px;">共312223个达人</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="mock-button" style="padding:6px 12px;border:1px solid #d9d9d9;background:#fff;color:#666;">批量操作 ▼</button>
+          <button class="mock-button" style="padding:6px 12px;border:1px solid #d9d9d9;background:#fff;color:#666;">⚙ 配置</button>
+          <button class="mock-button" style="padding:6px 12px;background:#0066ff;color:#fff;border:none;">+ 添加达人</button>
+        </div>
+      </div>
+
+      <!-- 数据表格 -->
+      <div style="margin-top:16px;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead style="background:#f5f7fa;">
+            <tr>
+              <th style="padding:12px 8px;width:40px;"><input type="checkbox"></th>
+              <th style="padding:12px 8px;text-align:left;">达人信息</th>
+              <th style="padding:12px 8px;">粉丝数 ↕</th>
+              <th style="padding:12px 8px;">带货类目</th>
+              <th style="padding:12px 8px;">近30日成交金额 ↕</th>
+              <th style="padding:12px 8px;">近30日销量 ↕</th>
+              <th style="padding:12px 8px;">场均成交金额 ↕</th>
+              <th style="padding:12px 8px;">跟进BD</th>
+              <th style="padding:12px 8px;">标签</th>
+              <th style="padding:12px 8px;">最近释放时间 ↕</th>
+              <th style="padding:12px 8px;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f0f0f0;">
+              <td style="padding:12px 8px;"><input type="checkbox"></td>
+              <td style="padding:12px 8px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:40px;height:40px;background:#e8e8e8;border-radius:50%;"></div>
+                  <div>
+                    <div style="display:flex;align-items:center;gap:4px;color:#333;">
+                      @username ✓ <span style="background:#ffe6f0;color:#ff66cc;padding:1px 6px;border-radius:10px;font-size:10px;">LV5</span>
+                    </div>
+                    <div style="color:#999;font-size:11px;margin-top:2px;">达人名称</div>
+                    <div style="display:inline-block;background:#fff0e6;color:#ff6600;padding:1px 6px;border-radius:10px;font-size:10px;margin-top:2px;">美国</div>
+                  </div>
+                </div>
+              </td>
+              <td style="padding:12px 8px;text-align:center;">👤 10.22w</td>
+              <td style="padding:12px 8px;text-align:center;"><span style="background:#f5f7fa;color:#666;padding:2px 8px;border-radius:10px;">美妆个护</span></td>
+              <td style="padding:12px 8px;text-align:right;">￥10,000</td>
+              <td style="padding:12px 8px;text-align:right;">1,234</td>
+              <td style="padding:12px 8px;text-align:right;">￥5,000</td>
+              <td style="padding:12px 8px;">张三</td>
+              <td style="padding:12px 8px;"><span style="background:#e6f0ff;color:#0066ff;padding:2px 8px;border-radius:10px;">优质</span></td>
+              <td style="padding:12px 8px;color:#999;">2025-08-06 17:28</td>
+              <td style="padding:12px 8px;">
+                <span style="color:#0066ff;cursor:pointer;">跟进</span>
+                <span style="color:#0066ff;cursor:pointer;margin-left:8px;">分配</span>
+                <span style="color:#0066ff;cursor:pointer;margin-left:8px;">删除</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 分页 -->
+      <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
+        <button style="width:32px;height:32px;border:1px solid #d9d9d9;background:#fff;border-radius:4px;">◀</button>
+        <button style="width:32px;height:32px;border:1px solid #0066ff;background:#0066ff;color:#fff;border-radius:4px;">1</button>
+        <button style="width:32px;height:32px;border:1px solid #d9d9d9;background:#fff;color:#666;border-radius:4px;">2</button>
+        <button style="width:32px;height:32px;border:1px solid #d9d9d9;background:#fff;color:#666;border-radius:4px;">3</button>
+        <button style="width:32px;height:32px;border:1px solid #d9d9d9;background:#fff;color:#999;border-radius:4px;">...</button>
+        <button style="width:32px;height:32px;border:1px solid #d9d9d9;background:#fff;color:#666;border-radius:4px;">43</button>
+        <button style="width:32px;height:32px;border:1px solid #d9d9d9;background:#fff;border-radius:4px;">▶</button>
+        <select style="width:70px;height:32px;border:1px solid #d9d9d9;border-radius:4px;margin-left:16px;">
+          <option>10条/页</option>
+        </select>
+        <span style="color:#999;font-size:12px;margin-left:16px;">跳至 <input style="width:40px;height:24px;border:1px solid #d9d9d9;border-radius:4px;text-align:center;"> 页</span>
+        <span style="color:#999;font-size:12px;margin-left:8px;">共40条记录 第1/8页</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>关键组件说明</h3>
+  <ul style="font-size:13px;color:#666;line-height:1.8;margin-left:20px;">
+    <li><strong>顶部筛选区</strong>：平台Tab切换 + 搜索框 + 多行筛选条件（国家/分类/带货信息）</li>
+    <li><strong>工具栏</strong>：标题 + 批量操作下拉 + 配置按钮 + 添加达人按钮</li>
+    <li><strong>数据表格</strong>：11列表头，支持排序，数据行64px高</li>
+    <li><strong>分页控件</strong>：首页/页码/末页 + 每页条数选择 + 跳转功能</li>
+  </ul>
+</div>

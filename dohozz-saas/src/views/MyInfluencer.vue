@@ -1,5 +1,5 @@
 <template>
-  <div class="influencer-public-pool">
+  <div class="my-influencer">
     <!-- ==================== 平台Tab区 ==================== -->
     <div class="platform-section">
       <div class="platform-tabs">
@@ -43,6 +43,45 @@
             <el-button @click="handleSearch">搜索</el-button>
           </template>
         </el-input>
+        <el-select v-model="filterDepartment" placeholder="全部部门" clearable class="filter-select">
+          <el-option label="全部部门" value="" />
+          <el-option label="销售部" value="sales" />
+          <el-option label="市场部" value="marketing" />
+          <el-option label="运营部" value="operation" />
+        </el-select>
+        <el-select v-model="filterBD" placeholder="全部BD" clearable class="filter-select">
+          <el-option label="全部BD" value="" />
+          <el-option label="张三" value="zhangsan" />
+          <el-option label="李四" value="lisi" />
+          <el-option label="王五" value="wangwu" />
+        </el-select>
+        <div class="date-range">
+          <span class="date-label">跟进时间:</span>
+          <el-date-picker
+            v-model="dateRange"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            class="date-picker"
+          />
+        </div>
+        <div class="deal-range">
+          <span class="date-label">成交数据:</span>
+          <el-date-picker
+            v-model="dealRange"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            class="date-picker"
+          />
+        </div>
+        <el-checkbox v-model="onlyMyInfluencer" class="only-my-checkbox">只看我的达人</el-checkbox>
       </div>
 
       <!-- 筛选条件（三行） -->
@@ -139,8 +178,7 @@
     <!-- ==================== 工具栏 ==================== -->
     <div class="toolbar-section">
       <div class="toolbar-left">
-        <h2 class="page-title">达人公海</h2>
-        <span class="total-count">共 {{ totalCount }} 个达人</span>
+        <h2 class="page-title">我的达人</h2>
       </div>
       <div class="toolbar-right">
         <el-dropdown @command="handleBatchCommand" trigger="click">
@@ -148,13 +186,6 @@
             批量操作
             <el-icon><ArrowDown /></el-icon>
           </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="follow">批量跟进</el-dropdown-item>
-              <el-dropdown-item command="assign">批量分配</el-dropdown-item>
-              <el-dropdown-item command="delete" class="delete-item">批量删除</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
         </el-dropdown>
         <el-button class="config-btn">配置</el-button>
         <el-button type="primary" class="add-btn">
@@ -164,13 +195,27 @@
       </div>
     </div>
 
+    <!-- ==================== 状态标签 ==================== -->
+    <div class="status-tabs">
+      <div
+        v-for="tab in statusTabs"
+        :key="tab.key"
+        class="status-tab"
+        :class="{ active: activeStatus === tab.key }"
+        @click="handleStatusChange(tab.key)"
+      >
+        <span class="status-text">{{ tab.label }}</span>
+        <span class="status-count">({{ tab.count }})</span>
+      </div>
+    </div>
+
     <!-- ==================== 数据表格 ==================== -->
     <div class="table-section">
       <el-table
         :data="paginatedData"
         style="width: 100%"
         @selection-change="handleSelectionChange"
-        :default-sort="{ prop: 'recentReleaseTime', order: 'descending' }"
+        :default-sort="{ prop: 'followTime', order: 'descending' }"
       >
         <el-table-column type="selection" width="40" />
         <el-table-column label="达人信息" min-width="220" fixed="left">
@@ -199,6 +244,28 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column label="跟进BD" width="100" align="center">
+          <template #default="{ row }">
+            <span v-if="row.bdName" class="bd-name">{{ row.bdName }}</span>
+            <span v-else class="no-bd">-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="标签" width="100" align="center">
+          <template #default="{ row }">
+            <div class="tags-cell">
+              <el-tag
+                v-for="(tag, idx) in row.tags.slice(0, 1)"
+                :key="idx"
+                size="small"
+                class="blue-tag"
+                :style="{ background: '#E6F0FF', color: '#0066FF' }"
+              >
+                {{ tag }}
+              </el-tag>
+              <span v-if="row.tags.length > 1" class="more-tags">+{{ row.tags.length - 1 }}</span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="粉丝数" width="100" align="right" sortable>
           <template #default="{ row }">
             <div class="follower-cell">
@@ -222,49 +289,42 @@
             <span class="gmv-value">￥{{ formatNumber(row.gmv30d) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="近30日销量" width="100" align="right" sortable prop="sales30d">
+        <el-table-column label="成交金额" width="100" align="right" sortable prop="totalGmv">
           <template #default="{ row }">
-            <span>{{ formatSales(row.sales30d) }}</span>
+            <span class="gmv-value">￥{{ formatNumber(row.totalGmv) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="场均成交金额" width="120" align="right" sortable prop="avgGmv">
+        <el-table-column label="成交单数" width="100" align="right" sortable prop="orderCount">
           <template #default="{ row }">
-            <span class="gmv-value">￥{{ formatNumber(row.avgGmv) }}</span>
+            <span>{{ row.orderCount }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="跟进BD" width="100" align="center">
+        <el-table-column label="销量" width="80" align="right" sortable prop="sales">
           <template #default="{ row }">
-            <span v-if="row.bdName" class="bd-name">{{ row.bdName }}</span>
-            <span v-else class="no-bd">-</span>
+            <span>{{ row.sales }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="标签" width="100" align="center">
+        <el-table-column label="跟进时间" width="180" align="center" sortable prop="followTime">
           <template #default="{ row }">
-            <div class="tags-cell">
-              <el-tag
-                v-for="(tag, idx) in row.tags.slice(0, 1)"
-                :key="idx"
-                size="small"
-                class="blue-tag"
-                :style="{ background: '#E6F0FF', color: '#0066FF' }"
-              >
-                {{ tag }}
-              </el-tag>
-              <span v-if="row.tags.length > 1" class="more-tags">+{{ row.tags.length - 1 }}</span>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="最近释放时间" width="180" align="center" sortable prop="recentReleaseTime">
-          <template #default="{ row }">
-            <span class="release-time">{{ row.recentReleaseTime }}</span>
+            <span class="follow-time">{{ row.followTime }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
             <div class="action-btns">
-              <el-button type="primary" link size="small" @click="handleFollow(row)">跟进</el-button>
-              <el-button type="primary" link size="small" @click="handleAssign(row)">分配</el-button>
-              <el-button type="primary" link size="small" class="delete-btn" @click="handleDelete(row)">删除</el-button>
+              <el-button type="primary" link size="small" @click="handleContact(row)">触达达人</el-button>
+              <el-dropdown trigger="click">
+                <el-button type="primary" link size="small">
+                  <el-icon><ArrowDown /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="handleViewDetails(row)">查看详情</el-dropdown-item>
+                    <el-dropdown-item @click="handleEdit(row)">编辑</el-dropdown-item>
+                    <el-dropdown-item @click="handleDelete(row)">删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </template>
         </el-table-column>
@@ -355,14 +415,33 @@ const isFilterExpanded = ref(true)
 // 搜索
 const searchInput = ref('')
 
+// 筛选
+const filterDepartment = ref('')
+const filterBD = ref('')
+const dateRange = ref([])
+const dealRange = ref([])
+const onlyMyInfluencer = ref(false)
+
 // 筛选标签
 const selectedCountryTags = ref([])
 const selectedCategoryTags = ref([])
 const filterLevel = ref('')
 const filterInteraction = ref('')
 
+// 状态标签
+const statusTabs = [
+  { key: 'all', label: '全部达人', count: 888 },
+  { key: 'toContact', label: '待触达', count: 66 },
+  { key: 'toInvite', label: '待邀约', count: 66 },
+  { key: 'toApprove', label: '待审单', count: 66 },
+  { key: 'toFulfill', label: '待履约', count: 66 },
+  { key: 'cooperating', label: '合作中', count: 66 },
+  { key: 'completed', label: '合作完成', count: 66 }
+]
+const activeStatus = ref('all')
+
 // 工具栏
-const totalCount = ref(156)
+const totalCount = ref(888)
 const selectedRows = ref([])
 
 // 分页
@@ -389,11 +468,12 @@ const mockData = ref([
     followers: 102200,
     categories: ['美妆个护', '服饰鞋包'],
     gmv30d: 1000000,
-    sales30d: 1234,
-    avgGmv: 50000,
+    totalGmv: 1000000,
+    orderCount: 1234,
+    sales: 1234,
     bdName: '张三',
     tags: ['高转化', '优质'],
-    recentReleaseTime: '2025-08-06 17:28:40'
+    followTime: '2025-08-06 17:28:40'
   },
   {
     id: 2,
@@ -406,11 +486,12 @@ const mockData = ref([
     followers: 85000,
     categories: ['数码科技'],
     gmv30d: 580000,
-    sales30d: 856,
-    avgGmv: 32000,
+    totalGmv: 580000,
+    orderCount: 856,
+    sales: 856,
     bdName: '',
     tags: ['科技达人'],
-    recentReleaseTime: '2025-08-05 14:20:10'
+    followTime: '2025-08-05 14:20:10'
   },
   {
     id: 3,
@@ -423,11 +504,12 @@ const mockData = ref([
     followers: 156000,
     categories: ['美妆个护', '母婴用品'],
     gmv30d: 1200000,
-    sales30d: 2100,
-    avgGmv: 65000,
+    totalGmv: 1200000,
+    orderCount: 2100,
+    sales: 2100,
     bdName: '李四',
     tags: ['顶级达人', '高客单价'],
-    recentReleaseTime: '2025-08-04 09:15:30'
+    followTime: '2025-08-04 09:15:30'
   },
   {
     id: 4,
@@ -440,11 +522,12 @@ const mockData = ref([
     followers: 45600,
     categories: ['食品饮料'],
     gmv30d: 320000,
-    sales30d: 1580,
-    avgGmv: 18000,
+    totalGmv: 320000,
+    orderCount: 1580,
+    sales: 1580,
     bdName: '',
     tags: ['美食达人'],
-    recentReleaseTime: '2025-08-03 18:45:20'
+    followTime: '2025-08-03 18:45:20'
   },
   {
     id: 5,
@@ -457,11 +540,12 @@ const mockData = ref([
     followers: 78000,
     categories: ['运动户外'],
     gmv30d: 680000,
-    sales30d: 980,
-    avgGmv: 42000,
+    totalGmv: 680000,
+    orderCount: 980,
+    sales: 980,
     bdName: '王五',
     tags: ['运动达人'],
-    recentReleaseTime: '2025-08-02 11:30:45'
+    followTime: '2025-08-02 11:30:45'
   },
   {
     id: 6,
@@ -474,11 +558,12 @@ const mockData = ref([
     followers: 210000,
     categories: ['家居生活', '母婴用品'],
     gmv30d: 1500000,
-    sales30d: 3200,
-    avgGmv: 78000,
+    totalGmv: 1500000,
+    orderCount: 3200,
+    sales: 3200,
     bdName: '',
     tags: ['家居达人', '优质'],
-    recentReleaseTime: '2025-08-01 16:20:00'
+    followTime: '2025-08-01 16:20:00'
   },
   {
     id: 7,
@@ -491,11 +576,12 @@ const mockData = ref([
     followers: 92000,
     categories: ['服饰鞋包'],
     gmv30d: 890000,
-    sales30d: 1450,
-    avgGmv: 55000,
+    totalGmv: 890000,
+    orderCount: 1450,
+    sales: 1450,
     bdName: '张三',
     tags: ['时尚达人'],
-    recentReleaseTime: '2025-07-31 20:10:15'
+    followTime: '2025-07-31 20:10:15'
   },
   {
     id: 8,
@@ -508,11 +594,12 @@ const mockData = ref([
     followers: 38000,
     categories: ['数码科技'],
     gmv30d: 280000,
-    sales30d: 620,
-    avgGmv: 22000,
+    totalGmv: 280000,
+    orderCount: 620,
+    sales: 620,
     bdName: '',
     tags: ['科技达人'],
-    recentReleaseTime: '2025-07-30 08:45:30'
+    followTime: '2025-07-30 08:45:30'
   },
   {
     id: 9,
@@ -525,11 +612,12 @@ const mockData = ref([
     followers: 185000,
     categories: ['美妆个护', '服饰鞋包'],
     gmv30d: 2100000,
-    sales30d: 4500,
-    avgGmv: 95000,
+    totalGmv: 2100000,
+    orderCount: 4500,
+    sales: 4500,
     bdName: '李四',
     tags: ['顶级达人', '高转化'],
-    recentReleaseTime: '2025-07-29 14:30:20'
+    followTime: '2025-07-29 14:30:20'
   },
   {
     id: 10,
@@ -542,45 +630,12 @@ const mockData = ref([
     followers: 134000,
     categories: ['母婴用品', '家居生活'],
     gmv30d: 980000,
-    sales30d: 2100,
-    avgGmv: 48000,
+    totalGmv: 980000,
+    orderCount: 2100,
+    sales: 2100,
     bdName: '',
     tags: ['母婴达人'],
-    recentReleaseTime: '2025-07-28 10:20:40'
-  },
-  {
-    id: 11,
-    avatar: '',
-    username: 'fitness_coach',
-    name: 'John Smith',
-    level: 'LV3',
-    country: '马来西亚',
-    verified: false,
-    followers: 52000,
-    categories: ['运动户外'],
-    gmv30d: 420000,
-    sales30d: 890,
-    avgGmv: 35000,
-    bdName: '王五',
-    tags: ['运动达人'],
-    recentReleaseTime: '2025-07-27 15:10:25'
-  },
-  {
-    id: 12,
-    avatar: '',
-    username: 'cooking_master',
-    name: 'Chef Wang',
-    level: 'LV5',
-    country: '印度尼西亚',
-    verified: true,
-    followers: 168000,
-    categories: ['食品饮料'],
-    gmv30d: 1350000,
-    sales30d: 2800,
-    avgGmv: 72000,
-    bdName: '',
-    tags: ['美食达人', '高转化'],
-    recentReleaseTime: '2025-07-26 09:30:00'
+    followTime: '2025-07-28 10:20:40'
   }
 ])
 
@@ -594,6 +649,11 @@ const paginatedData = computed(() => {
 // 平台切换
 function handlePlatformChange(platform) {
   activePlatform.value = platform
+}
+
+// 状态切换
+function handleStatusChange(status) {
+  activeStatus.value = status
 }
 
 // 收起/展开筛选
@@ -683,12 +743,16 @@ function handleSelectionChange(selection) {
 }
 
 // 单个操作
-function handleFollow(row) {
-  ElMessage.success({ message: '跟进成功', customClass: 'success-toast' })
+function handleContact(row) {
+  ElMessage.success({ message: '触达成功', customClass: 'success-toast' })
 }
 
-function handleAssign(row) {
-  isAssignDialogVisible.value = true
+function handleViewDetails(row) {
+  ElMessage.info('查看详情')
+}
+
+function handleEdit(row) {
+  ElMessage.info('编辑')
 }
 
 function handleDelete(row) {
@@ -739,7 +803,7 @@ function formatSales(num) {
 <style lang="scss" scoped>
 @import '@/styles/_influencer-page.scss';
 
-.influencer-public-pool {
+.my-influencer {
   @extend .page-container;
   padding: 16px 0 24px;
   background: #f5f5f5;
@@ -776,10 +840,42 @@ function formatSales(num) {
 
 .search-row {
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .search-input {
   width: 320px;
+}
+
+.filter-select {
+  width: 120px;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deal-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.date-picker {
+  width: 200px;
+}
+
+.only-my-checkbox {
+  margin-left: 12px;
 }
 
 .filter-rows {
@@ -820,10 +916,6 @@ function formatSales(num) {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.filter-select {
-  width: 160px;
 }
 
 // ==================== 工具栏 ====================
@@ -869,6 +961,43 @@ function formatSales(num) {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+// ==================== 状态标签 ====================
+.status-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+.status-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border-radius: 16px;
+  background: #f5f7fa;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+
+  &:hover {
+    background: #e6f0ff;
+    color: #1677ff;
+  }
+
+  &.active {
+    background: #1677ff;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .status-count {
+    font-size: 12px;
+  }
 }
 
 // ==================== 数据表格 ====================
@@ -980,7 +1109,7 @@ function formatSales(num) {
   color: #999;
 }
 
-.release-time {
+.follow-time {
   font-size: 12px;
   color: #666;
 }

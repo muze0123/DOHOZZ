@@ -190,6 +190,69 @@
         <!-- 商品找达人页面 -->
         <ProductSearchInfluencer v-else-if="activeSidebarMenu === '商品找达人'" />
 
+        <!-- 达人公海页面 -->
+        <InfluencerPublicPool v-else-if="activeSidebarMenu === '达人公海'" />
+
+        <!-- 我的达人页面 -->
+        <MyInfluencer v-else-if="activeSidebarMenu === '我的达人'" />
+
+        <!-- 白名单页面 -->
+        <WhiteList v-else-if="activeSidebarMenu === '白名单'" />
+
+        <!-- 黑名单页面 -->
+        <BlackList v-else-if="activeSidebarMenu === '黑名单'" />
+
+        <!-- 账号信息页面 -->
+        <AccountInfo v-else-if="activeSidebarMenu === '账号信息'" />
+
+        <!-- 其他菜单页面占位 -->
+        <TagManagement v-else-if="activeSidebarMenu === '标签管理'" />
+
+        <!-- 跟进记录页面 -->
+        <FollowUpRecords v-else-if="activeSidebarMenu === '跟进记录'" />
+
+        <!-- 样品管理页面 -->
+        <SampleManagement v-else-if="activeSidebarMenu === '样品管理'" />
+
+        <!-- 视频履约页面 -->
+        <VideoFulfillment v-else-if="activeSidebarMenu === '视频履约'" />
+
+        <!-- 合作管理页面 -->
+        <CooperationManagement v-else-if="activeSidebarMenu === '合作管理'" />
+
+        <!-- 团长列表页面 -->
+        <LeaderList v-else-if="activeSidebarMenu === '团长列表'" />
+
+        <!-- 团长合作页面 -->
+        <LeaderCooperation v-else-if="activeSidebarMenu === '团长合作'" />
+
+        <!-- 商品库页面 -->
+        <ProductLibrary v-else-if="activeSidebarMenu === '商品库'" />
+
+        <!-- 商品分析页面 -->
+        <ProductAnalysis v-else-if="activeSidebarMenu === '商品分析'" />
+
+        <!-- 店铺管理页面 -->
+        <ShopManagement v-else-if="activeSidebarMenu === '店铺管理'" />
+
+        <!-- 订单管理页面 -->
+        <OrderManagement v-else-if="activeSidebarMenu === '订单管理'" />
+
+        <!-- 成员管理页面 -->
+        <MemberManagement v-else-if="activeSidebarMenu === '成员管理'" />
+
+        <!-- 部门管理页面 -->
+        <DepartmentManagement v-else-if="activeSidebarMenu === '部门管理'" />
+
+        <!-- 角色管理页面 -->
+        <RoleManagement v-else-if="activeSidebarMenu === '角色管理'" />
+
+        <!-- 业务配置页面 -->
+        <BusinessConfig v-else-if="activeSidebarMenu === '业务配置'" />
+
+        <!-- 汇率设置页面 -->
+        <ExchangeRate v-else-if="activeSidebarMenu === '汇率设置'" />
+
         <!-- 其他菜单页面占位 -->
         <div v-else class="empty-page">
           <div class="empty-content">
@@ -205,7 +268,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, h, provide, onMounted } from 'vue'
+import { ref, reactive, computed, watch, h, provide, onMounted, nextTick } from 'vue'
 import { ElMessage, ElAvatar } from 'element-plus'
 import DataOverview from './DataOverview.vue'
 import Workspace from './Workspace.vue'
@@ -221,6 +284,27 @@ import NaturalOrderInfluencer from './NaturalOrderInfluencer.vue'
 import ProductSearchInfluencer from './ProductSearchInfluencer.vue'
 import SmartRecommendation from './SmartRecommendation.vue'
 import ImportInfluencerLeads from './ImportInfluencerLeads.vue'
+import InfluencerPublicPool from './InfluencerPublicPool.vue'
+import MyInfluencer from './MyInfluencer.vue'
+import WhiteList from './WhiteList.vue'
+import BlackList from './BlackList.vue'
+import AccountInfo from './AccountInfo.vue'
+import TagManagement from './TagManagement.vue'
+import FollowUpRecords from './FollowUpRecords.vue'
+import SampleManagement from './SampleManagement.vue'
+import VideoFulfillment from './VideoFulfillment.vue'
+import CooperationManagement from './CooperationManagement.vue'
+import LeaderList from './LeaderList.vue'
+import LeaderCooperation from './LeaderCooperation.vue'
+import ProductLibrary from './ProductLibrary.vue'
+import ProductAnalysis from './ProductAnalysis.vue'
+import ShopManagement from './ShopManagement.vue'
+import OrderManagement from './OrderManagement.vue'
+import MemberManagement from './MemberManagement.vue'
+import DepartmentManagement from './DepartmentManagement.vue'
+import RoleManagement from './RoleManagement.vue'
+import BusinessConfig from './BusinessConfig.vue'
+import ExchangeRate from './ExchangeRate.vue'
 
 const UserIcon = {
   render() {
@@ -241,6 +325,7 @@ const activeNavMenu = ref('达人合作')
 const activeSidebarMenu = ref(localStorage.getItem('lastActiveMenu') || '工作台')
 const thirdLevelPage = ref(localStorage.getItem('lastThirdLevelPage') || '') // 用于第三层级页面，如创建报表
 const openSubmenus = reactive({})
+const isRestoring = ref(false) // 标记是否正在恢复保存的菜单状态
 
 // 提供给子组件的方法
 const setThirdLevelPage = (page) => {
@@ -261,10 +346,35 @@ watch(thirdLevelPage, (newVal) => {
 onMounted(() => {
   const lastMenu = localStorage.getItem('lastActiveMenu')
   if (lastMenu) {
-    sidebarMenuItems.value.forEach(item => {
-      if (item.children && item.children.some(child => child.name === lastMenu)) {
-        openSubmenus[item.name] = true
+    // 标记为恢复状态，防止 watch ActiveNavMenu 重置菜单
+    isRestoring.value = true
+
+    // 先根据保存的菜单找到对应的 nav menu
+    const scenarioConfig = sidebarMenuConfig[currentScenario.value]
+    for (const navMenu of Object.keys(scenarioConfig)) {
+      const items = scenarioConfig[navMenu]
+      const found = items.find(item =>
+        item.name === lastMenu || (item.children && item.children.some(child => child.name === lastMenu))
+      )
+      if (found) {
+        activeNavMenu.value = navMenu
+        break
       }
+    }
+
+    // 再打开对应的子菜单并设置选中菜单
+    nextTick(() => {
+      // 先打开子菜单
+      sidebarMenuItems.value.forEach(item => {
+        if (item.children && item.children.some(child => child.name === lastMenu)) {
+          openSubmenus[item.name] = true
+        }
+      })
+      // 最后设置选中的侧边栏菜单
+      activeSidebarMenu.value = lastMenu
+
+      // 恢复完成
+      isRestoring.value = false
     })
   }
 })
@@ -322,7 +432,11 @@ watch(currentScenario, (newVal) => {
 })
 
 // 当B区菜单切换时，重置左侧激活菜单
-watch(activeNavMenu, () => {
+watch(activeNavMenu, (newVal, oldVal) => {
+  // 如果是初始加载且已有保存的菜单，不重置activeSidebarMenu
+  if (isRestoring.value && localStorage.getItem('lastActiveMenu')) {
+    return
+  }
   const items = sidebarMenuItems.value
   if (items.length > 0) {
     activeSidebarMenu.value = items[0].name
@@ -390,14 +504,26 @@ const sidebarMenuConfig = {
         { name: '导入达人线索' }
       ]},
       { name: '达人管理', icon: icons.person, children: [
-        { name: '达人公海' }
+        { name: '达人公海' },
+        { name: '我的达人' },
+        { name: '白名单' },
+        { name: '黑名单' },
+        { name: '标签管理' },
+        { name: '跟进记录' }
       ]},
       { name: '批量建联', icon: icons.group },
       { name: '样品管理', icon: icons.sample },
       { name: '视频履约', icon: icons.video },
       { name: '合作管理', icon: icons.cooperation },
-      { name: '团长管理', icon: icons.globe },
-      { name: '店铺商品', icon: icons.shop },
+      { name: '团长管理', icon: icons.globe, children: [
+        { name: '团长列表' },
+        { name: '团长合作' }
+      ]},
+      { name: '店铺商品', icon: icons.shop, children: [
+        { name: '商品库' },
+        { name: '商品分析' },
+        { name: '店铺管理' }
+      ]},
       { name: '订单管理', icon: icons.order }
     ],
     '内容中心': [
@@ -421,7 +547,6 @@ const sidebarMenuConfig = {
       { name: '角色管理', icon: icons.role },
       { name: '业务配置', icon: icons.config },
       { name: '汇率设置', icon: icons.exchange },
-      { name: '权限管理', icon: icons.permission },
       { name: '账号信息', icon: icons.account }
     ]
   },
@@ -443,7 +568,6 @@ const sidebarMenuConfig = {
       { name: '角色管理', icon: icons.role },
       { name: '业务配置', icon: icons.config },
       { name: '汇率设置', icon: icons.exchange },
-      { name: '权限管理', icon: icons.permission },
       { name: '账号信息', icon: icons.account }
     ]
   }
