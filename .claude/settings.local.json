@@ -31,7 +31,8 @@
       "Bash(kill -9 60653 52311 52312 46881 46882 25524 25525)",
       "Bash(./scripts/start-server.sh --project-dir /Users/zhangbin/Documents/DOHOZZ)",
       "Bash(cat /Users/zhangbin/Documents/DOHOZZ/.superpowers/brainstorm/*/server-info)",
-      "Bash(find /Users/zhangbin/Documents/DOHOZZ/.superpowers -name \"server-info\" -exec cat {} \\\\;)"
+      "Bash(find /Users/zhangbin/Documents/DOHOZZ/.superpowers -name \"server-info\" -exec cat {} \\\\;)",
+      "Bash(open /Users/zhangbin/.claude/projects/-Users-zhangbin-Documents-DOHOZZ/491ce2f1-0555-4371-bfaa-8d6e71b9bcdf/tool-results/webfetch-1777014136857-jxxux3.png)"
     ]
   }
 }

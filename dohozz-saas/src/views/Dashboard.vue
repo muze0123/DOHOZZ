@@ -70,7 +70,7 @@
 
           <!-- 任务列表 -->
           <el-tooltip content="任务列表" placement="bottom" :show-after="300">
-            <div class="c-btn-circle">
+            <div class="c-btn-circle" @click="showTaskCenter = true">
               <svg class="c-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
                 <path d="M17.99 9l-1.41-1.42-6.59 6.59-2.58-2.57-1.42 1.41 4 3.99z"/>
@@ -264,6 +264,9 @@
         </div>
       </main>
     </div>
+
+    <!-- 任务中心抽屉 -->
+    <TaskCenter v-model="showTaskCenter" />
   </div>
 </template>
 
@@ -305,6 +308,7 @@ import DepartmentManagement from './DepartmentManagement.vue'
 import RoleManagement from './RoleManagement.vue'
 import BusinessConfig from './BusinessConfig.vue'
 import ExchangeRate from './ExchangeRate.vue'
+import TaskCenter from './components/TaskCenter.vue'
 
 const UserIcon = {
   render() {
@@ -326,6 +330,7 @@ const activeSidebarMenu = ref(localStorage.getItem('lastActiveMenu') || '工作�
 const thirdLevelPage = ref(localStorage.getItem('lastThirdLevelPage') || '') // 用于第三层级页面，如创建报表
 const openSubmenus = reactive({})
 const isRestoring = ref(false) // 标记是否正在恢复保存的菜单状态
+const showTaskCenter = ref(false) // 控制任务中心抽屉显示
 
 // 提供给子组件的方法
 const setThirdLevelPage = (page) => {
