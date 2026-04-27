@@ -293,6 +293,15 @@ const routes = [
     }
   },
   {
+    path: '/plan-management',
+    name: 'PlanManagement',
+    component: () => import('@/views/PlanManagement.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '计划管理 - DOHOZZ'
+    }
+  },
+  {
     path: '/member-management',
     name: 'MemberManagement',
     component: () => import('@/views/MemberManagement.vue'),

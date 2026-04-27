@@ -234,6 +234,9 @@
         <LiveRecording v-else-if="activeSidebarMenu === '直播录屏'" />
         <MyTrackedInfluencers v-else-if="activeSidebarMenu === '追踪达人'" />
 
+        <!-- 计划管理页面 -->
+        <PlanManagement v-else-if="activeSidebarMenu === '计划管理'" />
+
         <!-- 建联任务页面 -->
         <OutreachTask v-else-if="activeSidebarMenu === '建联任务'" />
 
@@ -339,6 +342,7 @@ import CollaborationLive from './CollaborationLive.vue'
 import ShoppingVideo from './ShoppingVideo.vue'
 import NonCartVideo from './NonCartVideo.vue'
 import MyTrackedInfluencers from './MyTrackedInfluencers.vue'
+import PlanManagement from './PlanManagement.vue'
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
 import LeaderList from './LeaderList.vue'
@@ -655,7 +659,9 @@ const sidebarMenuConfig = {
   seeding: {
     '内容合作': [
       { name: '数据概览', icon: icons.overview },
-      { name: '营销计划', icon: icons.plan },
+      { name: '营销计划', icon: icons.plan, children: [
+        { name: '计划管理' }
+      ]},
       { name: '达人管理', icon: icons.person, children: [
         { name: '达人公海' }
       ]},
