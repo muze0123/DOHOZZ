@@ -14,25 +14,34 @@
 
     <!-- 下方图表区 -->
     <div class="chart-area">
-      <div class="chart-placeholder">
-        <span>TrendChart (Task 7)</span>
-      </div>
-      <div class="chart-placeholder">
-        <span>GMVDistribution (Task 7)</span>
-      </div>
-      <div class="chart-placeholder">
-        <span>CategoryTop5 (Task 8)</span>
-      </div>
+      <TrendChart
+        class="chart-item trend-chart-item"
+        :data="metricData[currentMetric]?.trendData || []"
+        :metric-type="currentMetric"
+      />
+      <GMVDistribution
+        class="chart-item"
+        :data="metricData[currentMetric]?.gmvDistribution || []"
+        @click-row="handleRowClick"
+      />
+      <CategoryTop5
+        class="chart-item"
+        :data="metricData[currentMetric]?.categoryTop5 || []"
+        @click-row="handleRowClick"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import MetricCard from './MetricCard.vue'
+import TrendChart from './TrendChart.vue'
+import GMVDistribution from './GMVDistribution.vue'
+import CategoryTop5 from './CategoryTop5.vue'
 
 export default {
   name: 'AnalysisSection',
-  components: { MetricCard },
+  components: { MetricCard, TrendChart, GMVDistribution, CategoryTop5 },
   props: {
     currentMetric: { type: String, default: 'new' }
   },
@@ -45,6 +54,9 @@ export default {
   methods: {
     selectMetric(type) {
       this.$emit('update:currentMetric', type)
+    },
+    handleRowClick(type, value) {
+      this.$emit('click-row', type, value)
     }
   }
 }
@@ -63,19 +75,10 @@ export default {
 .chart-area {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: 16px;
 }
-.chart-placeholder {
-  background: #f5f5f5;
-  border-radius: 8px;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #999;
-  font-size: 14px;
-}
-.chart-area > div:last-child {
+.trend-chart-item {
   grid-column: 1 / -1;
 }
 </style>
