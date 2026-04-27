@@ -103,40 +103,82 @@
       />
     </div>
 
-    <!-- 新增/编辑弹窗 -->
+    <!-- 新增/编辑模板弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="isEdit ? '编辑模板' : '新增模板'"
+      :title="isEdit ? '编辑触达模板' : '新增触达模板'"
       width="600px"
       :close-on-click-modal="false"
       class="custom-dialog"
     >
       <div class="dialog-form">
+        <!-- 模板名称 -->
         <div class="form-row">
+          <span class="required-star">*</span>
           <span class="form-label">模板名称：</span>
-          <el-input v-model="form.name" placeholder="请输入模板名称" style="width: 400px" />
-        </div>
-        <div class="form-row">
-          <span class="form-label">话术内容：</span>
           <el-input
-            v-model="form.scripts[0]"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入话术内容"
+            v-model="form.name"
+            :maxlength="50"
+            show-word-limit
+            placeholder="请输入模板名称"
             style="width: 400px"
           />
         </div>
-        <div class="form-row">
-          <span class="form-label">封面图：</span>
-          <el-input v-model="form.imageUrl" placeholder="请输入封面图URL" style="width: 400px" />
+
+        <!-- 触达话术 (支持多个) -->
+        <div class="form-row align-start">
+          <span class="required-star">*</span>
+          <span class="form-label">触达话术：</span>
+          <div class="scripts-list">
+            <div v-for="(script, idx) in form.scripts" :key="idx" class="script-row">
+              <el-input
+                v-model="form.scripts[idx]"
+                type="textarea"
+                :rows="2"
+                placeholder="请输入触达话术"
+                style="width: 340px; margin-right: 8px"
+              />
+              <el-button link type="danger" @click="removeScript(idx)" :disabled="form.scripts.length <= 1">删除</el-button>
+            </div>
+            <el-button link type="primary" @click="addScript" :disabled="form.scripts.length >= 10">
+              + 添加触达话术
+            </el-button>
+          </div>
         </div>
-        <div class="form-row">
-          <span class="form-label">关联商品ID：</span>
-          <el-input v-model="form.productId" placeholder="请输入关联商品ID" style="width: 400px" />
+
+        <!-- 图片上传 -->
+        <div class="form-row align-start">
+          <span class="form-label">图片：</span>
+          <div class="image-upload-area">
+            <div v-if="form.imageUrl" class="image-preview">
+              <img :src="form.imageUrl" alt="preview" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" />
+              <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <el-button link type="primary" size="small" @click="previewImage(form.imageUrl)">查看</el-button>
+                <el-button link type="danger" size="small" @click="form.imageUrl = ''">删除</el-button>
+              </div>
+            </div>
+            <el-input v-else v-model="form.imageUrl" placeholder="请输入图片URL" style="width: 300px" />
+          </div>
         </div>
+
+        <!-- 商品ID -->
         <div class="form-row">
+          <span class="form-label">商品ID：</span>
+          <el-input v-model="form.productId" placeholder="请输入商品ID" style="width: 400px" />
+        </div>
+
+        <!-- 备注 -->
+        <div class="form-row align-start">
           <span class="form-label">备注：</span>
-          <el-input v-model="form.remark" type="textarea" :rows="2" placeholder="请输入备注" style="width: 400px" />
+          <el-input
+            v-model="form.remark"
+            type="textarea"
+            :rows="2"
+            :maxlength="100"
+            show-word-limit
+            placeholder="请输入备注"
+            style="width: 400px"
+          />
         </div>
       </div>
       <template #footer>
@@ -147,14 +189,69 @@
       </template>
     </el-dialog>
 
+    <!-- 模板详情弹窗 -->
+    <el-dialog
+      v-model="detailVisible"
+      title="模板详情"
+      width="560px"
+      class="custom-dialog"
+    >
+      <div class="detail-list">
+        <div class="detail-row">
+          <span class="detail-label">模板ID：</span>
+          <span class="detail-value">{{ currentRow?.id || '-' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">模板名称：</span>
+          <span class="detail-value">{{ currentRow?.name || '-' }}</span>
+        </div>
+        <div class="detail-row align-start">
+          <span class="detail-label">触达话术：</span>
+          <div class="detail-scripts">
+            <div v-for="(s, i) in (currentRow?.scripts || [])" :key="i">
+              话术{{ i + 1 }}：{{ s }}
+            </div>
+          </div>
+        </div>
+        <div class="detail-row" v-if="currentRow?.imageUrl">
+          <span class="detail-label">图片：</span>
+          <img :src="currentRow.imageUrl" class="detail-thumb" @click="previewImage(currentRow.imageUrl)" />
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">商品ID：</span>
+          <span class="detail-value">{{ currentRow?.productId || '-' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">创建人：</span>
+          <span class="detail-value">{{ currentRow?.creatorName || '-' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">创建时间：</span>
+          <span class="detail-value">{{ currentRow?.createTime || '-' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">使用次数：</span>
+          <span class="detail-value">{{ currentRow?.useCount ?? '-' }}</span>
+        </div>
+        <div class="detail-row" v-if="currentRow?.remark">
+          <span class="detail-label">备注：</span>
+          <span class="detail-value">{{ currentRow.remark }}</span>
+        </div>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="detailVisible = false">关闭</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
     <!-- 图片预览弹窗 -->
     <el-dialog
       v-model="imagePreviewVisible"
-      title="图片预览"
-      width="600px"
+      width="800px"
     >
       <div class="image-preview-container">
-        <img :src="previewImageUrl" alt="预览图片" style="max-width: 100%" />
+        <img :src="previewImageUrl" alt="预览图片" style="max-width: 100%; display: block; margin: 0 auto;" />
       </div>
     </el-dialog>
   </div>
@@ -262,15 +359,32 @@ const copyProductId = (id) => {
 }
 
 const openDetailDialog = (row) => {
-  // stub for now
+  currentRow.value = row
+  detailVisible.value = true
 }
 
 const openEditDialog = (row) => {
-  // stub for now
+  isEdit.value = true
+  currentRow.value = row
+  form.name = row.name
+  form.scripts = [...row.scripts]
+  form.imageUrl = row.imageUrl
+  form.productId = row.productId
+  form.remark = row.remark || ''
+  dialogVisible.value = true
 }
 
 const previewImage = (url) => {
-  // stub for now
+  previewImageUrl.value = url
+  imagePreviewVisible.value = true
+}
+
+const addScript = () => {
+  form.scripts.push('')
+}
+
+const removeScript = (idx) => {
+  form.scripts.splice(idx, 1)
 }
 
 const handleSave = () => {
@@ -396,21 +510,27 @@ onMounted(() => {
 .dialog-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 
   .form-row {
     display: flex;
-    align-items: flex-start;
-
-    .form-label {
-      width: 100px;
-      font-size: 14px;
-      color: #595959;
-      flex-shrink: 0;
-      line-height: 32px;
-    }
+    align-items: center;
+    &.align-start { align-items: flex-start; }
+    .required-star { color: #FF4D4F; margin-right: 4px; font-size: 14px; line-height: 32px; }
+    .form-label { width: 90px; font-size: 14px; color: #595959; flex-shrink: 0; line-height: 32px; }
   }
 }
+
+.scripts-list { display: flex; flex-direction: column; gap: 8px; }
+.script-row { display: flex; align-items: flex-start; }
+
+.image-upload-area { display: flex; flex-direction: column; }
+.image-preview { display: flex; flex-direction: column; }
+
+.detail-list { display: flex; flex-direction: column; gap: 14px; }
+.detail-row { display: flex; font-size: 14px; align-items: center; &.align-start { align-items: flex-start; } .detail-label { width: 80px; color: #595959; flex-shrink: 0; } .detail-value { color: #262626; flex: 1; } }
+.detail-scripts { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.detail-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer; }
 
 .image-preview-container {
   display: flex;
