@@ -40,6 +40,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import NonCartVideoStatsSection from './components/NonCartVideoStatsSection.vue'
+import NonCartVideoFilterSection from './components/NonCartVideoFilterSection.vue'
 
 // 平台 Tab（默认 TikTok，不含"全部"）
 const platformTabs = [
