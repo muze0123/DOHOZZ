@@ -35,12 +35,7 @@
       "Bash(open /Users/zhangbin/.claude/projects/-Users-zhangbin-Documents-DOHOZZ/491ce2f1-0555-4371-bfaa-8d6e71b9bcdf/tool-results/webfetch-1777014136857-jxxux3.png)",
       "Bash(node:*)",
       "Bash(grep -r \"MessageCenter\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/dist/assets/*.js)",
-      "Bash(git pull:*)",
-      "Bash(git stash:*)",
-      "Bash(git:*)",
-      "Bash(echo \"exit: $?\")",
-      "Bash(cp:*)",
-      "Bash(echo \"Dev server starting, PID=$!\")"
+      "Bash(git pull:*)"
     ]
   }
 }
