@@ -48,7 +48,7 @@
     <!-- 弹窗 -->
     <AddNonCartVideoDialog v-model="addDialogVisible" />
     <SyncPlatformDialog v-model="syncDialogVisible" />
-    <NonCartVideoDetailDialog v-model="detailDialogVisible" />
+    <NonCartVideoDetailDialog v-model="detailDialogVisible" :video="currentDetailVideo" />
   </div>
 </template>
 
@@ -58,6 +58,7 @@ import { ElMessage } from 'element-plus'
 import NonCartVideoStatsSection from './components/NonCartVideoStatsSection.vue'
 import NonCartVideoFilterSection from './components/NonCartVideoFilterSection.vue'
 import NonCartVideoListSection from './components/NonCartVideoListSection.vue'
+import NonCartVideoDetailDialog from './dialogs/NonCartVideoDetailDialog.vue'
 
 // 平台 Tab（默认 TikTok，不含"全部"）
 const platformTabs = [
@@ -76,6 +77,7 @@ const timeRange = ref([])
 const addDialogVisible = ref(false)
 const syncDialogVisible = ref(false)
 const detailDialogVisible = ref(false)
+const currentDetailVideo = ref(null)
 
 // 组件引用
 const filterSectionRef = ref(null)
@@ -212,6 +214,7 @@ function handlePlayVideo(video) {
 }
 
 function handleViewDetail(video) {
+  currentDetailVideo.value = video
   detailDialogVisible.value = true
 }
 
