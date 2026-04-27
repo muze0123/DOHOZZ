@@ -107,8 +107,7 @@
               effect="dark"
             >
               <div class="product-thumbnail">
-                <img v-if="row.productImage" :src="row.productImage" alt="" />
-                <el-icon v-else><Goods /></el-icon>
+                <img :src="row.productImage" alt="" />
               </div>
             </el-tooltip>
             <span v-else class="no-product">--</span>
@@ -215,7 +214,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { VideoPlay, User, Goods, Loading } from '@element-plus/icons-vue'
 
 const props = defineProps({
@@ -337,8 +336,9 @@ const handleDetail = (row) => {
 }
 
 // 选中变化
+const selectedRows = ref([])
 const handleSelectionChange = (selection) => {
-  // 可扩展：支持批量操作
+  selectedRows.value = selection
 }
 
 // 格式化金额
