@@ -58,6 +58,7 @@ import { ElMessage } from 'element-plus'
 import NonCartVideoStatsSection from './components/NonCartVideoStatsSection.vue'
 import NonCartVideoFilterSection from './components/NonCartVideoFilterSection.vue'
 import NonCartVideoListSection from './components/NonCartVideoListSection.vue'
+import AddNonCartVideoDialog from './dialogs/AddNonCartVideoDialog.vue'
 import NonCartVideoDetailDialog from './dialogs/NonCartVideoDetailDialog.vue'
 
 // 平台 Tab（默认 TikTok，不含"全部"）
