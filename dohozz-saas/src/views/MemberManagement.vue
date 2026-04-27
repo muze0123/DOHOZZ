@@ -71,6 +71,11 @@
                 <span class="member-name">{{ row.name }}</span>
               </template>
             </el-table-column>
+            <el-table-column prop="nickname" label="昵称" min-width="100">
+              <template #default="{ row }">
+                <span>{{ row.nickname || '-' }}</span>
+              </template>
+            </el-table-column>
             <el-table-column prop="roleName" label="所属角色" min-width="120" />
             <el-table-column prop="phone" label="手机号" min-width="140">
               <template #default="{ row }">
@@ -90,6 +95,30 @@
             <el-table-column prop="fixedAssets" label="固定资产" min-width="100">
               <template #default="{ row }">
                 <span>{{ row.fixedAssets ? '￥' + row.fixedAssets.toFixed(2) : '-' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="createDate" label="添加日期" min-width="120">
+              <template #default="{ row }">
+                <span>{{ row.createDate || '-' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="entryDate" label="入职时间/工龄" min-width="160">
+              <template #default="{ row }">
+                <span v-if="row.entryDate">{{ row.entryDate }} | {{ calculateWorkDays(row.entryDate) }}</span>
+                <span v-else>-</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="lastUpdateTime" label="最近修改时间" min-width="160">
+              <template #default="{ row }">
+                <span>{{ row.lastUpdateTime || '-' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="status" label="状态" width="100">
+              <template #default="{ row }">
+                <el-switch
+                  :model-value="row.status"
+                  @change="handleStatusChange(row, $event)"
+                />
               </template>
             </el-table-column>
             <el-table-column label="操作" width="120" fixed="right">
@@ -274,14 +303,14 @@ const selectedDeptId = ref('dept0')
 
 // 模拟成员数据
 const mockMemberData = [
-  { id: 'm1', name: '张三', nickname: '小张', phone: '13812345678', roleId: 'r1', roleName: '超级管理员', country: '中国', deptId: 'dept1', deptName: '销售部', deptPath: 'XXX科技有限公司 > 销售部', fixedAssets: 0 },
-  { id: 'm2', name: '李四', nickname: '小李', phone: '13923456789', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept1', deptName: '销售部', deptPath: 'XXX科技有限公司 > 销售部', fixedAssets: 5000.00 },
-  { id: 'm3', name: '王五', nickname: '老王', phone: '13734567890', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept1-1', deptName: '销售一组', deptPath: 'XXX科技有限公司 > 销售部 > 销售一组', fixedAssets: 0 },
-  { id: 'm4', name: '赵六', nickname: '小赵', phone: '13645678901', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept1-2', deptName: '销售二组', deptPath: 'XXX科技有限公司 > 销售部 > 销售二组', fixedAssets: 1200.00 },
-  { id: 'm5', name: '钱七', nickname: '钱多多', phone: '13556789012', roleId: 'r2', roleName: '普通成员', country: '美国', deptId: 'dept2', deptName: '市场部', deptPath: 'XXX科技有限公司 > 市场部', fixedAssets: 0 },
-  { id: 'm6', name: '孙八', nickname: '小孙', phone: '13467890123', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept2-1', deptName: '市场策划组', deptPath: 'XXX科技有限公司 > 市场部 > 市场策划组', fixedAssets: 3000.00 },
-  { id: 'm7', name: '周九', nickname: '老周', phone: '13378901234', roleId: 'r1', roleName: '超级管理员', country: '中国', deptId: 'dept3', deptName: '技术部', deptPath: 'XXX科技有限公司 > 技术部', fixedAssets: 0 },
-  { id: 'm8', name: '吴十', nickname: '小吴', phone: '13289012345', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept3', deptName: '技术部', deptPath: 'XXX科技有限公司 > 技术部', fixedAssets: 8000.00 }
+  { id: 'm1', name: '张三', nickname: '小张', phone: '13812345678', roleId: 'r1', roleName: '超级管理员', country: '中国', deptId: 'dept1', deptName: '销售部', deptPath: 'XXX科技有限公司 > 销售部', fixedAssets: 0, createDate: '2026-04-01', entryDate: '2026-04-01', lastUpdateTime: '2026-04-27 10:30:00', status: true },
+  { id: 'm2', name: '李四', nickname: '小李', phone: '13923456789', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept1', deptName: '销售部', deptPath: 'XXX科技有限公司 > 销售部', fixedAssets: 5000.00, createDate: '2026-04-05', entryDate: '2026-04-05', lastUpdateTime: '2026-04-27 11:20:00', status: true },
+  { id: 'm3', name: '王五', nickname: '老王', phone: '13734567890', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept1-1', deptName: '销售一组', deptPath: 'XXX科技有限公司 > 销售部 > 销售一组', fixedAssets: 0, createDate: '2026-04-10', entryDate: '2026-04-10', lastUpdateTime: '2026-04-27 09:15:00', status: false },
+  { id: 'm4', name: '赵六', nickname: '小赵', phone: '13645678901', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept1-2', deptName: '销售二组', deptPath: 'XXX科技有限公司 > 销售部 > 销售二组', fixedAssets: 1200.00, createDate: '2026-04-12', entryDate: '2026-04-12', lastUpdateTime: '2026-04-27 14:45:00', status: true },
+  { id: 'm5', name: '钱七', nickname: '钱多多', phone: '13556789012', roleId: 'r2', roleName: '普通成员', country: '美国', deptId: 'dept2', deptName: '市场部', deptPath: 'XXX科技有限公司 > 市场部', fixedAssets: 0, createDate: '2026-04-15', entryDate: '2026-04-15', lastUpdateTime: '2026-04-27 16:30:00', status: true },
+  { id: 'm6', name: '孙八', nickname: '小孙', phone: '13467890123', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept2-1', deptName: '市场策划组', deptPath: 'XXX科技有限公司 > 市场部 > 市场策划组', fixedAssets: 3000.00, createDate: '2026-04-18', entryDate: '2026-04-18', lastUpdateTime: '2026-04-27 13:00:00', status: false },
+  { id: 'm7', name: '周九', nickname: '老周', phone: '13378901234', roleId: 'r1', roleName: '超级管理员', country: '中国', deptId: 'dept3', deptName: '技术部', deptPath: 'XXX科技有限公司 > 技术部', fixedAssets: 0, createDate: '2026-04-20', entryDate: '2026-04-20', lastUpdateTime: '2026-04-27 08:00:00', status: true },
+  { id: 'm8', name: '吴十', nickname: '小吴', phone: '13289012345', roleId: 'r2', roleName: '普通成员', country: '中国', deptId: 'dept3', deptName: '技术部', deptPath: 'XXX科技有限公司 > 技术部', fixedAssets: 8000.00, createDate: '2026-04-22', entryDate: '2026-04-22', lastUpdateTime: '2026-04-27 17:00:00', status: true }
 ]
 
 const allMembers = ref(mockMemberData)
@@ -501,6 +530,36 @@ function handleSearchInput() {
 
 function handleSearchClear() {
   searchKeyword.value = ''
+}
+
+function calculateWorkDays(entryDate) {
+  if (!entryDate) return '-'
+  const entry = new Date(entryDate)
+  const today = new Date()
+  const diffTime = today.getTime() - entry.getTime()
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  if (diffDays === 0) return '0天'
+  if (diffDays === 1) return '1天'
+  return diffDays + '天'
+}
+
+function handleStatusChange(row, newStatus) {
+  const member = allMembers.value.find(m => m.id === row.id)
+  if (member) {
+    member.status = newStatus
+    member.lastUpdateTime = formatDateTime(new Date())
+    ElMessage.success(newStatus ? '已启用' : '已禁用')
+  }
+}
+
+function formatDateTime(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
 // 成员操作
