@@ -107,14 +107,7 @@
         <div class="section-head"><span class="section-title">店铺 GMV 分布</span></div>
         <div class="gmv-content">
           <div class="donut-wrapper">
-            <svg viewBox="0 0 180 180" width="180" height="180">
-              <circle cx="90" cy="90" r="65" fill="none" stroke="#f0f0f0" stroke-width="26"/>
-              <circle cx="90" cy="90" r="65" fill="none" stroke="#1677ff" stroke-width="26" :stroke-dasharray="storeGmvArcs[0].dash" stroke-dashoffset="0" transform="rotate(-90 90 90)" class="donut-arc"/>
-              <circle cx="90" cy="90" r="65" fill="none" stroke="#36cfc9" stroke-width="26" :stroke-dasharray="storeGmvArcs[1].dash" :stroke-dashoffset="storeGmvArcs[1].offset" transform="rotate(-90 90 90)" class="donut-arc"/>
-              <circle cx="90" cy="90" r="65" fill="none" stroke="#ffc53d" stroke-width="26" :stroke-dasharray="storeGmvArcs[2].dash" :stroke-dashoffset="storeGmvArcs[2].offset" transform="rotate(-90 90 90)" class="donut-arc"/>
-              <text x="90" y="84" text-anchor="middle" fill="#1e293b" font-size="16" font-weight="700">¥133.32w</text>
-              <text x="90" y="102" text-anchor="middle" fill="#94a3b8" font-size="11">总成交金额</text>
-            </svg>
+            <div ref="storeGmvChartRef" style="width: 180px; height: 180px;"></div>
           </div>
           <div class="gmv-legend-list">
             <div v-for="(s, i) in storeGmvData" :key="i" class="gmv-legend-item">
@@ -132,12 +125,7 @@
         <div class="section-head"><span class="section-title">载体 GMV 分布</span></div>
         <div class="gmv-content">
           <div class="donut-wrapper">
-            <svg viewBox="0 0 180 180" width="180" height="180">
-              <circle cx="90" cy="90" r="65" fill="none" stroke="#f0f0f0" stroke-width="26"/>
-              <circle cx="90" cy="90" r="65" fill="none" stroke="#597ef7" stroke-width="26" stroke-dasharray="204 204" stroke-dashoffset="0" transform="rotate(-90 90 90)" class="donut-arc"/>
-              <circle cx="90" cy="90" r="65" fill="none" stroke="#73d13d" stroke-width="26" stroke-dasharray="102 306" stroke-dashoffset="-204" transform="rotate(-90 90 90)" class="donut-arc"/>
-              <circle cx="90" cy="90" r="65" fill="none" stroke="#ffc53d" stroke-width="26" stroke-dasharray="102 306" stroke-dashoffset="-306" transform="rotate(-90 90 90)" class="donut-arc"/>
-            </svg>
+            <div ref="carrierGmvChartRef" style="width: 180px; height: 180px;"></div>
           </div>
           <div class="gmv-legend-list">
             <div v-for="(c, i) in carrierGmvData" :key="i" class="gmv-legend-item">
@@ -430,8 +418,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElAvatar, ElMessageBox } from 'element-plus'
+import * as echarts from 'echarts'
 
 // ===== 区域A：筛选 =====
 const filters = reactive({
@@ -529,6 +518,121 @@ const carrierGmvData = reactive([
   { name: '视频', amount: '¥33.33w', pct: '25%', color: '#73d13d' },
   { name: '直播', amount: '¥33.33w', pct: '25%', color: '#ffc53d' }
 ])
+
+// ===== ECharts 图表 =====
+const storeGmvChartRef = ref(null)
+const carrierGmvChartRef = ref(null)
+let storeGmvChart = null
+let carrierGmvChart = null
+
+// 初始化店铺GMV图表
+const initStoreGmvChart = () => {
+  if (storeGmvChartRef.value) {
+    storeGmvChart = echarts.init(storeGmvChartRef.value)
+    const option = {
+      series: [
+        {
+          type: 'pie',
+          radius: ['45%', '70%'],
+          center: ['50%', '50%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 0,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          label: {
+            show: false,
+            position: 'center'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 16,
+              fontWeight: 'bold',
+              formatter: '{b}\n{c}'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: storeGmvData.map(item => ({
+            value: parseFloat(item.amount.replace(/[^0-9.]/g, '')),
+            name: item.name,
+            itemStyle: {
+              color: item.color
+            }
+          }))
+        }
+      ]
+    }
+    storeGmvChart.setOption(option)
+  }
+}
+
+// 初始化载体GMV图表
+const initCarrierGmvChart = () => {
+  if (carrierGmvChartRef.value) {
+    carrierGmvChart = echarts.init(carrierGmvChartRef.value)
+    const option = {
+      series: [
+        {
+          type: 'pie',
+          radius: ['45%', '70%'],
+          center: ['50%', '50%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 0,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          label: {
+            show: false,
+            position: 'center'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 16,
+              fontWeight: 'bold',
+              formatter: '{b}\n{c}'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: carrierGmvData.map(item => ({
+            value: parseFloat(item.amount.replace(/[^0-9.]/g, '')),
+            name: item.name,
+            itemStyle: {
+              color: item.color
+            }
+          }))
+        }
+      ]
+    }
+    carrierGmvChart.setOption(option)
+  }
+}
+
+// 响应式调整图表大小
+const handleResize = () => {
+  storeGmvChart?.resize()
+  carrierGmvChart?.resize()
+}
+
+// 生命周期钩子
+onMounted(() => {
+  initStoreGmvChart()
+  initCarrierGmvChart()
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+  storeGmvChart?.dispose()
+  carrierGmvChart?.dispose()
+})
 
 // ===== 区域E：动销数据 =====
 const saleTab = ref('talent')

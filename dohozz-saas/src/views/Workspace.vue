@@ -52,12 +52,14 @@
         <!-- 待办事项区 -->
         <div class="section todo-section">
           <div class="section-header">
-            <span class="section-title">待办事项</span>
-            <div class="section-desc">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-              </svg>
-              <span>当前与跟进达人相关的待办事项，请及时处理</span>
+            <div class="section-title-group">
+              <span class="section-title">待办事项</span>
+              <div class="section-desc">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                  <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                </svg>
+                <span>当前与跟进达人相关的待办事项，请及时处理</span>
+              </div>
             </div>
           </div>
           <div class="todo-cards-grid">
@@ -625,6 +627,10 @@ $transition-fast: 150ms ease;
   :deep(.el-select) {
     width: 120px;
   }
+  
+  :deep(.el-select__selected-item span) {
+    color: #000000 !important;
+  }
 }
 
 // 中间层布局
@@ -671,7 +677,8 @@ $transition-fast: 150ms ease;
 
 .section-title-group {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
 }
 
 .section-title {
@@ -824,6 +831,7 @@ $transition-fast: 150ms ease;
 .performance-month-picker {
   :deep(.el-input__wrapper) {
     border-radius: $border-radius-sm;
+    width: 180px;
   }
 }
 
@@ -950,7 +958,7 @@ $transition-fast: 150ms ease;
   .stat-label {
     width: 100px;
     font-size: 13px;
-    color: $secondary-text;
+    color: #000000;
     flex-shrink: 0;
   }
 
