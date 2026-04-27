@@ -281,9 +281,6 @@
         <!-- 汇率设置页面 -->
         <ExchangeRate v-else-if="activeSidebarMenu === '汇率设置'" />
 
-        <!-- 消息中心页面 -->
-        <MessageCenter v-else-if="showMessageCenter" />
-
         <!-- 其他菜单页面占位 -->
         <div v-else class="empty-page">
           <div class="empty-content">
@@ -350,7 +347,6 @@ import RoleManagement from './RoleManagement.vue'
 import BusinessConfig from './BusinessConfig.vue'
 import MessageSettings from './MessageSettings.vue'
 import ExchangeRate from './ExchangeRate.vue'
-import MessageCenter from './MessageCenter.vue'
 import TaskCenter from './components/TaskCenter.vue'
 
 const UserIcon = {
@@ -374,23 +370,11 @@ const thirdLevelPage = ref(localStorage.getItem('lastThirdLevelPage') || '') // 
 const openSubmenus = reactive({})
 const isRestoring = ref(false) // 标记是否正在恢复保存的菜单状态
 const showTaskCenter = ref(false) // 控制任务中心抽屉显示
-const showMessageCenter = ref(false) // 控制消息中心页面显示
 
 // 消息中心点击处理
 const handleMessageCenterClick = () => {
-  if (showMessageCenter.value) {
-    // 已经打开消息中心，关闭并显示左侧菜单，选中第一个菜单
-    showMessageCenter.value = false
-    activeSidebarMenu.value = '成员管理'
-    nextTick(() => {
-      Object.keys(openSubmenus).forEach(key => {
-        openSubmenus[key] = false
-      })
-    })
-  } else {
-    activeSidebarMenu.value = '系统设置'
-    showMessageCenter.value = true
-  }
+  // 新开标签页打开消息中心
+  window.open('/message-center', '_blank')
 }
 
 // 提供给子组件的方法
@@ -626,8 +610,6 @@ const sidebarMenuConfig = {
       { name: '合作内容', icon: icons.content, children: [
         { name: '直播录屏', tag: 'New' },
         { name: '非挂车视频' },
-        { name: '违规情况' },
-        { name: '素材库' },
         { name: '合作直播' }
       ]},
       { name: '内容资产', icon: icons.asset },
