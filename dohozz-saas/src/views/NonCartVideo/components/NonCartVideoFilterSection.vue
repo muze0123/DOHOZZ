@@ -100,8 +100,7 @@ watch(() => props.filterParams, (newVal) => {
 }, { immediate: true, deep: true })
 
 function handleQuery() {
-  Object.assign(props.filterParams, localParams)
-  emit('query')
+  emit('query', { ...localParams })
 }
 
 function handleReset() {
