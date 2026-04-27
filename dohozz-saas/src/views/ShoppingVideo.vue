@@ -321,24 +321,32 @@ const metricOptions = [
   { label: '履约中', value: 'delivery' }
 ]
 
+// ==================== 默认筛选条件 ====================
+const getDefaultFilters = () => ({
+  timeRange: { type: 'last7days', start: '', end: '', customRange: [] },
+  shop: '',
+  influencer: '',
+  bd: '',
+  department: '',
+  product: '',
+  salesVolume: { min: null, max: null },
+  hasAssignment: null,
+  hasDelivery: null
+})
+
 // ==================== 全选状态 ====================
-const selectAll = ref(false)
+const selectAll = computed({
+  get: () => state.selectedVideos.length === 100,
+  set: (val) => {
+    // TODO: Task 9 实现全选逻辑
+  }
+})
 
 // ==================== 平台切换 ====================
 const handlePlatformChange = (platform) => {
   state.platform = platform
   // 重置所有筛选条件为默认值
-  state.filters = {
-    timeRange: { type: 'last7days', start: '', end: '', customRange: [] },
-    shop: '',
-    influencer: '',
-    bd: '',
-    department: '',
-    product: '',
-    salesVolume: { min: null, max: null },
-    hasAssignment: null,
-    hasDelivery: null
-  }
+  state.filters = getDefaultFilters()
   state.selectedVideos = []
   state.currentSubTab = 'all'
   selectAll.value = false
@@ -346,18 +354,18 @@ const handlePlatformChange = (platform) => {
 
 // ==================== 时间范围变化 ====================
 const handleTimeRangeChange = (type) => {
-  // 处理时间范围变化
+  // TODO: Task 4 实现时间范围变化逻辑
 }
 
 // ==================== 指标切换 ====================
 const handleMetricChange = (metric) => {
   state.currentMetric = metric
-  // 联动刷新下方图表和列表
+  // TODO: Task 6/7/8 实现指标联动刷新图表和列表
 }
 
 // ==================== 全选变化 ====================
 const handleSelectAllChange = (val) => {
-  // 处理全选
+  // TODO: Task 9 实现全选变化逻辑
 }
 
 // ==================== 批量投放 ====================
@@ -375,7 +383,7 @@ const handleBatchPublish = () => {
 
 // ==================== 分页变化 ====================
 const handlePageChange = (page) => {
-  // 处理分页变化
+  // TODO: Task 12 实现分页变化逻辑
 }
 </script>
 
