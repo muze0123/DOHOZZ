@@ -232,6 +232,7 @@
 
         <!-- 直播录屏页面（内容中心-合作内容二级菜单） -->
         <LiveRecording v-else-if="activeSidebarMenu === '直播录屏'" />
+        <MyTrackedInfluencers v-else-if="activeSidebarMenu === '追踪达人'" />
 
         <!-- 建联任务页面 -->
         <OutreachTask v-else-if="activeSidebarMenu === '建联任务'" />
@@ -337,7 +338,7 @@ import TemplateManagement from './TemplateManagement.vue'
 import CollaborationLive from './CollaborationLive.vue'
 import ShoppingVideo from './ShoppingVideo.vue'
 import NonCartVideo from './NonCartVideo.vue'
-
+import MyTrackedInfluencers from './MyTrackedInfluencers.vue'
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
 import LeaderList from './LeaderList.vue'
@@ -514,13 +515,23 @@ watch(activeNavMenu, (newVal, oldVal) => {
   }
   const items = sidebarMenuItems.value
   if (items.length > 0) {
-    activeSidebarMenu.value = items[0].name
+    // 内容中心默认展开内容洞察，并选中品牌洞察
+    if (newVal === '内容中心') {
+      activeSidebarMenu.value = '品牌洞察'
+      // 展开内容洞察子菜单
+      Object.keys(openSubmenus).forEach(key => {
+        openSubmenus[key] = false
+      })
+      openSubmenus['内容洞察'] = true
+    } else {
+      activeSidebarMenu.value = items[0].name
+      // 重置子菜单展开状态
+      Object.keys(openSubmenus).forEach(key => {
+        openSubmenus[key] = false
+      })
+    }
   }
   thirdLevelPage.value = ''
-  // 重置子菜单展开状态
-  Object.keys(openSubmenus).forEach(key => {
-    openSubmenus[key] = false
-  })
 })
 
 // SVG icon paths
@@ -616,7 +627,8 @@ const sidebarMenuConfig = {
         { name: '带货视频' },
         { name: '非挂车视频' },
         { name: '合作直播' },
-        { name: '直播录屏', tag: 'New' }
+        { name: '直播录屏', tag: 'New' },
+        { name: '追踪达人' }
       ]},
       { name: '内容资产', icon: icons.asset },
       { name: '投放管理', icon: icons.launch }
