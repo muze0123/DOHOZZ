@@ -1,4 +1,4 @@
-一、产品名称b'g'f'd'g'f'd's'g'd
+一、产品名称
 DOHOZZ
 
 二、Slogan
