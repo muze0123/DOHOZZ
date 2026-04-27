@@ -221,6 +221,9 @@
         <!-- 合作管理页面 -->
         <CooperationManagement v-else-if="activeSidebarMenu === '合作管理'" />
 
+        <!-- 带货视频页面 -->
+        <ShoppingVideo v-else-if="activeSidebarMenu === '带货视频'" />
+
         <!-- 直播录屏页面（内容中心-合作内容二级菜单） -->
         <LiveRecording v-else-if="activeSidebarMenu === '直播录屏'" />
 
@@ -331,6 +334,7 @@ import LiveRecording from './LiveRecording.vue'
 import OutreachTask from './OutreachTask.vue'
 import InvitationManagement from './InvitationManagement.vue'
 import TemplateManagement from './TemplateManagement.vue'
+import ShoppingVideo from './ShoppingVideo.vue'
 import NonCartVideo from './NonCartVideo.vue'
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
@@ -620,6 +624,7 @@ const sidebarMenuConfig = {
       ]},
       { name: 'AI创作', icon: icons.ai },
       { name: '合作内容', icon: icons.content, children: [
+        { name: '带货视频' },
         { name: '直播录屏', tag: 'New' },
         { name: '非挂车视频' },
         { name: '违规情况' },
