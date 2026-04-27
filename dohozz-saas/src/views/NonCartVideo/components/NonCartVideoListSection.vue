@@ -81,7 +81,14 @@
         <!-- 挂链商品 -->
         <el-table-column label="挂链商品" min-width="80">
           <template #default="{ row }">
-            <span class="linked-product">{{ row.linkedProduct || '--' }}</span>
+            <div v-if="row.linkedProduct" class="product-cell">
+              <el-tooltip placement="top" :content="row.linkedProduct.name">
+                <div class="product-thumb">
+                  <el-icon><Goods /></el-icon>
+                </div>
+              </el-tooltip>
+            </div>
+            <span v-else>--</span>
           </template>
         </el-table-column>
 
@@ -287,7 +294,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { Loading, VideoPlay, User, QuestionFilled, Refresh } from '@element-plus/icons-vue'
+import { Loading, VideoPlay, User, QuestionFilled, Refresh, Goods } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 // Props
@@ -619,9 +626,28 @@ function formatNumber(num) {
 }
 
 // ---- Linked Product ----
-.linked-product {
-  font-size: 12px;
+.product-cell {
+  display: flex;
+  align-items: center;
+}
+
+.product-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #999;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e6f4ff;
+    color: #1677ff;
+  }
 }
 
 // ---- Inline Edit ----

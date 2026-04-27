@@ -100,7 +100,7 @@ const videoList = ref([
       avatar: '',
       followers: '10.2w'
     },
-    linkedProduct: null,
+    linkedProduct: { id: 'P001', name: '氨基酸洁面乳', image: '' },
     cooperationFee: '¥2w',
     employee: '张三',
     dataUpdateTime: '2026-04-26 01:00:00',
