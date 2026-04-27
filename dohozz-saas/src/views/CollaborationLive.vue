@@ -11,7 +11,6 @@
     <template v-else>
       <!-- 区域A+B+C: 筛选区 -->
       <CollabLiveFilterSection
-        ref="filterSectionRef"
         :shop-list="shopList"
         :bd-list="bdList"
         :dept-list="deptList"
@@ -28,7 +27,6 @@
 
       <!-- 区域E: 直播列表 -->
       <CollabLiveListSection
-        ref="listSectionRef"
         :list-data="listData"
         :total="pagination.total"
         :sub-tabs="subTabs"
@@ -53,11 +51,6 @@ import CollabLiveListSection from './components/CollabLiveListSection.vue'
 // ==================== 状态管理 ====================
 const loading = ref(true)
 const listLoading = ref(false)
-const filterSectionRef = ref(null)
-const listSectionRef = ref(null)
-
-// 当前平台
-const activePlatform = ref('tiktok')
 
 // 当前筛选条件
 const currentFilters = reactive({
@@ -327,7 +320,6 @@ const handleFilterChange = (filters) => {
 
 // 平台切换
 const handlePlatformChange = (platform) => {
-  activePlatform.value = platform
   currentFilters.platform = platform
   currentFilters.page = 1
 
