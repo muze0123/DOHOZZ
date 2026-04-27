@@ -148,8 +148,9 @@
 
       <!-- 主内容区 -->
       <main class="main-content">
-<!-- 数据概览页面 -->
-        <DataOverview v-if="activeSidebarMenu === '数据概览'" />
+        <!-- 数据概览页面：带货/种草为不同页面与数据源 -->
+        <DataOverview v-if="activeSidebarMenu === '数据概览' && currentScenario === 'ecommerce'" />
+        <SeedingDataOverview v-else-if="activeSidebarMenu === '数据概览' && currentScenario === 'seeding'" />
 
         <!-- 工作台页面 -->
         <Workspace v-else-if="activeSidebarMenu === '工作台'" />
@@ -220,6 +221,27 @@
         <!-- 合作管理页面 -->
         <CooperationManagement v-else-if="activeSidebarMenu === '合作管理'" />
 
+        <!-- 直播录屏页面（内容中心-合作内容二级菜单） -->
+        <LiveRecording v-else-if="activeSidebarMenu === '直播录屏'" />
+
+        <!-- 非挂车视频页面（内容中心-合作内容二级菜单） -->
+        <NonCartVideo v-else-if="activeSidebarMenu === '非挂车视频'" />
+
+        <!-- 建联任务页面 -->
+        <OutreachTask v-else-if="activeSidebarMenu === '建联任务'" />
+
+        <!-- 邀约管理页面 -->
+        <InvitationManagement v-else-if="activeSidebarMenu === '邀约管理'" />
+
+        <!-- 模板管理页面 -->
+        <TemplateManagement v-else-if="activeSidebarMenu === '模板管理'" />
+
+        <!-- 品牌洞察页面 -->
+        <BrandInsight v-else-if="activeSidebarMenu === '品牌洞察'" />
+
+        <!-- 行业热点页面 -->
+        <IndustryHot v-else-if="activeSidebarMenu === '行业热点'" />
+
         <!-- 团长列表页面 -->
         <LeaderList v-else-if="activeSidebarMenu === '团长列表'" />
 
@@ -250,6 +272,9 @@
         <!-- 业务配置页面 -->
         <BusinessConfig v-else-if="activeSidebarMenu === '业务配置'" />
 
+        <!-- 消息设置页面 -->
+        <MessageSettings v-else-if="activeSidebarMenu === '消息设置'" />
+
         <!-- 汇率设置页面 -->
         <ExchangeRate v-else-if="activeSidebarMenu === '汇率设置'" />
 
@@ -278,6 +303,7 @@ import { ref, reactive, computed, watch, h, provide, onMounted, nextTick } from 
 import { ElMessage, ElAvatar } from 'element-plus'
 import router from '@/router'
 import DataOverview from './DataOverview.vue'
+import SeedingDataOverview from './SeedingDataOverview.vue'
 import Workspace from './Workspace.vue'
 import Performance from './Performance.vue'
 import PerformanceTarget from './PerformanceTarget.vue'
@@ -301,6 +327,13 @@ import FollowUpRecords from './FollowUpRecords.vue'
 import SampleManagement from './SampleManagement.vue'
 import VideoFulfillment from './VideoFulfillment.vue'
 import CooperationManagement from './CooperationManagement.vue'
+import LiveRecording from './LiveRecording.vue'
+import OutreachTask from './OutreachTask.vue'
+import InvitationManagement from './InvitationManagement.vue'
+import TemplateManagement from './TemplateManagement.vue'
+import NonCartVideo from './NonCartVideo.vue'
+import BrandInsight from './BrandInsight.vue'
+import IndustryHot from './IndustryHot.vue'
 import LeaderList from './LeaderList.vue'
 import LeaderCooperation from './LeaderCooperation.vue'
 import ProductLibrary from './ProductLibrary.vue'
@@ -311,6 +344,7 @@ import MemberManagement from './MemberManagement.vue'
 import DepartmentManagement from './DepartmentManagement.vue'
 import RoleManagement from './RoleManagement.vue'
 import BusinessConfig from './BusinessConfig.vue'
+import MessageSettings from './MessageSettings.vue'
 import ExchangeRate from './ExchangeRate.vue'
 import MessageCenter from './MessageCenter.vue'
 import TaskCenter from './components/TaskCenter.vue'
@@ -362,6 +396,19 @@ const setThirdLevelPage = (page) => {
 
 provide('setThirdLevelPage', setThirdLevelPage)
 provide('thirdLevelPage', thirdLevelPage)
+
+const navigateToMenu = (menuName) => {
+  showMessageCenter.value = false
+  activeSidebarMenu.value = menuName
+  thirdLevelPage.value = ''
+  
+  // 确保侧边栏菜单展开
+  if (menuName === '消息设置' || menuName === '成员管理' || menuName === '部门管理' || menuName === '角色管理' || menuName === '业务配置' || menuName === '汇率设置' || menuName === '账号信息') {
+    openSubmenus['系统设置'] = true
+  }
+}
+provide('navigateToMenu', navigateToMenu)
+provide('toggleMessageCenter', handleMessageCenterClick)
 
 watch(activeSidebarMenu, (newVal) => {
   localStorage.setItem('lastActiveMenu', newVal)
@@ -509,6 +556,7 @@ const icons = {
   department: '<path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>',
   role: '<path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>',
   config: '<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>',
+  messageSettings: '<path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>',
   exchange: '<path d="M12.89 11.1c-1.78-.59-2.64-.96-2.64-1.9 0-1.02 1.11-1.39 1.81-1.39 1.31 0 1.79.99 1.9 1.34l1.58-.67c-.15-.45-.82-1.92-2.54-2.16V5h-2v1.3c-2.44.54-2.47 2.74-2.47 2.9 0 2.47 2.3 3.2 3.26 3.53 1.57.54 2.26 1.01 2.26 2.05 0 1.31-1.27 1.71-1.98 1.71-1.22 0-2.15-.95-2.39-1.98l-1.66.5c.52 1.96 1.97 2.5 2.98 2.69V19h2v-1.33c.78-.15 2.65-.84 2.65-3.15 0-2.27-1.94-3.09-2.76-3.42z"/><path d="M2 2h20v2H2V2zm0 18h20v2H2v-2z"/>',
   permission: '<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>',
   account: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"/>',
@@ -546,7 +594,11 @@ const sidebarMenuConfig = {
         { name: '标签管理' },
         { name: '跟进记录' }
       ]},
-      { name: '批量建联', icon: icons.group },
+      { name: '批量建联', icon: icons.group, children: [
+        { name: '建联任务' },
+        { name: '邀约管理' },
+        { name: '模板管理' }
+      ]},
       { name: '样品管理', icon: icons.sample },
       { name: '视频履约', icon: icons.video },
       { name: '合作管理', icon: icons.cooperation },
@@ -562,9 +614,17 @@ const sidebarMenuConfig = {
       { name: '订单管理', icon: icons.order }
     ],
     '内容中心': [
-      { name: '内容洞察', icon: icons.insight },
+      { name: '内容洞察', icon: icons.insight, children: [
+        { name: '品牌洞察' },
+        { name: '行业热点' }
+      ]},
       { name: 'AI创作', icon: icons.ai },
-      { name: '合作内容', icon: icons.content },
+      { name: '合作内容', icon: icons.content, children: [
+        { name: '直播录屏', tag: 'New' },
+        { name: '非挂车视频' },
+        { name: '违规情况' },
+        { name: '素材库' }
+      ]},
       { name: '内容资产', icon: icons.asset },
       { name: '投放管理', icon: icons.launch }
     ],
@@ -581,6 +641,7 @@ const sidebarMenuConfig = {
       { name: '部门管理', icon: icons.department },
       { name: '角色管理', icon: icons.role },
       { name: '业务配置', icon: icons.config },
+      { name: '消息设置', icon: icons.messageSettings },
       { name: '汇率设置', icon: icons.exchange },
       { name: '账号信息', icon: icons.account }
     ]
@@ -602,6 +663,7 @@ const sidebarMenuConfig = {
       { name: '部门管理', icon: icons.department },
       { name: '角色管理', icon: icons.role },
       { name: '业务配置', icon: icons.config },
+      { name: '消息设置', icon: icons.messageSettings },
       { name: '汇率设置', icon: icons.exchange },
       { name: '账号信息', icon: icons.account }
     ]
