@@ -220,8 +220,23 @@
         <!-- 合作管理页面 -->
         <CooperationManagement v-else-if="activeSidebarMenu === '合作管理'" />
 
+        <!-- 直播录屏页面（内容中心-合作内容二级菜单） -->
+        <LiveRecording v-else-if="activeSidebarMenu === '直播录屏'" />
+
         <!-- 建联任务页面 -->
         <OutreachTask v-else-if="activeSidebarMenu === '建联任务'" />
+
+        <!-- 邀约管理页面 -->
+        <InvitationManagement v-else-if="activeSidebarMenu === '邀约管理'" />
+
+        <!-- 模板管理页面 -->
+        <TemplateManagement v-else-if="activeSidebarMenu === '模板管理'" />
+
+        <!-- 品牌洞察页面 -->
+        <BrandInsight v-else-if="activeSidebarMenu === '品牌洞察'" />
+
+        <!-- 行业热点页面 -->
+        <IndustryHot v-else-if="activeSidebarMenu === '行业热点'" />
 
         <!-- 团长列表页面 -->
         <LeaderList v-else-if="activeSidebarMenu === '团长列表'" />
@@ -307,7 +322,12 @@ import FollowUpRecords from './FollowUpRecords.vue'
 import SampleManagement from './SampleManagement.vue'
 import VideoFulfillment from './VideoFulfillment.vue'
 import CooperationManagement from './CooperationManagement.vue'
+import LiveRecording from './LiveRecording.vue'
 import OutreachTask from './OutreachTask.vue'
+import InvitationManagement from './InvitationManagement.vue'
+import TemplateManagement from './TemplateManagement.vue'
+import BrandInsight from './BrandInsight.vue'
+import IndustryHot from './IndustryHot.vue'
 import LeaderList from './LeaderList.vue'
 import LeaderCooperation from './LeaderCooperation.vue'
 import ProductLibrary from './ProductLibrary.vue'
@@ -569,7 +589,9 @@ const sidebarMenuConfig = {
         { name: '跟进记录' }
       ]},
       { name: '批量建联', icon: icons.group, children: [
-        { name: '建联任务' }
+        { name: '建联任务' },
+        { name: '邀约管理' },
+        { name: '模板管理' }
       ]},
       { name: '样品管理', icon: icons.sample },
       { name: '视频履约', icon: icons.video },
@@ -586,9 +608,16 @@ const sidebarMenuConfig = {
       { name: '订单管理', icon: icons.order }
     ],
     '内容中心': [
-      { name: '内容洞察', icon: icons.insight },
+      { name: '内容洞察', icon: icons.insight, children: [
+        { name: '品牌洞察' },
+        { name: '行业热点' }
+      ]},
       { name: 'AI创作', icon: icons.ai },
-      { name: '合作内容', icon: icons.content },
+      { name: '合作内容', icon: icons.content, children: [
+        { name: '直播录屏', tag: 'New' },
+        { name: '违规情况' },
+        { name: '素材库' }
+      ]},
       { name: '内容资产', icon: icons.asset },
       { name: '投放管理', icon: icons.launch }
     ],
