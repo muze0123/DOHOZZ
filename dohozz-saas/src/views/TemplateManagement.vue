@@ -38,35 +38,50 @@
         border
       >
         <el-table-column type="index" label="序号" width="60" align="center" />
-        <el-table-column prop="id" label="模板ID" width="120" show-overflow-tooltip />
-        <el-table-column prop="name" label="模板名称" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="scripts" label="话术内容" min-width="200" show-overflow-tooltip>
+        <el-table-column prop="name" label="模板名称" min-width="160">
           <template #default="{ row }">
-            {{ row.scripts[0] }}
+            <div class="template-name-cell">{{ row.name }}</div>
           </template>
         </el-table-column>
-        <el-table-column prop="imageUrl" label="封面图" width="100" align="center">
+        <el-table-column prop="useCount" label="使用次数" width="100" sortable />
+        <el-table-column prop="scripts" label="触达话术" min-width="200">
           <template #default="{ row }">
-            <el-icon v-if="row.imageUrl" class="image-icon" @click="handlePreviewImage(row.imageUrl)"><Picture /></el-icon>
-            <span v-else class="no-image">暂无</span>
+            <el-tooltip :content="row.scripts.join('\n')" :show-after="300">
+              <div class="script-preview">
+                {{ row.scripts[0] }}{{ row.scripts.length > 1 ? '...' : '' }}
+                <span v-if="row.scripts.length > 1" class="script-count">+{{ row.scripts.length - 1 }}</span>
+              </div>
+            </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="productId" label="关联商品ID" width="140" show-overflow-tooltip />
-        <el-table-column prop="creatorName" label="创建人" width="100" align="center" />
-        <el-table-column prop="createTime" label="创建时间" width="160" />
-        <el-table-column prop="useCount" label="使用次数" width="100" align="center" />
-        <el-table-column prop="status" label="状态" width="80" align="center">
+        <el-table-column prop="imageUrl" label="图片" width="80">
           <template #default="{ row }">
-            <span :class="row.status === 1 ? 'status-active' : 'status-inactive'">
-              {{ row.status === 1 ? '启用' : '禁用' }}
-            </span>
+            <div v-if="row.imageUrl" class="image-thumb" @click="previewImage(row.imageUrl)">
+              <el-icon><Picture /></el-icon>
+            </div>
+            <span v-else class="no-image">-</span>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注" min-width="120" show-overflow-tooltip />
-        <el-table-column label="操作" width="120" fixed="right" align="center">
+        <el-table-column prop="productId" label="商品ID" width="160">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-            <el-button type="primary" link @click="handleDelete(row)">删除</el-button>
+            <span v-if="row.productId" class="product-id-cell">{{ row.productId }}</span>
+            <el-icon v-if="row.productId" class="copy-icon" @click="copyProductId(row.productId)"><DocumentCopy /></el-icon>
+            <span v-else class="no-image">-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="creatorName" label="创建人" width="100" />
+        <el-table-column prop="createTime" label="创建时间" width="170" sortable />
+        <el-table-column prop="status" label="状态" width="80">
+          <template #default="{ row }">
+            <el-switch v-model="row.status" :active-value="1" :inactive-value="0" @change="handleStatusChange(row)" />
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180" fixed="right">
+          <template #default="{ row }">
+            <el-button type="primary" link @click="openDetailDialog(row)">详情</el-button>
+            <el-button type="primary" link @click="openEditDialog(row)">编辑</el-button>
+            <el-button type="primary" link @click="handleCopy(row)">复制</el-button>
+            <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
         <template #empty>
@@ -148,7 +163,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { Search, Plus, Picture, DocumentCopy } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 // ==== State ====
 const activeTab = ref('contact')
@@ -223,7 +238,39 @@ const handleEdit = (row) => {
 }
 
 const handleDelete = (row) => {
-  ElMessage.info(`删除模板: ${row.name}`)
+  ElMessageBox.confirm('删除后，该模板将无法恢复，请谨慎操作。', '确认删除该模板吗？', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    ElMessage.success('删除成功')
+    loadData()
+  }).catch(() => {})
+}
+
+const handleCopy = (row) => {
+  ElMessage.success('复制成功')
+}
+
+const handleStatusChange = (row) => {
+  ElMessage.success('状态已更新')
+}
+
+const copyProductId = (id) => {
+  navigator.clipboard.writeText(id)
+  ElMessage.success('复制成功')
+}
+
+const openDetailDialog = (row) => {
+  // stub for now
+}
+
+const openEditDialog = (row) => {
+  // stub for now
+}
+
+const previewImage = (url) => {
+  // stub for now
 }
 
 const handleSave = () => {
@@ -376,6 +423,10 @@ onMounted(() => {
   }
 }
 
+.script-count {
+  color: #1677FF;
+}
+
 /* 弹窗通用样式 */
 :deep(.custom-dialog) {
   .el-dialog__header {
@@ -397,4 +448,45 @@ onMounted(() => {
     padding: 12px 24px;
   }
 }
+
+.template-name-cell {
+  font-size: 14px;
+  color: #262626;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.script-preview {
+  font-size: 13px;
+  color: #595959;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.image-thumb {
+  width: 40px;
+  height: 40px;
+  background: #F5F5F5;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #8C8C8C;
+  &:hover { background: #E8E8E8; }
+}
+
+.product-id-cell { margin-right: 4px; }
+.copy-icon {
+  cursor: pointer;
+  color: #8C8C8C;
+  &:hover { color: #1677FF; }
+}
+
+.no-image { color: #D9D9D9; }
 </style>
