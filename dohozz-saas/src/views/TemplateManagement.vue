@@ -76,7 +76,7 @@
           <el-table-column prop="createTime" label="创建时间" width="170" sortable />
           <el-table-column prop="status" label="状态" width="80">
             <template #default="{ row }">
-              <el-switch v-model="row.status" :active-value="1" :inactive-value="0" @change="handleStatusChange(row)" />
+              <el-switch v-model="row.status" :active-value="1" :inactive-value="0" @change="(val) => handleStatusChange(val)" />
             </template>
           </el-table-column>
         </template>
@@ -141,7 +141,7 @@
           <el-table-column prop="createTime" label="创建时间" width="170" sortable />
           <el-table-column prop="status" label="状态" width="80">
             <template #default="{ row }">
-              <el-switch v-model="row.status" :active-value="1" :inactive-value="0" @change="handleStatusChange(row)" />
+              <el-switch v-model="row.status" :active-value="1" :inactive-value="0" @change="(val) => handleStatusChange(val)" />
             </template>
           </el-table-column>
         </template>
@@ -337,51 +337,115 @@
     <!-- 模板详情弹窗 -->
     <el-dialog
       v-model="detailVisible"
-      title="模板详情"
+      :title="activeTab === 'invite' ? '邀约模板详情' : '触达模板详情'"
       width="560px"
       class="custom-dialog"
     >
       <div class="detail-list">
-        <div class="detail-row">
-          <span class="detail-label">模板ID：</span>
-          <span class="detail-value">{{ currentRow?.id || '-' }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">模板名称：</span>
-          <span class="detail-value">{{ currentRow?.name || '-' }}</span>
-        </div>
-        <div class="detail-row align-start">
-          <span class="detail-label">触达话术：</span>
-          <div class="detail-scripts">
-            <div v-for="(s, i) in (currentRow?.scripts || [])" :key="i">
-              话术{{ i + 1 }}：{{ s }}
+        <!-- 触达模板详情 -->
+        <template v-if="activeTab === 'contact'">
+          <div class="detail-row">
+            <span class="detail-label">模板ID：</span>
+            <span class="detail-value">{{ currentRow?.id || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">模板名称：</span>
+            <span class="detail-value">{{ currentRow?.name || '-' }}</span>
+          </div>
+          <div class="detail-row align-start">
+            <span class="detail-label">触达话术：</span>
+            <div class="detail-scripts">
+              <div v-for="(s, i) in (currentRow?.scripts || [])" :key="i">话术{{ i + 1 }}：{{ s }}</div>
             </div>
           </div>
-        </div>
-        <div class="detail-row" v-if="currentRow?.imageUrl">
-          <span class="detail-label">图片：</span>
-          <img :src="currentRow.imageUrl" class="detail-thumb" @click="previewImage(currentRow.imageUrl)" />
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">商品ID：</span>
-          <span class="detail-value">{{ currentRow?.productId || '-' }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">创建人：</span>
-          <span class="detail-value">{{ currentRow?.creatorName || '-' }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">创建时间：</span>
-          <span class="detail-value">{{ currentRow?.createTime || '-' }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">使用次数：</span>
-          <span class="detail-value">{{ currentRow?.useCount ?? '-' }}</span>
-        </div>
-        <div class="detail-row" v-if="currentRow?.remark">
-          <span class="detail-label">备注：</span>
-          <span class="detail-value">{{ currentRow.remark }}</span>
-        </div>
+          <div class="detail-row" v-if="currentRow?.imageUrl">
+            <span class="detail-label">图片：</span>
+            <img :src="currentRow.imageUrl" class="detail-thumb" @click="previewImage(currentRow.imageUrl)" />
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">商品ID：</span>
+            <span class="detail-value">{{ currentRow?.productId || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">创建人：</span>
+            <span class="detail-value">{{ currentRow?.creatorName || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">创建时间：</span>
+            <span class="detail-value">{{ currentRow?.createTime || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">使用次数：</span>
+            <span class="detail-value">{{ currentRow?.useCount ?? '-' }}</span>
+          </div>
+          <div class="detail-row" v-if="currentRow?.remark">
+            <span class="detail-label">备注：</span>
+            <span class="detail-value">{{ currentRow.remark }}</span>
+          </div>
+        </template>
+
+        <!-- 邀约模板详情 -->
+        <template v-else-if="activeTab === 'invite'">
+          <div class="detail-row">
+            <span class="detail-label">模板ID：</span>
+            <span class="detail-value">{{ currentRow?.id || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">邀约名称：</span>
+            <span class="detail-value">{{ currentRow?.name || '-' }}</span>
+          </div>
+          <div class="detail-row align-start">
+            <span class="detail-label">邀约话术：</span>
+            <div class="detail-scripts">
+              <div v-for="(s, i) in (currentRow?.inviteScripts || [])" :key="i">话术{{ i + 1 }}：{{ s }}</div>
+            </div>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">截止日期：</span>
+            <span class="detail-value">{{ currentRow?.deadline || '-' }}</span>
+          </div>
+          <div class="detail-row align-start">
+            <span class="detail-label">联系方式：</span>
+            <div class="detail-scripts">
+              <div v-for="(cm, i) in (currentRow?.contactMethods || [])" :key="i">{{ cm.type }}：{{ cm.account }}</div>
+            </div>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">合作偏好：</span>
+            <span class="detail-value">{{ currentRow?.cooperationPreference || '-' }}</span>
+          </div>
+          <div class="detail-row align-start">
+            <span class="detail-label">合作商品：</span>
+            <div class="detail-products">
+              <div v-for="(p, i) in (currentRow?.products || [])" :key="i" class="detail-product-item">
+                <el-icon><Picture /></el-icon>
+                <span>{{ p.name }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">免费样品：</span>
+            <span class="detail-value" :style="{ color: currentRow?.freeSampleEnabled ? '#52C41A' : '#8C8C8C' }">
+              {{ currentRow?.freeSampleEnabled ? `已开启，${currentRow?.freeSampleAutoApprove ? '自动批准申请' : '手动审核申请'}` : '已关闭' }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">创建人：</span>
+            <span class="detail-value">{{ currentRow?.creatorName || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">创建时间：</span>
+            <span class="detail-value">{{ currentRow?.createTime || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">使用次数：</span>
+            <span class="detail-value">{{ currentRow?.useCount ?? '-' }}</span>
+          </div>
+          <div class="detail-row" v-if="currentRow?.remark">
+            <span class="detail-label">备注：</span>
+            <span class="detail-value">{{ currentRow.remark }}</span>
+          </div>
+        </template>
       </div>
       <template #footer>
         <span class="dialog-footer">
@@ -512,8 +576,8 @@ const handleDelete = (row) => {
   }).catch(() => {})
 }
 
-const handleStatusChange = (row) => {
-  ElMessage.success('状态已更新')
+const handleStatusChange = (newStatus) => {
+  ElMessage.success(newStatus ? '启用成功' : '禁用成功')
 }
 
 const copyProductId = (id) => {
