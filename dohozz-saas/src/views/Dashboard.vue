@@ -227,6 +227,9 @@
         <!-- 非挂车视频页面（内容中心-合作内容二级菜单） -->
         <NonCartVideo v-else-if="activeSidebarMenu === '非挂车视频'" />
 
+        <!-- 合作直播页面（内容中心-合作内容二级菜单） -->
+        <CollaborationLive v-else-if="activeSidebarMenu === '合作直播'" />
+
         <!-- 建联任务页面 -->
         <OutreachTask v-else-if="activeSidebarMenu === '建联任务'" />
 
@@ -331,6 +334,7 @@ import LiveRecording from './LiveRecording.vue'
 import OutreachTask from './OutreachTask.vue'
 import InvitationManagement from './InvitationManagement.vue'
 import TemplateManagement from './TemplateManagement.vue'
+import CollaborationLive from './CollaborationLive.vue'
 import NonCartVideo from './NonCartVideo.vue'
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
@@ -623,7 +627,8 @@ const sidebarMenuConfig = {
         { name: '直播录屏', tag: 'New' },
         { name: '非挂车视频' },
         { name: '违规情况' },
-        { name: '素材库' }
+        { name: '素材库' },
+        { name: '合作直播' }
       ]},
       { name: '内容资产', icon: icons.asset },
       { name: '投放管理', icon: icons.launch }
