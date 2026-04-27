@@ -68,14 +68,6 @@ const props = defineProps({
     type: String,
     default: 'all'
   },
-  activePlatform: {
-    type: String,
-    default: 'tiktok'
-  },
-  timeRange: {
-    type: Array,
-    default: () => []
-  },
   metricsData: {
     type: Object,
     default: () => ({
@@ -112,6 +104,7 @@ function initChart() {
 
 function updateChart() {
   if (!chartInstance) return
+  const { labels = [], seriesData = [] } = props.chartData
   const option = {
     tooltip: { trigger: 'axis' },
     legend: {
@@ -119,18 +112,18 @@ function updateChart() {
     },
     xAxis: {
       type: 'category',
-      data: ['4/20', '4/21', '4/22', '4/23', '4/24', '4/25', '4/26']
+      data: labels
     },
     yAxis: [
       { type: 'value', name: '视频数', position: 'left' },
       { type: 'value', name: '互动量', position: 'right' }
     ],
     series: [
-      { name: '视频数', type: 'bar', data: [12, 15, 18, 20, 22, 25, 28] },
-      { name: '视频播放量', type: 'line', yAxisIndex: 1, data: [12000, 15000, 18000, 20000, 22000, 25000, 28000] },
-      { name: '视频点赞数', type: 'line', yAxisIndex: 1, data: [1200, 1500, 1800, 2000, 2200, 2500, 2800] },
-      { name: '视频评论数', type: 'line', yAxisIndex: 1, data: [120, 150, 180, 200, 220, 250, 280] },
-      { name: '视频收藏数', type: 'line', yAxisIndex: 1, data: [600, 750, 900, 1000, 1100, 1250, 1400] }
+      { name: '视频数', type: 'bar', data: seriesData[0] || [] },
+      { name: '视频播放量', type: 'line', yAxisIndex: 1, data: seriesData[1] || [] },
+      { name: '视频点赞数', type: 'line', yAxisIndex: 1, data: seriesData[2] || [] },
+      { name: '视频评论数', type: 'line', yAxisIndex: 1, data: seriesData[3] || [] },
+      { name: '视频收藏数', type: 'line', yAxisIndex: 1, data: seriesData[4] || [] }
     ]
   }
   chartInstance.setOption(option)
