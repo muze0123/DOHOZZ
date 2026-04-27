@@ -22,7 +22,7 @@
       </div>
       <div class="msg-top-right">
         <span class="wechat-bind-link" @click="showWechatModal = true">绑定公众号，随时掌握达人动态 ></span>
-        <button class="btn-msg-setting">消息设置</button>
+        <button class="btn-msg-setting" @click="handleGoToSettings">消息设置</button>
       </div>
     </header>
 
@@ -215,8 +215,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, inject } from 'vue'
 import { ElMessage } from 'element-plus'
+
+const navigateToMenu = inject('navigateToMenu', null)
+
+const handleGoToSettings = () => {
+  if (navigateToMenu) {
+    navigateToMenu('消息设置')
+  } else {
+    ElMessage.info('路由不可用')
+  }
+}
 
 // Tab状态
 const activeTab = ref('notification')
