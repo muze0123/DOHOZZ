@@ -27,7 +27,7 @@
           size="small"
         >
           <el-option
-            v-for="shop in mockShopList"
+            v-for="shop in shopList"
             :key="shop.id"
             :label="shop.name"
             :value="shop.id"
@@ -59,7 +59,7 @@
           size="small"
         >
           <el-option
-            v-for="bd in mockBdList"
+            v-for="bd in bdList"
             :key="bd.id"
             :label="bd.name"
             :value="bd.id"
@@ -79,7 +79,7 @@
           size="small"
         >
           <el-option
-            v-for="dept in mockDeptList"
+            v-for="dept in deptList"
             :key="dept.id"
             :label="dept.name"
             :value="dept.id"
@@ -196,9 +196,9 @@
     <div class="tracking-banner">
       <div class="banner-text">
         系统已为您累计追踪到
-        <span class="highlight">{{ trackingData.influencerCount }}</span> 位达人的
-        <span class="highlight">{{ trackingData.videoCount }}</span> 个视频及
-        <span class="highlight">{{ trackingData.liveCount }}</span> 场直播
+        <span class="highlight">{{ props.trackingData.influencerCount }}</span> 位达人的
+        <span class="highlight">{{ props.trackingData.videoCount }}</span> 个视频及
+        <span class="highlight">{{ props.trackingData.liveCount }}</span> 场直播
       </div>
       <div class="banner-actions">
         <el-button link @click="handleMyTrackInfluencers">我的追踪达人</el-button>
@@ -247,24 +247,16 @@ const platforms = [
 
 const activePlatform = ref('tiktok')
 
-// Mock数据
-const mockShopList = [
-  { id: 1, name: '店铺A' },
-  { id: 2, name: '店铺B' },
-  { id: 3, name: '店铺C' }
-]
-
-const mockBdList = [
-  { id: 1, name: 'BD张三' },
-  { id: 2, name: 'BD李四' },
-  { id: 3, name: 'BD王五' }
-]
-
-const mockDeptList = [
-  { id: 1, name: '销售部' },
-  { id: 2, name: '市场部' },
-  { id: 3, name: '运营部' }
-]
+// 计算默认日期范围（最近30天）
+const getDefaultDateRange = () => {
+  const end = new Date()
+  const start = new Date()
+  start.setDate(start.getDate() - 30)
+  return [
+    start.toISOString().split('T')[0],
+    end.toISOString().split('T')[0]
+  ]
+}
 
 // 筛选条件
 const filters = reactive({
@@ -276,13 +268,13 @@ const filters = reactive({
   salesRange: null,
   amountRange: null,
   hasPromote: '',
-  dateRange: [],
+  dateRange: getDefaultDateRange(),
   hasSample: '',
   hasRecording: false
 })
 
-// 追踪数据
-const trackingData = ref({
+// 追踪数据 - 使用reactive保持一致性
+const trackingData = reactive({
   influencerCount: 0,
   videoCount: 0,
   liveCount: 0
@@ -365,8 +357,30 @@ const resetFilters = () => {
 
 // 设置追踪数据
 const setTrackingData = (data) => {
-  trackingData.value = data
+  Object.assign(trackingData, data)
 }
+
+// 添加 watchers 实现立即触发全页数据刷新
+watch(
+  () => [filters.shopId, filters.influencerKeyword, filters.bdId, filters.departmentId],
+  () => {
+    emit('filter-change', getFilters())
+  }
+)
+
+watch(
+  () => [filters.productKeyword, filters.hasPromote, filters.hasSample, filters.hasRecording],
+  () => {
+    emit('filter-change', getFilters())
+  }
+)
+
+watch(
+  () => filters.dateRange,
+  () => {
+    emit('filter-change', getFilters())
+  }
+)
 
 // 追踪达人点击
 const handleMyTrackInfluencers = () => {
