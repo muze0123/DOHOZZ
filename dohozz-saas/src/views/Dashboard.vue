@@ -224,14 +224,14 @@
         <!-- 带货视频页面 -->
         <ShoppingVideo v-else-if="activeSidebarMenu === '带货视频'" />
 
-        <!-- 直播录屏页面（内容中心-合作内容二级菜单） -->
-        <LiveRecording v-else-if="activeSidebarMenu === '直播录屏'" />
-
         <!-- 非挂车视频页面（内容中心-合作内容二级菜单） -->
         <NonCartVideo v-else-if="activeSidebarMenu === '非挂车视频'" />
 
         <!-- 合作直播页面（内容中心-合作内容二级菜单） -->
         <CollaborationLive v-else-if="activeSidebarMenu === '合作直播'" />
+
+        <!-- 直播录屏页面（内容中心-合作内容二级菜单） -->
+        <LiveRecording v-else-if="activeSidebarMenu === '直播录屏'" />
 
         <!-- 建联任务页面 -->
         <OutreachTask v-else-if="activeSidebarMenu === '建联任务'" />
@@ -336,7 +336,8 @@ import InvitationManagement from './InvitationManagement.vue'
 import TemplateManagement from './TemplateManagement.vue'
 import CollaborationLive from './CollaborationLive.vue'
 import ShoppingVideo from './ShoppingVideo.vue'
-import NonCartVideo from './NonCartVideo/NonCartVideo.vue'
+import NonCartVideo from './NonCartVideo.vue'
+
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
 import LeaderList from './LeaderList.vue'
@@ -613,9 +614,9 @@ const sidebarMenuConfig = {
       { name: 'AI创作', icon: icons.ai },
       { name: '合作内容', icon: icons.content, children: [
         { name: '带货视频' },
-        { name: '直播录屏', tag: 'New' },
         { name: '非挂车视频' },
-        { name: '合作直播' }
+        { name: '合作直播' },
+        { name: '直播录屏', tag: 'New' }
       ]},
       { name: '内容资产', icon: icons.asset },
       { name: '投放管理', icon: icons.launch }

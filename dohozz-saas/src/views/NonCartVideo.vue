@@ -33,53 +33,49 @@
       </div>
     </div>
 
-    <!-- 分析区 -->
-    <NonCartVideoStatsSection
-      v-if="statsSectionVisible"
-      :activePlatform="activePlatform"
-      :timeRange="timeRange"
-      :activeMetric="activeMetric"
-      @metric-change="handleMetricChange"
-    />
-
-    <!-- 列表区 -->
-    <NonCartVideoFilterSection ref="filterSectionRef" />
-    <NonCartVideoListSection
-      v-if="listSectionVisible"
-      :videos="videoList"
-      :loading="listLoading"
-      :updateTime="updateTime"
-      :listTitle="listTitle"
-      @export="handleExport"
-      @sync="handleSync"
-      @add="handleAdd"
-      @play="handlePlayVideo"
-      @view-detail="handleViewDetail"
-      @update:cooperationFee="handleUpdateCooperationFee"
-      @update:employee="handleUpdateEmployee"
-      @update:blueWords="handleUpdateBlueWords"
-      @refresh-data="handleRefreshData"
-      @selection-change="handleSelectionChange"
-    />
-
-    <!-- 分页 -->
-    <div class="pagination-section">...</div>
-
-    <!-- 弹窗 -->
-    <AddNonCartVideoDialog v-model="addDialogVisible" />
-    <SyncPlatformDialog v-model="syncDialogVisible" />
-    <NonCartVideoDetailDialog v-model="detailDialogVisible" :video="currentDetailVideo" />
+    <!-- 视频列表 -->
+    <div class="video-list-section">
+      <div class="list-header">
+        <h2>{{ listTitle }}</h2>
+        <div class="list-actions">
+          <button class="btn-add" @click="handleAdd">添加视频</button>
+          <button class="btn-sync" @click="handleSync">同步平台</button>
+          <button class="btn-export" @click="handleExport">导出</button>
+        </div>
+      </div>
+      
+      <div class="video-list">
+        <div
+          v-for="video in videoList"
+          :key="video.id"
+          class="video-item"
+        >
+          <div class="video-info">
+            <h3>{{ video.title }}</h3>
+            <p>平台: {{ video.platform }}</p>
+            <p>发布时间: {{ video.publishTime }}</p>
+            <p>达人: {{ video.influencer.name }}</p>
+            <p>合作费用: {{ video.cooperationFee }}</p>
+            <p>归属员工: {{ video.employee }}</p>
+          </div>
+          <div class="video-actions">
+            <button class="btn-play" @click="handlePlayVideo(video)">播放</button>
+            <button class="btn-detail" @click="handleViewDetail(video)">详情</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 分页 -->
+      <div class="pagination-section">
+        <p>共 {{ videoList.length }} 条视频</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import NonCartVideoStatsSection from './components/NonCartVideoStatsSection.vue'
-import NonCartVideoFilterSection from './components/NonCartVideoFilterSection.vue'
-import NonCartVideoListSection from './components/NonCartVideoListSection.vue'
-import NonCartVideoDetailDialog from './dialogs/NonCartVideoDetailDialog.vue'
-import SyncPlatformDialog from './dialogs/SyncPlatformDialog.vue'
 
 // 平台 Tab（默认 TikTok，不含"全部"）
 const platformTabs = [
@@ -107,18 +103,7 @@ const timeRange = ref([])
 const activeMetric = ref('all')
 const listTitle = ref('非挂车视频列表-全部视频')
 
-// 弹窗状态
-const addDialogVisible = ref(false)
-const syncDialogVisible = ref(false)
-const detailDialogVisible = ref(false)
-const currentDetailVideo = ref(null)
-
-// 组件引用
-const filterSectionRef = ref(null)
-
 // 状态
-const statsSectionVisible = ref(true)
-const listSectionVisible = ref(true)
 const listLoading = ref(false)
 const updateTime = ref('2026-04-26 01:00:00')
 
@@ -229,11 +214,11 @@ function handleExport() {
 }
 
 function handleSync() {
-  syncDialogVisible.value = true
+  ElMessage.info('同步平台功能开发中')
 }
 
 function handleAdd() {
-  addDialogVisible.value = true
+  ElMessage.info('添加视频功能开发中')
 }
 
 function handlePlayVideo(video) {
@@ -241,41 +226,7 @@ function handlePlayVideo(video) {
 }
 
 function handleViewDetail(video) {
-  currentDetailVideo.value = video
-  detailDialogVisible.value = true
-}
-
-function handleUpdateCooperationFee({ id, value }) {
-  const video = videoList.value.find(v => v.id === id)
-  if (video) {
-    video.cooperationFee = value
-    ElMessage.success('合作费用已更新')
-  }
-}
-
-function handleUpdateEmployee({ id, value }) {
-  const video = videoList.value.find(v => v.id === id)
-  if (video) {
-    video.employee = value
-    ElMessage.success('归属员工已更新')
-  }
-}
-
-function handleUpdateBlueWords({ id, value }) {
-  const video = videoList.value.find(v => v.id === id)
-  if (video) {
-    video.blueWords = value
-    ElMessage.success('小蓝词已更新')
-  }
-}
-
-function handleRefreshData(row) {
-  // 模拟刷新操作
-  console.log(`刷新互动数据: ${row.id}`)
-}
-
-function handleSelectionChange(ids) {
-  selectedIds.value = ids
+  ElMessage.info(`查看视频详情：${video.title}`)
 }
 
 // 方法
@@ -284,7 +235,6 @@ function handlePlatformChange(platform) {
   activeTimeKey.value = '7days'
   timeRange.value = calculateTimeRange('7days')
   handleMetricChange('all')
-  filterSectionRef.value?.reset()
 }
 
 function handleTimeChange(key) {
@@ -339,5 +289,145 @@ function handleTimeChange(key) {
   margin-left: 12px;
   font-size: 12px;
   color: #999;
+}
+
+.video-list-section {
+  background: #fff;
+  margin-top: 16px;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #262626;
+    margin: 0;
+  }
+
+  .list-actions {
+    display: flex;
+    gap: 12px;
+
+    button {
+      padding: 6px 16px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      background: #fff;
+      font-size: 14px;
+      color: #595959;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #1890ff;
+        color: #1890ff;
+      }
+
+      &.btn-add {
+        background: #1890ff;
+        border-color: #1890ff;
+        color: #fff;
+
+        &:hover {
+          background: #40a9ff;
+        }
+      }
+    }
+  }
+}
+
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.video-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: #1890ff;
+    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
+  }
+
+  .video-info {
+    flex: 1;
+
+    h3 {
+      font-size: 16px;
+      font-weight: 500;
+      color: #262626;
+      margin: 0 0 8px 0;
+    }
+
+    p {
+      font-size: 14px;
+      color: #595959;
+      margin: 4px 0;
+    }
+  }
+
+  .video-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    button {
+      padding: 6px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      background: #fff;
+      font-size: 14px;
+      color: #595959;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #1890ff;
+        color: #1890ff;
+      }
+
+      &.btn-play {
+        background: #f6ffed;
+        border-color: #b7eb8f;
+        color: #52c41a;
+
+        &:hover {
+          background: #d9f7be;
+        }
+      }
+    }
+  }
+}
+
+.pagination-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+
+  p {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin: 0;
+  }
 }
 </style>

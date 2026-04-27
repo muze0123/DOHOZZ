@@ -1,6 +1,104 @@
 <template>
   <div class="message-center">
     <!-- 顶部导航栏 -->
+    <header class="top-header">
+      <div class="header-left">
+        <!-- A区：logo、系统名、业务场景选择 -->
+        <div class="logo-area">
+          <img src="@/assets/DOHOZZ_LOOGO.png" alt="DOHOZZ" class="logo-img" />
+          <span class="logo-text">DOHOZZ</span>
+        </div>
+
+        <el-dropdown class="scenario-dropdown" trigger="click" @command="handleScenarioChange">
+          <div class="scenario-selector">
+            <span class="scenario-text">{{ currentScenario === 'ecommerce' ? '带货' : '种草' }}</span>
+            <span class="scenario-arrow"></span>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu class="scenario-dropdown-menu">
+              <el-dropdown-item command="ecommerce" :class="{ active: currentScenario === 'ecommerce' }">达人带货</el-dropdown-item>
+              <el-dropdown-item command="seeding" :class="{ active: currentScenario === 'seeding' }">内容种草</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+
+        <div class="nav-divider"></div>
+
+        <!-- B区：动态菜单 -->
+        <nav class="b-nav-menu">
+          <span
+            v-for="menu in currentNavMenus"
+            :key="menu"
+            class="nav-item"
+            :class="{ active: activeNavMenu === menu }"
+            @click="activeNavMenu = menu"
+          >
+            {{ menu }}
+          </span>
+        </nav>
+      </div>
+
+      <div class="header-right">
+        <!-- C区：基础服务功能图标 -->
+        <div class="c-icons-area">
+          <!-- 下载插件 -->
+          <div class="c-btn-pill">
+            <svg class="c-icon-svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            <span>下载插件</span>
+          </div>
+
+          <!-- 多语言选择 -->
+          <el-dropdown trigger="hover" @command="handleLanguageChange">
+            <div class="c-btn-lang">
+              <svg class="c-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+              </svg>
+              <span class="lang-text">{{ currentLanguage }}</span>
+              <svg class="c-icon-arrow" viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="中文" :class="{ 'is-active': currentLanguage === '中文' }">中文</el-dropdown-item>
+                <el-dropdown-item command="English" :class="{ 'is-active': currentLanguage === 'English' }">English</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+
+          <!-- 任务列表 -->
+          <el-tooltip content="任务列表" placement="bottom" :show-after="300">
+            <div class="c-btn-circle" @click="showTaskCenter = true">
+              <svg class="c-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                <path d="M17.99 9l-1.41-1.42-6.59 6.59-2.58-2.57-1.42 1.41 4 3.99z"/>
+              </svg>
+            </div>
+          </el-tooltip>
+
+          <!-- 消息中心 -->
+          <el-tooltip content="消息中心" placement="bottom" :show-after="300">
+            <div class="c-btn-circle has-badge" @click="handleMessageCenterClick">
+              <svg class="c-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+              </svg>
+              <span class="badge">{{ totalUnreadCount }}</span>
+            </div>
+          </el-tooltip>
+
+          <!-- 个人中心 -->
+          <el-tooltip content="个人中心" placement="bottom" :show-after="300">
+            <div class="c-btn-avatar">
+              <el-avatar :size="32" :icon="UserIcon" class="header-avatar" />
+            </div>
+          </el-tooltip>
+        </div>
+      </div>
+    </header>
+
+    <!-- 消息中心顶部导航 -->
     <header class="msg-top-bar">
       <div class="msg-tabs">
         <div
@@ -217,8 +315,46 @@
 <script setup>
 import { ref, reactive, computed, onMounted, inject } from 'vue'
 import { ElMessage } from 'element-plus'
+import { User } from '@element-plus/icons-vue'
 
 const navigateToMenu = inject('navigateToMenu', null)
+
+// 顶部导航栏相关
+const UserIcon = User
+const currentScenario = ref('ecommerce')
+const currentLanguage = ref('中文')
+const activeNavMenu = ref('消息中心')
+const showTaskCenter = ref(false)
+
+// 业务场景切换
+function handleScenarioChange(scenario) {
+  currentScenario.value = scenario
+}
+
+// 语言切换
+function handleLanguageChange(lang) {
+  currentLanguage.value = lang
+}
+
+// 消息中心点击（当前页面）
+function handleMessageCenterClick() {
+  // 已经在消息中心页面，无需操作
+}
+
+// 任务中心点击
+function handleTaskCenterClick() {
+  showTaskCenter.value = true
+}
+
+// 导航菜单
+const currentNavMenus = computed(() => {
+  return ['消息中心']
+})
+
+// 总未读消息数
+const totalUnreadCount = computed(() => {
+  return notificationUnreadCount.value + announcementUnreadCount.value
+})
 
 const handleGoToSettings = () => {
   if (navigateToMenu) {
@@ -544,6 +680,229 @@ onMounted(() => {
   background: #F5F6F7;
 }
 
+// 顶部导航栏样式
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .logo-img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1890FF;
+    }
+  }
+
+  .scenario-dropdown {
+    .scenario-selector {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border: 1px solid #D9D9D9;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #1890FF;
+      }
+
+      .scenario-text {
+        font-size: 14px;
+        color: #262626;
+      }
+
+      .scenario-arrow {
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid #8C8C8C;
+        transition: transform 0.3s;
+      }
+    }
+
+    .scenario-dropdown-menu {
+      .el-dropdown-item {
+        padding: 8px 16px;
+
+        &.active {
+          color: #1890FF;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .nav-divider {
+    width: 1px;
+    height: 24px;
+    background: #F0F0F0;
+  }
+
+  .b-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+
+    .nav-item {
+      font-size: 14px;
+      color: #595959;
+      cursor: pointer;
+      padding: 8px 0;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+
+      &:hover {
+        color: #1890FF;
+      }
+
+      &.active {
+        color: #1890FF;
+        font-weight: 500;
+        border-bottom-color: #1890FF;
+      }
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .c-icons-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .c-btn-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      background: #F5F5F5;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #595959;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background: #E6F7FF;
+        color: #1890FF;
+      }
+    }
+
+    .c-btn-lang {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s;
+
+      &:hover {
+        background: #F5F5F5;
+      }
+
+      .lang-text {
+        font-size: 12px;
+        color: #595959;
+      }
+    }
+
+    .c-btn-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background: #F5F5F5;
+      }
+
+      &.has-badge {
+        position: relative;
+
+        .badge {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          min-width: 16px;
+          height: 16px;
+          padding: 0 4px;
+          background: #FF4D4F;
+          border-radius: 8px;
+          color: #fff;
+          font-size: 10px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+
+    .c-btn-avatar {
+      cursor: pointer;
+
+      .header-avatar {
+        border-radius: 50%;
+      }
+    }
+
+    .c-icon-svg {
+      color: #8C8C8C;
+      transition: color 0.3s;
+
+      .c-btn-circle:hover &,
+      .c-btn-pill:hover & {
+        color: #1890FF;
+      }
+    }
+
+    .c-icon-arrow {
+      color: #8C8C8C;
+      transition: transform 0.3s;
+
+      .c-btn-lang:hover & {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+
+// 消息中心顶部导航样式
 .msg-top-bar {
   display: flex;
   align-items: center;

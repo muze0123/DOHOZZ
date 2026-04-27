@@ -156,6 +156,15 @@ const routes = [
       requiresAuth: true,
       title: '消息中心 - DOHOZZ'
     }
+  },
+  {
+    path: '/non-cart-video',
+    name: 'NonCartVideo',
+    component: () => import('@/views/NonCartVideo.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '非挂车视频 - DOHOZZ'
+    }
   }
 ]
 
