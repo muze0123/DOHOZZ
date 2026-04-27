@@ -148,8 +148,9 @@
 
       <!-- 主内容区 -->
       <main class="main-content">
-<!-- 数据概览页面 -->
-        <DataOverview v-if="activeSidebarMenu === '数据概览'" />
+        <!-- 数据概览页面：带货/种草为不同页面与数据源 -->
+        <DataOverview v-if="activeSidebarMenu === '数据概览' && currentScenario === 'ecommerce'" />
+        <SeedingDataOverview v-else-if="activeSidebarMenu === '数据概览' && currentScenario === 'seeding'" />
 
         <!-- 工作台页面 -->
         <Workspace v-else-if="activeSidebarMenu === '工作台'" />
@@ -299,6 +300,7 @@ import { ref, reactive, computed, watch, h, provide, onMounted, nextTick } from 
 import { ElMessage, ElAvatar } from 'element-plus'
 import router from '@/router'
 import DataOverview from './DataOverview.vue'
+import SeedingDataOverview from './SeedingDataOverview.vue'
 import Workspace from './Workspace.vue'
 import Performance from './Performance.vue'
 import PerformanceTarget from './PerformanceTarget.vue'
