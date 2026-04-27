@@ -14,27 +14,27 @@
         <div class="stats-cards">
           <div class="stats-card">
             <div class="card-label">直播场次</div>
-            <div class="card-value">{{ formatNumber(statsData.collabLiveCount) }}</div>
+            <div class="card-value">{{ formatNumber(safeStats.collabLiveCount) }}</div>
           </div>
           <div class="stats-card">
             <div class="card-label">直播成交金额</div>
-            <div class="card-value">¥{{ formatMoney(statsData.collabLiveAmount) }}</div>
+            <div class="card-value">¥{{ formatMoney(safeStats.collabLiveAmount) }}</div>
           </div>
           <div class="stats-card">
             <div class="card-label">直播销量</div>
-            <div class="card-value">{{ formatSales(statsData.collabLiveSales) }}</div>
+            <div class="card-value">{{ formatSales(safeStats.collabLiveSales) }}</div>
           </div>
           <div class="stats-card warning">
             <div class="card-label">直播退款金额</div>
-            <div class="card-value">¥{{ formatMoney(statsData.collabLiveRefund) }}</div>
+            <div class="card-value">¥{{ formatMoney(safeStats.collabLiveRefund) }}</div>
           </div>
           <div class="stats-card success">
             <div class="card-label">预估达人佣金</div>
-            <div class="card-value">¥{{ formatMoney(statsData.estimatedCommission) }}</div>
+            <div class="card-value">¥{{ formatMoney(safeStats.estimatedCommission) }}</div>
           </div>
           <div class="stats-card">
             <div class="card-label">直播达人数</div>
-            <div class="card-value">{{ formatNumber(statsData.collabLiveInfluencerCount) }}</div>
+            <div class="card-value">{{ formatNumber(safeStats.collabLiveInfluencerCount) }}</div>
           </div>
         </div>
       </div>
@@ -45,23 +45,23 @@
         <div class="stats-cards">
           <div class="stats-card">
             <div class="card-label">投放直播数</div>
-            <div class="card-value">{{ formatNumber(statsData.promoLiveCount) }}</div>
+            <div class="card-value">{{ formatNumber(safeStats.promoLiveCount) }}</div>
           </div>
           <div class="stats-card">
             <div class="card-label">消耗金额</div>
-            <div class="card-value">¥{{ formatMoney(statsData.consumeAmount) }}</div>
+            <div class="card-value">¥{{ formatMoney(safeStats.consumeAmount) }}</div>
           </div>
           <div class="stats-card">
             <div class="card-label">成交金额（投放）</div>
-            <div class="card-value">¥{{ formatMoney(statsData.promoLiveAmount) }}</div>
+            <div class="card-value">¥{{ formatMoney(safeStats.promoLiveAmount) }}</div>
           </div>
           <div class="stats-card">
             <div class="card-label">成交订单数</div>
-            <div class="card-value">{{ formatNumber(statsData.promoOrderCount) }}</div>
+            <div class="card-value">{{ formatNumber(safeStats.promoOrderCount) }}</div>
           </div>
           <div class="stats-card">
             <div class="card-label">支付ROI</div>
-            <div class="card-value">{{ formatRatio(statsData.payRoi) }}</div>
+            <div class="card-value">{{ formatRatio(safeStats.payRoi) }}</div>
           </div>
         </div>
       </div>
@@ -83,6 +83,9 @@ const props = defineProps({
   }
 })
 
+// 安全访问statsData的computed属性，防止null/undefined访问错误
+const safeStats = computed(() => props.statsData ?? {})
+
 // 计算统计时间范围文案
 const dateRangeText = computed(() => {
   if (!props.dateRange || props.dateRange.length < 2) {
@@ -101,25 +104,25 @@ const dateRangeText = computed(() => {
 
 // 格式化金额
 function formatMoney(value) {
-  if (!value && value !== 0) return '0.00'
+  if (value == null || typeof value !== 'number') return '0.00'
   return value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 // 格式化销量
 function formatSales(value) {
-  if (!value && value !== 0) return '0'
+  if (value == null || typeof value !== 'number') return '0'
   return value.toLocaleString('zh-CN')
 }
 
 // 格式化数字
 function formatNumber(value) {
-  if (!value && value !== 0) return '0'
+  if (value == null || typeof value !== 'number') return '0'
   return value.toLocaleString('zh-CN')
 }
 
 // 格式化ROI
 function formatRatio(value) {
-  if (!value && value !== 0) return '--'
+  if (value == null || typeof value !== 'number') return '--'
   return value.toFixed(2)
 }
 </script>
