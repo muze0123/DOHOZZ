@@ -483,7 +483,7 @@ const getStatusClass = (status) => {
 
 const goToMessageCenter = () => {
   const tab = notifTab.value === 'reminder' ? 'notification' : 'announcement'
-  router.push(`/message-center?tab=${tab}`)
+  window.open(`/message-center?tab=${tab}`, '_blank')
 }
 </script>
 

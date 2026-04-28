@@ -76,7 +76,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import MsgTopBar from './components/msg/MsgTopBar.vue'
 import FilterSection from './components/msg/FilterSection.vue'
@@ -94,6 +94,7 @@ import {
 } from '@/api/messageCenter'
 
 const router = useRouter()
+const route = useRoute()
 
 // 状态
 const activeTab = ref('notification')
@@ -195,6 +196,12 @@ function handleVersionModalClose() {
 }
 
 onMounted(() => {
+  // 从 URL query 参数读取初始 tab
+  const tabParam = route.query.tab
+  if (tabParam === 'notification' || tabParam === 'announcement') {
+    activeTab.value = tabParam
+  }
+
   const hasSeenVersion = localStorage.getItem('hasSeenVersionPopup_v2')
   if (!hasSeenVersion && latestAnnouncementContent.value) {
     setTimeout(() => {
