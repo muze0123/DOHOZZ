@@ -258,13 +258,13 @@ onMounted(async () => {
 .brand-content {
   position: absolute;
   top: 50%;
-  left: 30%;
+  left: 35%;
   transform: translateY(-50%);
   text-align: left;
   z-index: 10;
 
   @media (max-width: 1100px) {
-    left: 25%;
+    left: 30%;
   }
 }
 
