@@ -462,6 +462,15 @@ const routes = [
       requiresAuth: true,
       title: '白名单 - DOHOZZ'
     }
+  },
+  {
+    path: '/enterprise-influencer',
+    name: 'EnterpriseInfluencer',
+    component: () => import('@/views/EnterpriseInfluencer/EnterpriseInfluencer.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '企业达人库 - DOHOZZ'
+    }
   }
 ]
 

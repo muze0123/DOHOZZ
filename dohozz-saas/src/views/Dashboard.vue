@@ -237,6 +237,9 @@
         <!-- 计划管理页面 -->
         <PlanManagement v-else-if="activeSidebarMenu === '计划管理'" />
 
+        <!-- 企业达人库页面 -->
+        <EnterpriseInfluencer v-else-if="activeSidebarMenu === '企业达人库'" />
+
         <!-- 建联任务页面 -->
         <OutreachTask v-else-if="activeSidebarMenu === '建联任务'" />
 
@@ -343,6 +346,7 @@ import ShoppingVideo from './ShoppingVideo.vue'
 import NonCartVideo from './NonCartVideo.vue'
 import MyTrackedInfluencers from './MyTrackedInfluencers.vue'
 import PlanManagement from './PlanManagement.vue'
+import EnterpriseInfluencer from './EnterpriseInfluencer/EnterpriseInfluencer.vue'
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
 import LeaderList from './LeaderList.vue'
@@ -663,7 +667,8 @@ const sidebarMenuConfig = {
         { name: '计划管理' }
       ]},
       { name: '达人管理', icon: icons.person, children: [
-        { name: '达人公海' }
+        { name: '达人公海' },
+        { name: '企业达人库' }
       ]},
       { name: '合作内容', icon: icons.content },
       { name: '绩效管理', icon: icons.performance },
