@@ -214,6 +214,12 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   padding: 40px;
+  min-width: 400px;
+
+  @media (max-width: 1100px) {
+    min-width: 320px;
+    padding: 32px;
+  }
 
   @media (max-width: 968px) {
     display: none;
@@ -234,7 +240,7 @@ onMounted(async () => {
 }
 
 .brand-name {
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 0.05em;
@@ -252,14 +258,19 @@ onMounted(async () => {
 .brand-content {
   position: absolute;
   top: 50%;
-  left: calc(50% - 180px);
+  left: 50%;
   transform: translate(-50%, -50%);
   text-align: left;
   z-index: 10;
+  padding-right: 60px;
+
+  @media (max-width: 1100px) {
+    padding-right: 40px;
+  }
 }
 
 .system-name {
-  font-size: 60px;
+  font-size: clamp(1.75rem, 4vw, 3.75rem);
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 0.05em;
@@ -268,7 +279,7 @@ onMounted(async () => {
 }
 
 .system-slogan {
-  font-size: 32px;
+  font-size: clamp(1rem, 2vw, 2rem);
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
   line-height: 1.6;
@@ -328,18 +339,24 @@ onMounted(async () => {
 // Login Panel (Right Side)
 .login-panel {
   width: 660px;
-  min-width: 660px;
+  min-width: 360px;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #ffffff;
-  padding: 40px 20px;
+  padding: 40px 24px;
   z-index: 10;
+  flex-shrink: 0;
 
   @media (max-width: 1550px) {
-    width: 600px;
-    min-width: 600px;
+    width: 560px;
+    min-width: 480px;
+  }
+
+  @media (max-width: 1200px) {
+    width: 480px;
+    min-width: 400px;
   }
 
   @media (max-width: 968px) {
@@ -347,12 +364,20 @@ onMounted(async () => {
     min-width: 100%;
     flex: 1;
   }
+
+  @media (max-width: 480px) {
+    padding: 32px 16px;
+  }
 }
 
 .login-form-wrapper {
   width: 100%;
   max-width: 400px;
   animation: fadeIn 0.6s ease-out;
+
+  @media (max-width: 480px) {
+    max-width: 100%;
+  }
 }
 
 @keyframes fadeIn {
@@ -470,7 +495,7 @@ onMounted(async () => {
 
 @media (max-width: 640px) {
   .login-header {
-    margin-bottom: 32px;
+    margin-bottom: 28px;
 
     h2 {
       font-size: 1.5rem;
@@ -496,13 +521,34 @@ onMounted(async () => {
   .login-button {
     height: 48px;
   }
+}
 
-  .system-name {
-    font-size: 1.75rem;
+@media (max-width: 480px) {
+  .login-panel {
+    padding: 24px 16px;
   }
 
-  .system-slogan {
-    font-size: 1rem;
+  .login-header {
+    margin-bottom: 24px;
+
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+
+  .login-form {
+    :deep(.el-form-item) {
+      margin-bottom: 16px;
+    }
+
+    :deep(.el-input) {
+      --el-input-height: 44px;
+    }
+  }
+
+  .login-button {
+    height: 44px;
+    font-size: 0.9375rem;
   }
 }
 </style>
