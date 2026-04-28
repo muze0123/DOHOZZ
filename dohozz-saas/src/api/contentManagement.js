@@ -3,8 +3,6 @@
  * 使用 Mock 数据，真实接口预留
  */
 
-import { ElMessage } from 'element-plus'
-
 // Mock 延迟时间
 const MOCK_DELAY = 500
 
@@ -1260,7 +1258,8 @@ export function getStatusOptions() {
         data: [
           { value: 'normal', label: '正常' },
           { value: 'abnormal', label: '异常' },
-          { value: 'deleted', label: '已删除' }
+          { value: 'deleted', label: '已删除' },
+          { value: 'archived', label: '已归档' }
         ]
       })
     }, MOCK_DELAY)
