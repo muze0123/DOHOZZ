@@ -23,7 +23,7 @@
         <div class="filter-item">
           <span class="filter-label">达人昵称</span>
           <el-input
-            v-model="localParams.influencerName"
+            v-model="localParams.streamerName"
             placeholder="请输入达人昵称"
             clearable
             size="small"
@@ -214,7 +214,7 @@ const emit = defineEmits(['query', 'reset'])
 
 const localParams = reactive({
   planId: '',
-  influencerName: '',
+  streamerName: '',
   contentTag: '',
   publishForm: '',
   spuId: '',
@@ -231,8 +231,26 @@ watch(() => props.filterParams, (newVal) => {
 }, { immediate: true, deep: true })
 
 function handleQuery() {
-  Object.assign(props.filterParams, localParams)
-  emit('query')
+  const queryParams = { ...localParams }
+  // Convert date ranges to start/end fields
+  if (queryParams.publishTimeRange && queryParams.publishTimeRange.length === 2) {
+    queryParams.publishTimeStart = queryParams.publishTimeRange[0]
+    queryParams.publishTimeEnd = queryParams.publishTimeRange[1]
+  } else {
+    queryParams.publishTimeStart = ''
+    queryParams.publishTimeEnd = ''
+  }
+  if (queryParams.createTimeRange && queryParams.createTimeRange.length === 2) {
+    queryParams.createTimeStart = queryParams.createTimeRange[0]
+    queryParams.createTimeEnd = queryParams.createTimeRange[1]
+  } else {
+    queryParams.createTimeStart = ''
+    queryParams.createTimeEnd = ''
+  }
+  // Remove array fields
+  delete queryParams.publishTimeRange
+  delete queryParams.createTimeRange
+  emit('query', queryParams)
 }
 
 function handleReset() {
