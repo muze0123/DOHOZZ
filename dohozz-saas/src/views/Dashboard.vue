@@ -310,6 +310,9 @@
         <!-- SPU管理页面 -->
         <SpuManagement v-else-if="activeSidebarMenu === 'SPU管理'" />
 
+        <!-- 商品链接页面 -->
+        <ProductLink v-else-if="activeSidebarMenu === '商品链接'" />
+
         <!-- 其他菜单页面占位 -->
         <div v-else class="empty-page">
           <div class="empty-content">
@@ -388,6 +391,7 @@ import MessageSettings from './MessageSettings.vue'
 import ExchangeRate from './ExchangeRate.vue'
 import TaskCenter from './components/TaskCenter.vue'
 import SpuManagement from './SpuManagement.vue'
+import ProductLink from './ProductLink.vue'
 
 const UserIcon = {
   render() {
@@ -705,7 +709,8 @@ const sidebarMenuConfig = {
       ]},
       { name: '绩效管理', icon: icons.performance },
       { name: '店铺商品', icon: icons.shop, children: [
-        { name: 'SPU管理' }
+        { name: 'SPU管理' },
+        { name: '商品链接' }
       ]}
     ],
     '系统设置': [
