@@ -33,12 +33,12 @@
     <!-- 数据统计区 (Task 4) -->
     <EnterpriseInfluencerStatsSection :stats-data="statsData" />
 
-    <!-- 筛选区域 (占位 - Task 3) -->
+    <!-- 筛选区域 (Task 3) -->
     <EnterpriseInfluencerFilterSection
       v-if="!loading"
-      :platform="activePlatform"
-      :filters="filters"
-      @filter-change="handleFilterChange"
+      :filter-params="filters"
+      @query="handleQuery"
+      @reset="handleReset"
     />
 
     <!-- 数据卡片/功能区 -->
@@ -179,8 +179,7 @@ import api from '@/api/enterpriseInfluencer'
 import EnterpriseInfluencerStatsSection from './components/EnterpriseInfluencerStatsSection.vue'
 
 // Task 3: 筛选区域组件
-// import EnterpriseInfluencerFilterSection from './components/EnterpriseInfluencerFilterSection.vue'
-const EnterpriseInfluencerFilterSection = { template: '<div class="placeholder-filter"></div>' }
+import EnterpriseInfluencerFilterSection from './components/EnterpriseInfluencerFilterSection.vue'
 
 // Task 5: 列表区域组件
 // import EnterpriseInfluencerListSection from './components/EnterpriseInfluencerListSection.vue'
@@ -325,6 +324,21 @@ const handleTimeTabChange = (key) => {
 // 筛选条件变化
 const handleFilterChange = (newFilters) => {
   Object.assign(filters, newFilters)
+  currentPage.value = 1
+  fetchData()
+}
+
+// 查询 (来自筛选组件)
+const handleQuery = () => {
+  currentPage.value = 1
+  fetchData()
+}
+
+// 重置筛选条件 (来自筛选组件)
+const handleReset = () => {
+  Object.keys(filters).forEach(key => {
+    filters[key] = ''
+  })
   currentPage.value = 1
   fetchData()
 }
