@@ -710,7 +710,8 @@ const sidebarMenuConfig = {
       { name: '绩效管理', icon: icons.performance },
       { name: '店铺商品', icon: icons.shop, children: [
         { name: 'SPU管理' },
-        { name: '商品链接' }
+        { name: '商品链接' },
+        { name: '店铺管理' }
       ]}
     ],
     '系统设置': [
