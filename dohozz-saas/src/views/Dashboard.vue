@@ -156,7 +156,8 @@
         <Workspace v-else-if="activeSidebarMenu === '工作台'" />
 
         <!-- 绩效管理页面 -->
-        <Performance v-else-if="activeSidebarMenu === '绩效管理'" />
+        <Performance v-else-if="activeSidebarMenu === '绩效管理' && currentScenario === 'ecommerce'" />
+        <PerformanceManagement v-else-if="activeSidebarMenu === '绩效管理' && currentScenario === 'seeding'" />
 
         <!-- 业绩目标页面 -->
         <PerformanceTarget v-else-if="activeSidebarMenu === '业绩目标'" />
@@ -316,6 +317,7 @@ import DataOverview from './DataOverview.vue'
 import SeedingDataOverview from './SeedingDataOverview.vue'
 import Workspace from './Workspace.vue'
 import Performance from './Performance.vue'
+import PerformanceManagement from './PerformanceManagement.vue'
 import PerformanceTarget from './PerformanceTarget.vue'
 import ReportCenter from './ReportCenter.vue'
 import CreateReport from './CreateReport.vue'
