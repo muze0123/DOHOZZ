@@ -238,6 +238,9 @@
         <!-- 计划管理页面 -->
         <PlanManagement v-else-if="activeSidebarMenu === '计划管理'" />
 
+        <!-- 寄样管理页面 -->
+        <SeedingSampleManagement v-else-if="activeSidebarMenu === '寄样管理'" />
+
         <!-- 企业达人库页面 -->
         <EnterpriseInfluencer v-else-if="activeSidebarMenu === '企业达人库'" />
 
@@ -348,6 +351,7 @@ import ShoppingVideo from './ShoppingVideo.vue'
 import NonCartVideo from './NonCartVideo.vue'
 import MyTrackedInfluencers from './MyTrackedInfluencers.vue'
 import PlanManagement from './PlanManagement.vue'
+import SeedingSampleManagement from './SeedingSampleManagement.vue'
 import EnterpriseInfluencer from './EnterpriseInfluencer/EnterpriseInfluencer.vue'
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
@@ -666,7 +670,8 @@ const sidebarMenuConfig = {
     '内容合作': [
       { name: '数据概览', icon: icons.overview },
       { name: '营销计划', icon: icons.plan, children: [
-        { name: '计划管理' }
+        { name: '计划管理' },
+        { name: '寄样管理' }
       ]},
       { name: '达人管理', icon: icons.person, children: [
         { name: '达人公海' },
