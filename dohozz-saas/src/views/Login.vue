@@ -270,7 +270,7 @@ onMounted(async () => {
 }
 
 .system-name {
-  font-size: clamp(1.75rem, 4vw, 3.75rem);
+  font-size: clamp(1.5rem, 2.5vw, 3rem);
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 0.05em;
@@ -279,7 +279,7 @@ onMounted(async () => {
 }
 
 .system-slogan {
-  font-size: clamp(1rem, 2vw, 2rem);
+  font-size: clamp(0.875rem, 1.2vw, 1.25rem);
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
   line-height: 1.6;
