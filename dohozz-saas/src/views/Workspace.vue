@@ -202,7 +202,22 @@
       <div class="section data-section">
         <div class="section-header">
           <span class="section-title">达人大盘数据</span>
-          <div class="date-filter" style="margin-bottom: 0;">
+        </div>
+
+        <!-- 状态 Sub-Tab + 时间筛选 -->
+        <div class="status-tabs-row">
+          <div class="status-tabs">
+            <div
+              v-for="status in statusFilters"
+              :key="status.key"
+              class="status-tab"
+              :class="{ active: selectedStatus === status.key }"
+              @click="selectedStatus = status.key"
+            >
+              {{ status.label }}{{ status.count }}
+            </div>
+          </div>
+          <div class="date-filter">
             <div class="date-tabs">
               <span
                 v-for="tab in dateTabs"
@@ -215,19 +230,6 @@
               </span>
             </div>
             <span class="date-range">近7天（2025/11/20 - 2025/11/26）</span>
-          </div>
-        </div>
-
-        <!-- 状态 Sub-Tab -->
-        <div class="status-tabs">
-          <div
-            v-for="status in statusFilters"
-            :key="status.key"
-            class="status-tab"
-            :class="{ active: selectedStatus === status.key }"
-            @click="selectedStatus = status.key"
-          >
-            {{ status.label }}{{ status.count }}
           </div>
         </div>
 
@@ -325,7 +327,7 @@
         >
           系统公告
         </span>
-        <span class="more-link">更多 ></span>
+        <span class="more-link" @click="goToMessageCenter">更多 ></span>
       </div>
       <div class="notification-list">
         <div
@@ -344,7 +346,10 @@
 
 <script setup>
 import { ref, reactive, computed, h } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElAvatar } from 'element-plus'
+
+const router = useRouter()
 
 const UserIcon = {
   render() {
@@ -474,6 +479,11 @@ const getStatusClass = (status) => {
     'pending_sample': ''
   }
   return classMap[status] || ''
+}
+
+const goToMessageCenter = () => {
+  const tab = notifTab.value === 'reminder' ? 'notification' : 'announcement'
+  router.push(`/message-center?tab=${tab}`)
 }
 </script>
 
@@ -644,9 +654,10 @@ $transition-fast: 150ms ease;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  max-width: calc(100% - 600px);
 }
 .middle-right {
-  width: 500px;
+  width: 600px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -1041,6 +1052,7 @@ $transition-fast: 150ms ease;
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-shrink: 0;
 }
 
 .date-tabs {
@@ -1071,10 +1083,18 @@ $transition-fast: 150ms ease;
   color: $disabled-text;
 }
 
+.status-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .status-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
