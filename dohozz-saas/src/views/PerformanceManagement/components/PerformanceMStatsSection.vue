@@ -45,7 +45,7 @@ defineProps({
   }
 })
 
-defineEmits([
+const emit = defineEmits([
   'showDataUpdateDialog',
   'showMoreTimeDialog',
   'showTableConfigDialog',
@@ -66,6 +66,9 @@ const timeTabs = [
 
 const handleTimeChange = (key) => {
   currentTimeType.value = key
+  if (key === 'more') {
+    emit('showMoreTimeDialog')
+  }
 }
 </script>
 
