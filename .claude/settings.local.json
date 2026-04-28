@@ -35,7 +35,13 @@
       "Bash(open /Users/zhangbin/.claude/projects/-Users-zhangbin-Documents-DOHOZZ/491ce2f1-0555-4371-bfaa-8d6e71b9bcdf/tool-results/webfetch-1777014136857-jxxux3.png)",
       "Bash(node:*)",
       "Bash(grep -r \"MessageCenter\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/dist/assets/*.js)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(git branch:*)",
+      "Bash(git worktree:*)",
+      "Bash(git:*)"
     ]
   }
 }

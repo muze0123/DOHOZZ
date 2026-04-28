@@ -241,6 +241,9 @@
         <!-- 寄样管理页面 -->
         <SeedingSampleManagement v-else-if="activeSidebarMenu === '寄样管理'" />
 
+        <!-- 内容管理页面 -->
+        <ContentManagement v-else-if="activeSidebarMenu === '内容管理'" />
+
         <!-- 企业达人库页面 -->
         <EnterpriseInfluencer v-else-if="activeSidebarMenu === '企业达人库'" />
 
@@ -352,6 +355,7 @@ import NonCartVideo from './NonCartVideo.vue'
 import MyTrackedInfluencers from './MyTrackedInfluencers.vue'
 import PlanManagement from './PlanManagement.vue'
 import SeedingSampleManagement from './SeedingSampleManagement.vue'
+import ContentManagement from './ContentManagement.vue'
 import EnterpriseInfluencer from './EnterpriseInfluencer/EnterpriseInfluencer.vue'
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
@@ -677,7 +681,9 @@ const sidebarMenuConfig = {
         { name: '达人公海' },
         { name: '企业达人库' }
       ]},
-      { name: '合作内容', icon: icons.content },
+      { name: '合作内容', icon: icons.content, children: [
+        { name: '内容管理' }
+      ]},
       { name: '绩效管理', icon: icons.performance },
       { name: '店铺商品', icon: icons.shop }
     ],
