@@ -30,6 +30,9 @@
       </div>
     </div>
 
+    <!-- 数据统计区 (Task 4) -->
+    <EnterpriseInfluencerStatsSection :stats-data="statsData" />
+
     <!-- 筛选区域 (占位 - Task 3) -->
     <EnterpriseInfluencerFilterSection
       v-if="!loading"
@@ -171,7 +174,10 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import api from '@/api/enterpriseInfluencer'
 
-// ==================== 占位组件引用 ====================
+// ==================== 组件引用 ====================
+// Task 4: 数据统计区组件
+import EnterpriseInfluencerStatsSection from './components/EnterpriseInfluencerStatsSection.vue'
+
 // Task 3: 筛选区域组件
 // import EnterpriseInfluencerFilterSection from './components/EnterpriseInfluencerFilterSection.vue'
 const EnterpriseInfluencerFilterSection = { template: '<div class="placeholder-filter"></div>' }
@@ -200,6 +206,14 @@ const activePlatform = ref('douyin')
 // 企业配额
 const isQuotaCollapsed = ref(false)
 const quota = reactive({ used: 815, total: 10000 })
+
+// 数据统计 (Task 4)
+const statsData = [
+  { key: 'totalInfluencers', label: '达人总数', value: 815 },
+  { key: 'cooperating', label: '合作中', value: 123 },
+  { key: 'pending', label: '待合作', value: 692 },
+  { key: 'newThisMonth', label: '本月新增', value: 45 }
+]
 
 // 时间Tab
 const timeTabs = [
