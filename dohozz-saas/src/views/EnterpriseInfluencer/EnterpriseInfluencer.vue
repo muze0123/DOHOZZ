@@ -124,7 +124,7 @@
           @selection-change="handleSelectionChange"
           @detail="handleDetail"
           @edit="handleEdit"
-          @delete="handleDelete"
+          @relate="handleRelate"
         />
 
         <!-- 分页 -->
@@ -182,8 +182,7 @@ import EnterpriseInfluencerStatsSection from './components/EnterpriseInfluencerS
 import EnterpriseInfluencerFilterSection from './components/EnterpriseInfluencerFilterSection.vue'
 
 // Task 5: 列表区域组件
-// import EnterpriseInfluencerListSection from './components/EnterpriseInfluencerListSection.vue'
-const EnterpriseInfluencerListSection = { template: '<div class="placeholder-list"></div>' }
+import EnterpriseInfluencerListSection from './components/EnterpriseInfluencerListSection.vue'
 
 // Task 6: 弹窗组件
 // import ImportInfluencerDialog from './dialogs/ImportInfluencerDialog.vue'
@@ -406,6 +405,12 @@ const handleDetail = (row) => {
 const handleEdit = (row) => {
   currentInfluencer.value = row
   dialogs.add.visible = true
+}
+
+// 关联计划
+const handleRelate = (row) => {
+  currentInfluencer.value = row
+  dialogs.relatePlan.visible = true
 }
 
 // 删除
