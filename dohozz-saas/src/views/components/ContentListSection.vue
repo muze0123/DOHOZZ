@@ -249,12 +249,12 @@ const emit = defineEmits([
 
 const currentPage = computed({
   get: () => props.pagination.page,
-  set: (val) => val
+  set: (val) => emit('page-change', val)
 })
 
 const currentPageSize = computed({
   get: () => props.pagination.pageSize,
-  set: (val) => val
+  set: (val) => emit('page-size-change', val)
 })
 
 function handleSelectionChange(selection) {
@@ -288,7 +288,7 @@ async function handleMoreCommand(command, row) {
           cancelButtonText: '取消',
           type: 'warning'
         })
-        emit('delete', row.id)
+        emit('delete', row)
       } catch {
         // User cancelled
       }
@@ -300,7 +300,7 @@ async function handleMoreCommand(command, row) {
           cancelButtonText: '取消',
           type: 'warning'
         })
-        emit('archive', row.id)
+        emit('archive', row)
       } catch {
         // User cancelled
       }
