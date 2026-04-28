@@ -192,6 +192,7 @@ export const useContentManagementStore = defineStore('contentManagement', () => 
         contentTag: filters.contentTag,
         publishForm: filters.publishForm,
         spuId: filters.spuId,
+        productLink: filters.productLink,
         departmentId: filters.departmentId,
         mediumId: filters.mediumId,
         contentStatus: filters.contentStatus,
