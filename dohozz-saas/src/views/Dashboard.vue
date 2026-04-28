@@ -247,6 +247,15 @@
         <!-- 企业达人库页面 -->
         <EnterpriseInfluencer v-else-if="activeSidebarMenu === '企业达人库'" />
 
+        <!-- 达人标签页面 -->
+        <InfluencerTags v-else-if="activeSidebarMenu === '达人标签'" />
+
+        <!-- 内容标签页面 -->
+        <ContentTags v-else-if="activeSidebarMenu === '内容标签'" />
+
+        <!-- 脚本管理页面 -->
+        <ScriptManagement v-else-if="activeSidebarMenu === '脚本管理'" />
+
         <!-- 建联任务页面 -->
         <OutreachTask v-else-if="activeSidebarMenu === '建联任务'" />
 
@@ -297,6 +306,9 @@
 
         <!-- 汇率设置页面 -->
         <ExchangeRate v-else-if="activeSidebarMenu === '汇率设置'" />
+
+        <!-- SPU管理页面 -->
+        <SpuManagement v-else-if="activeSidebarMenu === 'SPU管理'" />
 
         <!-- 其他菜单页面占位 -->
         <div v-else class="empty-page">
@@ -357,6 +369,9 @@ import PlanManagement from './PlanManagement.vue'
 import SeedingSampleManagement from './SeedingSampleManagement.vue'
 import ContentManagement from './ContentManagement.vue'
 import EnterpriseInfluencer from './EnterpriseInfluencer/EnterpriseInfluencer.vue'
+import InfluencerTags from './InfluencerTags/InfluencerTags.vue'
+import ContentTags from './ContentTags/ContentTags.vue'
+import ScriptManagement from './ScriptManagement/ScriptManagement.vue'
 import BrandInsight from './BrandInsight.vue'
 import IndustryHot from './IndustryHot.vue'
 import LeaderList from './LeaderList.vue'
@@ -372,6 +387,7 @@ import BusinessConfig from './BusinessConfig.vue'
 import MessageSettings from './MessageSettings.vue'
 import ExchangeRate from './ExchangeRate.vue'
 import TaskCenter from './components/TaskCenter.vue'
+import SpuManagement from './SpuManagement.vue'
 
 const UserIcon = {
   render() {
@@ -679,13 +695,18 @@ const sidebarMenuConfig = {
       ]},
       { name: '达人管理', icon: icons.person, children: [
         { name: '达人公海' },
-        { name: '企业达人库' }
+        { name: '企业达人库' },
+        { name: '达人标签' }
       ]},
       { name: '合作内容', icon: icons.content, children: [
-        { name: '内容管理' }
+        { name: '内容管理' },
+        { name: '内容标签' },
+        { name: '脚本管理' }
       ]},
       { name: '绩效管理', icon: icons.performance },
-      { name: '店铺商品', icon: icons.shop }
+      { name: '店铺商品', icon: icons.shop, children: [
+        { name: 'SPU管理' }
+      ]}
     ],
     '系统设置': [
       { name: '成员管理', icon: icons.members },

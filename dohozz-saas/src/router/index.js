@@ -471,6 +471,33 @@ const routes = [
       requiresAuth: true,
       title: '企业达人库 - DOHOZZ'
     }
+  },
+  {
+    path: '/influencer-tags',
+    name: 'InfluencerTags',
+    component: () => import('@/views/InfluencerTags/InfluencerTags.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '达人标签 - DOHOZZ'
+    }
+  },
+  {
+    path: '/content-tags',
+    name: 'ContentTags',
+    component: () => import('@/views/ContentTags/ContentTags.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '内容标签 - DOHOZZ'
+    }
+  },
+  {
+    path: '/script-management',
+    name: 'ScriptManagement',
+    component: () => import('@/views/ScriptManagement/ScriptManagement.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '脚本管理 - DOHOZZ'
+    }
   }
 ]
 
