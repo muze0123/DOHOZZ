@@ -150,10 +150,18 @@
       @success="handleImportSuccess"
     />
 
-    <!-- 添加/编辑达人弹窗 (占位 - Task 6) -->
+    <!-- 添加达人弹窗 -->
     <AddInfluencerDialog
       v-if="dialogs.add.visible"
       v-model="dialogs.add.visible"
+      :platform="activePlatform"
+      @success="handleDialogSuccess"
+    />
+
+    <!-- 编辑达人弹窗 -->
+    <EditInfluencerDialog
+      v-if="dialogs.edit.visible"
+      v-model="dialogs.edit.visible"
       :platform="activePlatform"
       :influencer="currentInfluencer"
       @success="handleDialogSuccess"
@@ -185,12 +193,11 @@ import EnterpriseInfluencerFilterSection from './components/EnterpriseInfluencer
 import EnterpriseInfluencerListSection from './components/EnterpriseInfluencerListSection.vue'
 
 // Task 6: 弹窗组件
-// import ImportInfluencerDialog from './dialogs/ImportInfluencerDialog.vue'
-// import AddInfluencerDialog from './dialogs/AddInfluencerDialog.vue'
-// import RelatePlanDialog from './dialogs/RelatePlanDialog.vue'
+import AddInfluencerDialog from './dialogs/AddInfluencerDialog.vue'
+import EditInfluencerDialog from './dialogs/EditInfluencerDialog.vue'
+import RelatePlanDialog from './dialogs/RelatePlanDialog.vue'
+// Placeholder for ImportInfluencerDialog (to be implemented later)
 const ImportInfluencerDialog = { template: '<div></div>' }
-const AddInfluencerDialog = { template: '<div></div>' }
-const RelatePlanDialog = { template: '<div></div>' }
 
 // ==================== 状态管理 ====================
 
@@ -260,6 +267,7 @@ const updateDate = ref('')
 const dialogs = reactive({
   import: { visible: false },
   add: { visible: false },
+  edit: { visible: false },
   relatePlan: { visible: false }
 })
 
@@ -404,7 +412,7 @@ const handleDetail = (row) => {
 // 编辑
 const handleEdit = (row) => {
   currentInfluencer.value = row
-  dialogs.add.visible = true
+  dialogs.edit.visible = true
 }
 
 // 关联计划
@@ -445,6 +453,7 @@ const handleCurrentChange = (page) => {
 // 弹窗成功回调
 const handleDialogSuccess = () => {
   dialogs.add.visible = false
+  dialogs.edit.visible = false
   dialogs.import.visible = false
   dialogs.relatePlan.visible = false
   fetchData()
