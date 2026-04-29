@@ -33,3 +33,10 @@
 - 可视化：复杂图表必须抽象为独立组件，通过 Props 接收数据。
 - 防错：数据获取需包含 Loading 状态、异常处理（Error boundary）与空数据反馈。
 - 性能：对于大数据量看板，必须实现必要的计算属性优化与异步加载。
+## 资源管理纪律
+- 图标标准化：所有SVG图标必须封装为`src/components/icons/Icon*.vue`组件。
+- 动态颜色控制：SVG内部颜色属性（如 fill, stroke）必须设置为 `currentColor` ，以便通过 Tailwind 的 `text-xxx` 类名控制颜色。
+- 引用规范：严禁硬编码路径，必须使用 `@/assets/` 别名引用资源（例如 `@/assets/images/bg-card.png`）。
+- 背景图处理：优先使用 Tailwind 的 arbitrary value 语法，如 `bg-[url('@/assets/images/name.png')]`，并保持 `bg-center bg-no-repeat bg-cover` 的默认组合。
+- 自动适配：对于任何 UI 还原任务，若需使用图标，请 Claude 优先检查 `src/components/icons/` 是否存在同类图标，不存在则要求 Claude 将 SVG 转换为上述 Vue 组件规范。
+- 性能预防：超过 50KB 的图片资源，必须询问我是否需要进行压缩处理或转换为 WebP 格式。

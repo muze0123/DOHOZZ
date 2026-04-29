@@ -41,7 +41,13 @@
       "Bash(git merge:*)",
       "Bash(git branch:*)",
       "Bash(git worktree:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(xargs sed:*)",
+      "Bash(pkill -9 -f \"vite\")",
+      "Bash(pkill -9 -f \"node.*vite\")",
+      "Bash(pkill -9 -f vite)",
+      "Bash(kill 38743)",
+      "Bash(xargs kill:*)"
     ]
   }
 }
