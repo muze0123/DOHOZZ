@@ -5,14 +5,34 @@
       <!-- 平台Tab -->
       <div class="platform-tabs-bar">
         <div class="platform-tabs">
-          <div v-for="p in platformTabs" :key="p.id" class="platform-tab" :class="{ active: filters.platform === p.id }" @click="filters.platform = p.id">
-            <div class="platform-icon" v-html="p.icon"></div>
-            <span>{{ p.name }}</span>
+          <div
+            v-for="platform in platformTabs"
+            :key="platform.id"
+            class="platform-tab"
+            :class="{ active: filters.platform === platform.id }"
+            @click="filters.platform = platform.id"
+          >
+            <div class="platform-icon tiktok-icon" v-if="platform.id === 'tiktok'">
+              <img src="@/assets/images/TikTok.png" alt="TikTok" />
+            </div>
+            <div class="platform-icon instagram-icon" v-else-if="platform.id === 'instagram'">
+              <img src="@/assets/images/Instagram.png" alt="Instagram" />
+            </div>
+            <div class="platform-icon shopee-icon" v-else-if="platform.id === 'shopee'">
+              <img src="@/assets/images/Shopee.png" alt="Shopee" />
+            </div>
+            <div class="platform-icon lazada-icon" v-else-if="platform.id === 'lazada'">
+              <img src="@/assets/images/Lazada.png" alt="Lazada" />
+            </div>
+            <div class="platform-icon all-icon" v-else>
+              <IconAllPlatform />
+            </div>
+            <span>{{ platform.name }}</span>
           </div>
         </div>
       </div>
       <!-- 筛选条件区块 -->
-      <div class="filter-toolbar sticky-filter-bar">
+      <div class="filter-toolbar">
         <div class="filter-row">
           <div class="filter-item">
             <span class="filter-label">店铺筛选</span>
@@ -421,6 +441,7 @@
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElAvatar, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
+import IconAllPlatform from '@/components/icons/IconAllPlatform.vue'
 
 // ===== 区域A：筛选 =====
 const filters = reactive({
@@ -435,11 +456,11 @@ const dateQuickTabs = [
   { key: 'custom', label: '自定义' }
 ]
 const platformTabs = [
-  { id: 'all', name: '全部', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>' },
-  { id: 'tiktok', name: 'TikTok', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>' },
-  { id: 'instagram', name: 'Instagram', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/></svg>' },
-  { id: 'shopee', name: 'Shopee', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="12" r="10"/></svg>' },
-  { id: 'lazada', name: 'Lazada', icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>' }
+  { id: 'all', name: '全部' },
+  { id: 'tiktok', name: 'TikTok' },
+  { id: 'instagram', name: 'Instagram' },
+  { id: 'shopee', name: 'Shopee' },
+  { id: 'lazada', name: 'Lazada' },
 ]
 
 // ===== 区域B：数据大盘 =====
@@ -837,43 +858,60 @@ $border-radius-lg: 12px;
 $radius: 8px;
 $fast: 150ms ease;
 
-.data-overview { background: $bg; min-height: calc(100vh - 48px); padding: 16px 0 24px; }
+.data-overview { background: $bg; min-height: calc(100vh - 48px); padding: 0 0 24px; }
 
 // ===== 区域A =====
 .filter-area { margin: 0; }
 .platform-tabs-bar {
   background: $white;
-  border: 1px solid $border;
-  border-bottom: none;
-  border-radius: $radius $radius 0 0;
+  border: none;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
+  margin-top: 16px;
 }
-.platform-tabs { display: flex; gap: 24px; }
+.platform-tabs { display: flex; gap: 32px; }
 .platform-tab {
   display: flex; align-items: center; gap: 8px; padding: 12px 0;
   color: $secondary-text; cursor: pointer; border-bottom: 2px solid transparent;
   transition: all $fast; position: relative; top: 1px;
-  .platform-icon { display: flex; align-items: center; }
   &:hover { color: $primary-text; }
   &.active { color: $primary; font-weight: 500; border-bottom-color: $primary; }
+  .platform-icon {
+    width: 20px; height: 20px;
+    &.tiktok-icon {
+      width: 20px; height: 20px; border-radius: 6px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 6px; }
+    }
+    &.instagram-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.shopee-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.lazada-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.all-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      color: #1677FF;
+    }
+  }
 }
 .filter-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border: 1px solid $border;
-  border-top: none;
-  border-radius: 0 0 $radius $radius;
   background: $white;
-  transition: box-shadow 0.3s ease, border-radius 0.3s ease;
-}
-.sticky-filter-bar {
+  border-top: 1px solid #E8E8E8;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
   position: sticky;
-  top: 48px;
-  z-index: 90;
-  
-  /* When stuck, a nice shadow gives floating illusion */
+  top: 60px;
+  z-index: 89;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .filter-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
@@ -889,7 +927,7 @@ $fast: 150ms ease;
 .date-range-picker { :deep(.el-input__wrapper) { height: 28px; } }
 
 // ===== 通用 Section =====
-.section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: 1px solid $border;
+.section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: none;
   &.half { flex: 1; min-width: 0; margin: 0; }
 }
 .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
@@ -977,7 +1015,7 @@ $fast: 150ms ease;
 
 .pagination-bar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .page-btns { display: flex; gap: 4px; }
-.page-btn { min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid $border; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; color: $text-2; transition: all $fast;
+.page-btn { min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; color: $text-2; transition: all $fast;
   &:hover { border-color: $primary; color: $primary; }
   &.active { background: $primary; border-color: $primary; color: #fff; }
 }
@@ -1015,7 +1053,7 @@ $fast: 150ms ease;
 .link-text { color: $primary; cursor: pointer; margin-left: 4px; &:hover { text-decoration: underline; } }
 
 // ===== 排行榜 Tab =====
-.tab-toggle { display: flex; border: 1px solid $border; border-radius: 4px; overflow: hidden; }
+.tab-toggle { display: flex; border: none; border-radius: 4px; overflow: hidden; }
 .toggle-btn { padding: 4px 14px; font-size: 13px; cursor: pointer; color: $text-2; background: #fff; border-right: 1px solid $border; transition: all $fast;
   &:last-child { border-right: none; }
   &.active { background: $primary; color: #fff; }
@@ -1024,7 +1062,7 @@ $fast: 150ms ease;
 // ===== 弹窗 =====
 .deep-coop-form { display: flex; align-items: center; font-size: 14px; color: $text-1; }
 
-.config-dialog-tip { font-size: 13px; color: $text-2; margin-bottom: 16px; padding: 10px 16px; background: #e6f4ff; border: 1px solid #91caff; border-radius: 4px;
+.config-dialog-tip { font-size: 13px; color: $text-2; margin-bottom: 16px; padding: 10px 16px; background: #e6f4ff; border: none; border-radius: 4px;
    span { font-weight: 700; color: $primary; }
 }
 .config-cols { display: flex; gap: 20px; align-items: flex-start; }
@@ -1036,10 +1074,10 @@ $fast: 150ms ease;
     .el-checkbox__label { font-size: 13px; color: $text-1; white-space: normal; padding-left: 6px; }
   }
 }
-.config-right { width: 240px; border: 1px solid $border; border-radius: 4px; display: flex; flex-direction: column; max-height: 480px; }
+.config-right { width: 240px; border: none; border-radius: 4px; display: flex; flex-direction: column; max-height: 480px; }
 .right-header { padding: 12px; background: #fafafa; border-bottom: 1px solid $border; font-size: 13px; font-weight: 600; color: $text-1; }
 .selected-list { flex: 1; overflow-y: auto; padding: 8px; }
-.selected-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border: 1px solid $border; margin-bottom: 8px; border-radius: 4px; cursor: grab; font-size: 13px; color: $text-1; transition: box-shadow 0.2s;
+.selected-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border: none; margin-bottom: 8px; border-radius: 4px; cursor: grab; font-size: 13px; color: $text-1; transition: box-shadow 0.2s;
   &:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); .delete-icon svg { fill: #ff4d4f; } }
   &:active { cursor: grabbing; }
 }

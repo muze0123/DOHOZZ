@@ -313,7 +313,7 @@ async function handleDelete(row) {
   align-items: center;
   justify-content: space-between;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px 8px 0 0;
   padding: 12px 16px;
 }
@@ -346,7 +346,7 @@ async function handleDelete(row) {
 // ==================== 数据卡片 ====================
 .data-card {
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-top: none;
   border-radius: 0 0 8px 8px;
 }

@@ -920,7 +920,7 @@ watch(scatterData, () => {
 
   &.highlight {
     background: linear-gradient(135deg, #fff7e6 0%, #fff2e6 100%);
-    border: 1px solid #ffd591;
+    border: none;
   }
 
   .stat-icon {

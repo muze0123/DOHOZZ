@@ -637,7 +637,7 @@ onMounted(() => {
 .welcome-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
   margin-bottom: 12px;
 
@@ -656,7 +656,7 @@ onMounted(() => {
 .stats-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
   margin-bottom: 12px;
 }
@@ -694,7 +694,7 @@ onMounted(() => {
 .filter-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
   margin-bottom: 12px;
 }
@@ -753,7 +753,7 @@ onMounted(() => {
   align-items: center;
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 12px 16px;
   margin-bottom: 12px;
 }
@@ -766,7 +766,7 @@ onMounted(() => {
 .list-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
 }
 

@@ -720,7 +720,7 @@ $purple: #722ed1;
   height: 30px;
   padding: 0 12px;
   border-radius: 10px;
-  border: 1px solid #efefef;
+  border: none;
   background: #fafafa;
   color: #666;
   display: inline-flex;
@@ -789,7 +789,7 @@ $purple: #722ed1;
   width: 22px;
   height: 22px;
   border-radius: 8px;
-  border: 1px solid #efefef;
+  border: none;
   background: #fafafa;
   color: #999;
   display: inline-flex;
@@ -816,7 +816,7 @@ $purple: #722ed1;
 }
 
 .kpi {
-  border: 1px solid #f0f0f0;
+  border: none;
   border-radius: 12px;
   padding: 12px;
   background: #fff;
@@ -879,7 +879,7 @@ $purple: #722ed1;
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 999px;
-  border: 1px solid #f0f0f0;
+  border: none;
   background: #fafafa;
   &.green {
     color: #52c41a;
@@ -923,7 +923,7 @@ $purple: #722ed1;
 
 .seg {
   display: inline-flex;
-  border: 1px solid #efefef;
+  border: none;
   border-radius: 10px;
   overflow: hidden;
   background: #fafafa;
@@ -1057,7 +1057,7 @@ $purple: #722ed1;
 }
 .notify-item {
   padding: 10px 12px;
-  border: 1px solid #f0f0f0;
+  border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s ease;

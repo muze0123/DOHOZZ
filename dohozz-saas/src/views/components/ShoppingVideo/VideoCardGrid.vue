@@ -116,7 +116,7 @@ export default {
   background: #fff;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid #F0F0F0;
+  border: none;
   transition: all 0.2s;
   cursor: pointer;
 }

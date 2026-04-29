@@ -107,7 +107,7 @@ const regenerate = () => { generatedText.value = ''; startRewrite() }
 
 <style scoped>
 .generated-result { width: 100%; }
-.result-content { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px; padding: 16px; font-size: 14px; line-height: 1.8; color: #262626; margin-bottom: 8px; }
+.result-content { background: #fafafa; border: none; border-radius: 6px; padding: 16px; font-size: 14px; line-height: 1.8; color: #262626; margin-bottom: 8px; }
 .result-actions { display: flex; gap: 8px; justify-content: flex-end; }
 .generating-state { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 30px 0; color: #1677ff; }
 .loading-icon { font-size: 18px; }

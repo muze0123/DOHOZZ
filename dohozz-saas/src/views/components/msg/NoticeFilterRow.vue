@@ -25,7 +25,7 @@
   height: 24px;
   padding: 0 10px;
   background: #E6F4FF;
-  border: 1px solid #91CAFF;
+  border: none;
   border-radius: 4px;
   color: #1677FF;
   font-size: 12px;

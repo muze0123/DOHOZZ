@@ -25,7 +25,7 @@ function handleClose() { dialogVisible.value = false }
 
 <style scoped>
 .product-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.product-item { display: flex; flex-direction: column; align-items: center; padding: 16px; border: 1px solid #e8e8e8; border-radius: 8px; cursor: pointer; transition: all 0.2s; &:hover { border-color: #1677ff; background: #fafafa; } }
+.product-item { display: flex; flex-direction: column; align-items: center; padding: 16px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; &:hover { border-color: #1677ff; background: #fafafa; } }
 .product-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: #f5f5f5; border-radius: 8px; margin-bottom: 8px; font-size: 24px; color: #666; }
 .product-name { font-size: 13px; color: #333; text-align: center; }
 .product-quantity { font-size: 12px; color: #999; margin-top: 4px; }

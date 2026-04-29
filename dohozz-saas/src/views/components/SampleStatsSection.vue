@@ -238,7 +238,7 @@ function formatMoney(value) {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid #f0f0f0;
+  border: none;
 
   &:hover {
     border-color: #1677ff;

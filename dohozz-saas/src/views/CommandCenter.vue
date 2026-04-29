@@ -11,21 +11,24 @@
         </el-button>
       </div>
 
-      <div class="filter-row-main">
-        <!-- 平台切换栏 -->
+      <div class="platform-tabs-bar">
         <div class="platform-tabs">
-          <span
-            v-for="p in platforms"
-            :key="p"
+          <div
+            v-for="platform in platforms"
+            :key="platform.id"
             class="platform-tab"
-            :class="{ active: activePlatform === p }"
-            @click="handlePlatformChange(p)"
+            :class="{ active: activePlatform === platform.id }"
+            @click="handlePlatformChange(platform.id)"
           >
-            {{ p }}
-          </span>
+            <div class="platform-icon" :class="platform.id + '-icon'">
+              <img :src="platform.icon" :alt="platform.name" />
+            </div>
+            <span>{{ platform.name }}</span>
+          </div>
         </div>
+      </div>
 
-        <!-- 时间筛选 -->
+      <!-- 时间筛选 -->
         <div class="time-filter">
           <el-date-picker
             v-model="dateRange"
@@ -50,7 +53,6 @@
           </div>
           <el-button size="small" @click="handleTutorial">教程</el-button>
         </div>
-      </div>
 
       <div class="filter-row-sub">
         <div class="attr-filter">
@@ -464,8 +466,13 @@
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 
-const platforms = ['全部', '抖音', '快手', '视频号', '小红书']
-const activePlatform = ref('抖音')
+const platforms = [
+  { id: 'tiktok', name: 'TikTok', icon: require('@/assets/images/TikTok.png') },
+  { id: 'instagram', name: 'Instagram', icon: require('@/assets/images/Instagram.png') },
+  { id: 'shopee', name: 'Shopee', icon: require('@/assets/images/Shopee.png') },
+  { id: 'lazada', name: 'Lazada', icon: require('@/assets/images/Lazada.png') },
+]
+const activePlatform = ref('tiktok')
 const attrOptions = ['全部出单达人', '团队建联达人']
 const activeAttr = ref('全部出单达人')
 const activeShop = ref('所有店铺')
@@ -590,26 +597,97 @@ const handleViewMore = (type) => {
   margin-bottom: 12px;
 }
 
+.platform-tabs-bar {
+  background: #fff;
+  border: none;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 0 16px;
+  margin-top: 16px;
+}
+
 .platform-tabs {
   display: flex;
-  gap: 4px;
+  gap: 32px;
 }
 
 .platform-tab {
-  padding: 6px 16px;
-  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  color: #666;
   cursor: pointer;
-  font-size: 13px;
-  color: #595959;
-  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  position: relative;
+  top: 1px;
 
   &:hover {
-    color: #262626;
+    color: #333;
   }
 
   &.active {
-    background: #262626;
-    color: #FFFFFF;
+    color: #1677FF;
+    font-weight: 500;
+    border-bottom-color: #1677FF;
+  }
+
+  .platform-icon {
+    width: 20px;
+    height: 20px;
+
+    &.tiktok-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 6px;
+      }
+    }
+
+    &.instagram-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+    }
+
+    &.shopee-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+    }
+
+    &.lazada-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+    }
   }
 }
 
@@ -937,7 +1015,7 @@ const handleViewMore = (type) => {
 
 .metric-card {
   padding: 12px;
-  border: 1px solid #E8E8E8;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;

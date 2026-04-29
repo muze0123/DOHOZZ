@@ -424,7 +424,7 @@ const confirmCustomPlan = () => {
 
 .function-card {
   background: #FFFFFF;
-  border: 1px solid #E8E8E8;
+  border: none;
   border-radius: 4px;
   padding: 16px;
   display: flex;

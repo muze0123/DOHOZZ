@@ -128,7 +128,7 @@ function handleMoreClick() {
   font-size: 13px;
   color: #666;
   background: #fff;
-  border: 1px solid #E5E7EB;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;

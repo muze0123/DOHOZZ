@@ -833,7 +833,7 @@ onUnmounted(() => {
 // ==================== 数据概览与操作区 ====================
 .overview-section {
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px;
   margin-top: 16px;
   padding: 16px;
@@ -1038,7 +1038,7 @@ onUnmounted(() => {
 .records-list {
   width: 40%;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px;
   overflow-y: auto;
   max-height: 500px;
@@ -1126,7 +1126,7 @@ onUnmounted(() => {
 .record-detail {
   width: 60%;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px;
   overflow-y: auto;
   max-height: 500px;

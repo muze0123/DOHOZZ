@@ -814,13 +814,20 @@ $transition-fast: 150ms ease;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 48px;
+  height: 60px;
   padding: 0 16px;
   background: $white;
-  border-bottom: 1px solid $divider;
-  position: sticky;
+  border-bottom: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
+}
+
+.dashboard-container {
+  padding-top: 60px;
 }
 
 .header-left {
@@ -942,7 +949,7 @@ $transition-fast: 150ms ease;
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  border: 1px solid #1677ff;
+  border: none;
   color: #1677ff;
   border-radius: 20px;
   font-size: 13px;
@@ -963,7 +970,7 @@ $transition-fast: 150ms ease;
   height: 32px;
   padding: 0 10px;
   border-radius: 16px;
-  border: 1px solid #d9d9d9;
+  border: none;
   cursor: pointer;
   color: $secondary-text;
   background: $white;
@@ -989,7 +996,7 @@ $transition-fast: 150ms ease;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid #d9d9d9;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1049,12 +1056,13 @@ $transition-fast: 150ms ease;
 .left-sidebar {
   width: 210px;
   background: $white;
-  border-right: 1px solid $divider;
+  border-right: none;
   padding: 8px 0;
   flex-shrink: 0;
-  position: sticky;
-  top: 48px;
-  height: calc(100vh - 48px);
+  position: fixed;
+  top: 60px;
+  left: 0;
+  height: calc(100vh - 60px);
   overflow-y: auto;
 }
 
@@ -1186,6 +1194,7 @@ $transition-fast: 150ms ease;
   flex: 1;
   padding: 0 16px 24px;
   min-width: 0;
+  margin-left: 210px;
 }
 
 // 其他菜单页面占位
@@ -1193,7 +1202,7 @@ $transition-fast: 150ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 48px - 60px);
+  min-height: calc(100vh - 60px - 60px);
 }
 
 .empty-content {

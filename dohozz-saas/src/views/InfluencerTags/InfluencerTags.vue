@@ -318,7 +318,7 @@ async function handleMoveDown(groupId) {
   align-items: center;
   justify-content: space-between;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px 8px 0 0;
   padding: 12px 16px;
 }
@@ -351,7 +351,7 @@ async function handleMoveDown(groupId) {
 // ==================== 表格区域 ====================
 .table-section {
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-top: none;
   border-radius: 0 0 8px 8px;
 }
@@ -556,7 +556,7 @@ async function handleMoveDown(groupId) {
 .pagination-section {
   margin-top: 16px;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px;
   padding: 12px 16px;
 }

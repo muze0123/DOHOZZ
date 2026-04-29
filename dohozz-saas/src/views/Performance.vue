@@ -1199,7 +1199,7 @@ $warning-amber: #F7B928;
 .filter-area { margin: 0; }
 .platform-tabs-bar {
   background: $white;
-  border: 1px solid $border;
+  border: none;
   border-bottom: none;
   border-radius: $radius $radius 0 0;
   padding: 0 16px;
@@ -1218,7 +1218,7 @@ $warning-amber: #F7B928;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border: 1px solid $border;
+  border: none;
   border-top: none;
   border-radius: 0 0 $radius $radius;
   background: $white;
@@ -1244,7 +1244,7 @@ $warning-amber: #F7B928;
 .date-range-picker { :deep(.el-input__wrapper) { height: 28px; } }
 
 // ===== 通用 Section =====
-.section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: 1px solid $border; }
+.section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: none; }
 .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .head-left { display: flex; align-items: center; gap: 12px; }
 .section-title { font-size: 14px; font-weight: 600; color: $primary-text; }
@@ -1328,7 +1328,7 @@ $warning-amber: #F7B928;
 
 // ===== 区域D：绩效统计 =====
 .toolbar-actions { display: flex; align-items: center; gap: 12px; }
-.tab-toggle { display: flex; border: 1px solid $border; border-radius: 4px; overflow: hidden; }
+.tab-toggle { display: flex; border: none; border-radius: 4px; overflow: hidden; }
 .toggle-btn {
   padding: 4px 14px; font-size: 13px; cursor: pointer; color: $text-2; background: #fff;
   border-right: 1px solid $border; transition: all $fast;
@@ -1365,20 +1365,20 @@ $warning-amber: #F7B928;
 .page-btns { display: flex; gap: 4px; }
 .page-btn {
   min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-  border: 1px solid $border; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; color: $text-2; transition: all $fast;
+  border: none; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; color: $text-2; transition: all $fast;
   &:hover { border-color: $primary; color: $primary; }
   &.active { background: $primary; border-color: $primary; color: #fff; }
 }
 .page-jump { display: flex; align-items: center; gap: 8px; font-size: 12px; color: $text-2; }
 .page-input {
-  width: 48px; height: 28px; border: 1px solid $border; border-radius: 4px; text-align: center; outline: none;
+  width: 48px; height: 28px; border: none; border-radius: 4px; text-align: center; outline: none;
   &:focus { border-color: $primary; }
 }
 
 // ===== 弹窗样式 =====
 .config-tip {
   font-size: 13px; color: $text-2; margin-bottom: 16px; padding: 10px 16px;
-  background: #e6f4ff; border: 1px solid #91caff; border-radius: 4px;
+  background: #e6f4ff; border: none; border-radius: 4px;
   span { font-weight: 700; color: $primary; }
 }
 .config-cols { display: flex; gap: 20px; align-items: flex-start; }
@@ -1390,12 +1390,12 @@ $warning-amber: #F7B928;
     .el-checkbox__label { font-size: 13px; color: $text-1; white-space: normal; padding-left: 6px; }
   }
 }
-.config-right { width: 240px; border: 1px solid $border; border-radius: 4px; display: flex; flex-direction: column; max-height: 480px; }
+.config-right { width: 240px; border: none; border-radius: 4px; display: flex; flex-direction: column; max-height: 480px; }
 .right-header { padding: 12px; background: #fafafa; border-bottom: 1px solid $border; font-size: 13px; font-weight: 600; color: $text-1; }
 .selected-list { flex: 1; overflow-y: auto; padding: 8px; }
 .selected-item {
   display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;
-  background: #fff; border: 1px solid $border; margin-bottom: 8px; border-radius: 4px;
+  background: #fff; border: none; margin-bottom: 8px; border-radius: 4px;
   cursor: grab; font-size: 13px; color: $text-1; transition: box-shadow 0.2s;
   &:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); .delete-icon svg { fill: $error-red; } }
   &:active { cursor: grabbing; }

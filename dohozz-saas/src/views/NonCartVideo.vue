@@ -320,7 +320,7 @@ function handleTimeChange(key) {
 
     button {
       padding: 6px 16px;
-      border: 1px solid #d9d9d9;
+      border: none;
       border-radius: 4px;
       background: #fff;
       font-size: 14px;
@@ -357,7 +357,7 @@ function handleTimeChange(key) {
   justify-content: space-between;
   align-items: flex-start;
   padding: 16px;
-  border: 1px solid #f0f0f0;
+  border: none;
   border-radius: 8px;
   transition: all 0.3s;
 
@@ -390,7 +390,7 @@ function handleTimeChange(key) {
 
     button {
       padding: 6px 12px;
-      border: 1px solid #d9d9d9;
+      border: none;
       border-radius: 4px;
       background: #fff;
       font-size: 14px;

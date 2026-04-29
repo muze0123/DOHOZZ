@@ -600,7 +600,7 @@ function formatNumber(num) {
 // ==================== 平台Tab区 ====================
 .platform-section {
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px 8px 0 0;
   padding: 0 16px;
 }
@@ -634,7 +634,7 @@ function formatNumber(num) {
 // ==================== 检索与时间筛选栏 ====================
 .filter-section {
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-top: none;
   padding: 12px 16px;
 }
@@ -697,7 +697,7 @@ function formatNumber(num) {
   justify-content: space-between;
   padding: 16px;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-top: none;
 }
 
@@ -740,7 +740,7 @@ function formatNumber(num) {
 // ==================== 标签组卡片展示区 ====================
 .cards-section {
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-top: none;
   border-radius: 0 0 8px 8px;
   padding: 16px;
@@ -762,7 +762,7 @@ function formatNumber(num) {
 }
 
 .tag-group-card {
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px;
   overflow: hidden;
   background: #fff;

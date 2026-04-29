@@ -812,7 +812,7 @@ onMounted(() => {
   padding: 12px 16px;
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   margin-bottom: 12px;
 }
 
@@ -856,7 +856,7 @@ onMounted(() => {
 .group-tabs-bar {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 12px 16px;
   margin-bottom: 12px;
 }
@@ -916,7 +916,7 @@ onMounted(() => {
   align-items: center;
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 12px 16px;
   margin-bottom: 12px;
 }
@@ -965,7 +965,7 @@ onMounted(() => {
 .plan-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   overflow: hidden;
   transition: all 0.15s ease;
 
@@ -1171,7 +1171,7 @@ onMounted(() => {
 .empty-state {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 60px 0;
 }
 

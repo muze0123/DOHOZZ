@@ -1140,7 +1140,7 @@ onUnmounted(() => {
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   margin: 0 0 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
 }
 
 .card-main {
@@ -1433,7 +1433,7 @@ onUnmounted(() => {
 
 .dislike-option {
   padding: 8px 10px;
-  border: 1px solid #D9D9D9;
+  border: none;
   border-radius: 4px;
   margin-bottom: 6px;
   cursor: pointer;
@@ -1455,7 +1455,7 @@ onUnmounted(() => {
 .other-reason-input {
   width: 100%;
   height: 64px;
-  border: 1px solid #D9D9D9;
+  border: none;
   border-radius: 4px;
   padding: 8px;
   font-size: 12px;
@@ -1602,7 +1602,7 @@ onUnmounted(() => {
 .follower-popover {
   min-width: 280px;
   background: #fff;
-  border: 1px solid #E8E8E8;
+  border: none;
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   padding: 12px;

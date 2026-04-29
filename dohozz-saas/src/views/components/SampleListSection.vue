@@ -219,7 +219,7 @@ function getStatusClass(status) {
   background: #fff;
   border-radius: 8px;
   padding: 16px;
-  border: 1px solid #f0f0f0;
+  border: none;
   transition: all 0.2s;
 
   &:hover {

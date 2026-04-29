@@ -307,7 +307,7 @@ defineExpose({ reset })
 
     .el-input__wrapper {
       border-radius: 8px;
-      border: 1px solid #E5E7EB;
+      border: none;
       box-shadow: none;
 
       &:hover {

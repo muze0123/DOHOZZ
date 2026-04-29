@@ -281,7 +281,7 @@ onMounted(() => {
   background: #fff;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid #F0F0F0;
+  border: none;
   transition: all 0.2s;
   &:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 }

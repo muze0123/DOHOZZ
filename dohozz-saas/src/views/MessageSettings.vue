@@ -487,7 +487,7 @@ const saveEdit = () => {
 .qrcode-placeholder {
   width: 120px;
   height: 120px;
-  border: 1px solid #E8E8E8;
+  border: none;
   border-radius: 4px;
   overflow: hidden;
   img {

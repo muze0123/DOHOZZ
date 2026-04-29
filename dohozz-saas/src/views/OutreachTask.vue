@@ -1191,7 +1191,7 @@ const getInviteStatusClass = (status) => {
     
     .el-pager li {
       background: #FFFFFF;
-      border: 1px solid #D9D9D9;
+      border: none;
       border-radius: 4px;
       margin: 0 4px;
       min-width: 32px;
@@ -1213,7 +1213,7 @@ const getInviteStatusClass = (status) => {
 
     button {
       background: #FFFFFF;
-      border: 1px solid #D9D9D9;
+      border: none;
       border-radius: 4px;
       height: 32px;
       min-width: 32px;

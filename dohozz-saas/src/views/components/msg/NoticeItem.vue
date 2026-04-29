@@ -56,7 +56,7 @@ function toggleExpand() {
   height: 20px;
   padding: 0 6px;
   background: #FFF7E6;
-  border: 1px solid #FFD591;
+  border: none;
   border-radius: 3px;
   color: #FA8C16;
   font-size: 11px;

@@ -694,7 +694,7 @@ $error: #E41E3F;
   background: $bg-card;
   border-radius: 8px;
   padding: 16px;
-  border: 1px solid #e8e8e8;
+  border: none;
 }
 
 // 筛选区
@@ -1215,12 +1215,12 @@ $error: #E41E3F;
 
   &.success {
     background: #F6FFED;
-    border: 1px solid #B7EB8F;
+    border: none;
   }
 
   &.fail {
     background: #FFF1F0;
-    border: 1px solid #FFCCC7;
+    border: none;
   }
 }
 

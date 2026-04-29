@@ -527,7 +527,7 @@ $transition-fast: 150ms ease;
 // 平台Tab与用户信息区
 .platform-tabs-bar {
   background: $white;
-  border: 1px solid $divider;
+  border: none;
   border-bottom: none;
   border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
@@ -536,7 +536,7 @@ $transition-fast: 150ms ease;
 
 .platform-tabs {
   display: flex;
-  gap: 24px;
+  gap: 32px;
 }
 
 .platform-tab {
@@ -571,30 +571,58 @@ $transition-fast: 150ms ease;
     }
 
     &.tiktok-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 22px;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      overflow: hidden;
       color: inherit;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 6px;
+      }
     }
 
     &.instagram-icon {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
       color: inherit;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
     }
 
     &.shopee-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 22px;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
       color: inherit;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
     }
 
     &.lazada-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 22px;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
       color: inherit;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
     }
   }
 }
@@ -605,11 +633,13 @@ $transition-fast: 150ms ease;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border: 1px solid $divider;
-  border-radius: 0 0 $border-radius-lg $border-radius-lg;
+  border: none;
+  border-top: 1px solid #E8E8E8;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
   background: $white;
   margin-bottom: 16px;
-  transition: box-shadow 0.3s ease, border-radius 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 .sticky-user-bar {
@@ -710,7 +740,7 @@ $transition-fast: 150ms ease;
   border-radius: $border-radius-lg;
   padding: 16px;
   margin-bottom: 16px;
-  border: 1px solid $divider;
+  border: none;
 }
 
 .section-header {
@@ -750,7 +780,7 @@ $transition-fast: 150ms ease;
 
 .todo-card {
   background: $warm-gray;
-  border: 1px solid $divider;
+  border: none;
   border-radius: $border-radius-md;
   padding: 12px;
   transition: all $transition-fast;
@@ -811,7 +841,7 @@ $transition-fast: 150ms ease;
   gap: 8px;
   padding: 16px 8px;
   background: $warm-gray;
-  border: 1px solid $divider;
+  border: none;
   border-radius: $border-radius-md;
   cursor: pointer;
   transition: all $transition-fast;
@@ -1137,7 +1167,7 @@ $transition-fast: 150ms ease;
   font-size: 13px;
   color: $secondary-text;
   cursor: pointer;
-  border: 1px solid $divider;
+  border: none;
   border-radius: $border-radius-sm;
   transition: all $transition-fast;
 
@@ -1282,7 +1312,7 @@ $transition-fast: 150ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid $divider;
+  border: none;
   border-radius: $border-radius-sm;
   font-size: 13px;
   color: $secondary-text;
@@ -1312,7 +1342,7 @@ $transition-fast: 150ms ease;
 .page-input {
   width: 48px;
   height: 28px;
-  border: 1px solid $divider;
+  border: none;
   border-radius: $border-radius-sm;
   text-align: center;
   outline: none;

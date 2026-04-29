@@ -66,7 +66,7 @@ function handleViewProduct(product) {
   flex-direction: column;
   align-items: center;
   padding: 16px;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;

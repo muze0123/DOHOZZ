@@ -586,7 +586,7 @@ function formatSales(num) {
 .header-section {
   margin-top: 16px;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -759,7 +759,7 @@ function formatSales(num) {
     align-items: center;
     justify-content: space-between;
     background: #fff;
-    border: 1px solid #f0f0f0;
+    border: none;
     border-radius: 8px 8px 0 0;
     padding: 0 16px;
     margin-bottom: 0;
@@ -808,7 +808,7 @@ function formatSales(num) {
   // 筛选条件
   .filter-section {
     padding: 16px;
-    border: 1px solid #f0f0f0;
+    border: none;
     border-top: none;
     border-radius: 0 0 8px 8px;
     background: #fff;
@@ -842,7 +842,7 @@ function formatSales(num) {
 .main-section {
   margin-top: 16px;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 8px;
   overflow: hidden;
 

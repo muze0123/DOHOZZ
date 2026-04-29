@@ -53,5 +53,5 @@ const handleRegenerate = () => {
 .result-box { margin-bottom: 16px; }
 .result-label { color: #999; font-size: 14px; margin-bottom: 8px; }
 .result-url { color: #666; font-size: 14px; word-break: break-all; }
-.result-content { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; font-size: 14px; line-height: 1.8; color: #262626; min-height: 100px; white-space: pre-wrap; }
+.result-content { background: #fafafa; border: none; border-radius: 8px; padding: 16px; font-size: 14px; line-height: 1.8; color: #262626; min-height: 100px; white-space: pre-wrap; }
 </style>

@@ -84,7 +84,7 @@ function handleClick() {
   height: 20px;
   padding: 0 6px;
   background: #E6FFFB;
-  border: 1px solid #87E8DE;
+  border: none;
   border-radius: 3px;
   color: #13C2C2;
   font-size: 11px;

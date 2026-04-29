@@ -630,15 +630,15 @@ const commissionTypes = [
       <p style="margin: 0 0 12px; color: #65676B;">提成 = 提成比例 × 提成基数</p>
       <p style="margin: 0 0 8px; font-weight: 600;">示例</p>
       <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">适用人员</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工A</td></tr>
-        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成比例</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">6%</td></tr>
-        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工A订单提成基数</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">¥100w</td></tr>
-        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成计算</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">100w × 6% = <strong>¥6w</strong></td></tr>
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: none;">适用人员</td><td style="padding: 6px 8px; border: none;">员工A</td></tr>
+        <tr><td style="padding: 6px 8px; border: none;">员工提成比例</td><td style="padding: 6px 8px; border: none;">6%</td></tr>
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: none;">员工A订单提成基数</td><td style="padding: 6px 8px; border: none;">¥100w</td></tr>
+        <tr><td style="padding: 6px 8px; border: none;">员工提成计算</td><td style="padding: 6px 8px; border: none;">100w × 6% = <strong>¥6w</strong></td></tr>
       </table>
       <p style="margin: 12px 0 8px; font-weight: 600;">方案数据列表字段示例</p>
       <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">方案名称</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">管理提成</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">适用人员数</td></tr>
-        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">示例方案</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">20%</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">10%</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">20</td></tr>
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: none;">方案名称</td><td style="padding: 6px 8px; border: none;">员工提成</td><td style="padding: 6px 8px; border: none;">管理提成</td><td style="padding: 6px 8px; border: none;">适用人员数</td></tr>
+        <tr><td style="padding: 6px 8px; border: none;">示例方案</td><td style="padding: 6px 8px; border: none;">20%</td><td style="padding: 6px 8px; border: none;">10%</td><td style="padding: 6px 8px; border: none;">20</td></tr>
       </table>
     </div>`
   },
@@ -650,9 +650,9 @@ const commissionTypes = [
       <p style="margin: 0 0 12px; color: #65676B;">提成 = 提成比例 × 提成基数（按月业绩分档取对应比例）</p>
       <p style="margin: 0 0 8px; font-weight: 600;">月业绩分档</p>
       <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">月业绩分档</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成比例</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">管理提成比例</td></tr>
-        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">0 &lt; 月业绩 ≤ 10w</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">2%</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">1%</td></tr>
-        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">10w &lt; 月业绩 ≤ 20w</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">4%</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">2%</td></tr>
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: none;">月业绩分档</td><td style="padding: 6px 8px; border: none;">员工提成比例</td><td style="padding: 6px 8px; border: none;">管理提成比例</td></tr>
+        <tr><td style="padding: 6px 8px; border: none;">0 &lt; 月业绩 ≤ 10w</td><td style="padding: 6px 8px; border: none;">2%</td><td style="padding: 6px 8px; border: none;">1%</td></tr>
+        <tr><td style="padding: 6px 8px; border: none;">10w &lt; 月业绩 ≤ 20w</td><td style="padding: 6px 8px; border: none;">4%</td><td style="padding: 6px 8px; border: none;">2%</td></tr>
       </table>
       <p style="margin: 12px 0 8px; font-weight: 600;">提成计算示例</p>
       <p style="margin: 0 0 4px; color: #65676B; font-size: 12px;">提成基数：¥15w（落在第二档 10w &lt; 业绩 ≤ 20w）</p>
@@ -668,9 +668,9 @@ const commissionTypes = [
       <p style="margin: 0 0 12px; color: #65676B;">提成 = 提成比例 × 提成基数</p>
       <p style="margin: 0 0 8px; font-weight: 600;">示例</p>
       <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">适用商品</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">该商品提成基数</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">员工提成比例</td></tr>
-        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">商品A</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">100w</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">6%</td></tr>
-        <tr><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">商品B</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">50w</td><td style="padding: 6px 8px; border: 1px solid #e5e7eb;">2%</td></tr>
+        <tr style="background: #f5f7fa;"><td style="padding: 6px 8px; border: none;">适用商品</td><td style="padding: 6px 8px; border: none;">该商品提成基数</td><td style="padding: 6px 8px; border: none;">员工提成比例</td></tr>
+        <tr><td style="padding: 6px 8px; border: none;">商品A</td><td style="padding: 6px 8px; border: none;">100w</td><td style="padding: 6px 8px; border: none;">6%</td></tr>
+        <tr><td style="padding: 6px 8px; border: none;">商品B</td><td style="padding: 6px 8px; border: none;">50w</td><td style="padding: 6px 8px; border: none;">2%</td></tr>
       </table>
       <p style="margin: 12px 0 4px; font-size: 12px;">提成基数 = 商品A 100w + 商品B 50w = <strong>150w</strong></p>
       <p style="margin: 0; font-size: 12px;">员工提成：实际按各商品独立计算后汇总</p>
@@ -1082,7 +1082,7 @@ $warning-orange: #FF7A00;
   border-radius: $border-radius-lg;
   padding: 16px;
   margin: 0 0 16px 0;
-  border: 1px solid $divider;
+  border: none;
 }
 
 .section-header {
@@ -1159,12 +1159,12 @@ $warning-orange: #FF7A00;
   &.active {
     background: #f6ffed;
     color: $success-green;
-    border: 1px solid $success-green;
+    border: none;
   }
   &.inactive {
     background: #f5f5f5;
     color: $text-3;
-    border: 1px solid $divider;
+    border: none;
   }
 }
 
@@ -1351,7 +1351,7 @@ $warning-orange: #FF7A00;
 
   &.active {
     background: #e6f4ff;
-    border: 1px solid $primary;
+    border: none;
   }
 }
 

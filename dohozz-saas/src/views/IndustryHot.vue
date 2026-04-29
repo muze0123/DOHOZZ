@@ -507,7 +507,7 @@ const formatFollowers = (n) => {
   background: #fff;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid #F0F0F0;
+  border: none;
   transition: all 0.2s;
   &:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 }
@@ -577,7 +577,7 @@ const formatFollowers = (n) => {
     .step-num {
       width: 24px; height: 24px;
       border-radius: 50%;
-      border: 1px solid #D9D9D9;
+      border: none;
       display: flex; align-items: center; justify-content: center;
       font-size: 12px; font-weight: 600;
     }
@@ -662,7 +662,7 @@ const formatFollowers = (n) => {
 }
 
 .direction-card {
-  border: 1px solid #E8E8E8;
+  border: none;
   border-radius: 4px;
   padding: 16px;
   cursor: pointer;
@@ -688,7 +688,7 @@ const formatFollowers = (n) => {
 }
 
 .script-content {
-  border: 1px solid #F0F0F0;
+  border: none;
   border-radius: 4px;
   padding: 20px;
   margin-bottom: 16px;
@@ -717,7 +717,7 @@ const formatFollowers = (n) => {
 }
 
 .influencer-card {
-  border: 1px solid #E8E8E8;
+  border: none;
   border-radius: 4px;
   padding: 20px;
   text-align: center;

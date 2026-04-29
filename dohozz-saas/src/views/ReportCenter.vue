@@ -416,7 +416,7 @@ $success-green: #31A24C;
   border-radius: $border-radius-lg;
   padding: 16px;
   margin: 0 0 16px 0;
-  border: 1px solid $divider;
+  border: none;
 }
 
 .section-header {

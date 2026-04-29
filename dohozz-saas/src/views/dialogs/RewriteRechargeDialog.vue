@@ -54,7 +54,7 @@ const handleRecharge = (pkg) => {
 .points-num { color: #FF6600; font-weight: bold; font-size: 16px; }
 .recharge-title { font-size: 14px; color: #999; margin-bottom: 12px; }
 .recharge-list { display: flex; flex-direction: column; gap: 12px; }
-.recharge-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fafafa; border-radius: 8px; border: 1px solid #f0f0f0; }
+.recharge-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fafafa; border-radius: 8px; border: none; }
 .pkg-info { display: flex; gap: 16px; align-items: center; }
 .pkg-points { font-size: 14px; color: #333; font-weight: 500; }
 .pkg-price { font-size: 14px; color: #FF6600; font-weight: bold; }

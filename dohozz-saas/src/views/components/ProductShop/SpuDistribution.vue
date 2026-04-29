@@ -164,7 +164,7 @@ watch(() => props.data, () => {
   cursor: pointer;
   font-size: 13px;
   color: #666;
-  border: 1px solid #d9d9d9;
+  border: none;
   border-radius: 4px;
   transition: all 0.2s;
 }

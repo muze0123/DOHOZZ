@@ -47,7 +47,11 @@
       "Bash(pkill -9 -f \"node.*vite\")",
       "Bash(pkill -9 -f vite)",
       "Bash(kill 38743)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(grep -h \"border:\\\\s*1px solid\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/*.vue /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/**/*.vue)",
+      "Bash(find:*)",
+      "Bash(grep -rh \"border: 1px solid \\\\$\\(border|divider|primary|secondary\\)\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/)",
+      "Bash(grep -rh \"border: 1px solid \\\\$\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/)"
     ]
   }
 }

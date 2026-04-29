@@ -722,7 +722,7 @@ $bg-card: #FFFFFF;
   align-items: center;
   background: $bg-card;
   border-radius: 8px 8px 0 0;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-bottom: none;
 }
 
@@ -730,7 +730,7 @@ $bg-card: #FFFFFF;
   width: 100%;
   padding: 0 24px;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-top: none;
 }
 
@@ -926,7 +926,7 @@ $bg-card: #FFFFFF;
 .table-container {
   padding: 16px 24px;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-top: none;
   border-radius: 0 0 8px 8px;
 }
@@ -1072,7 +1072,7 @@ $bg-card: #FFFFFF;
   padding: 16px 24px;
   gap: 8px;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-top: none;
   border-radius: 0 0 8px 8px;
 }

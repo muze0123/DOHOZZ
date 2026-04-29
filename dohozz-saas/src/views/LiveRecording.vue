@@ -575,7 +575,7 @@ function formatDuration(sec) {
   padding: 12px 16px;
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   margin-bottom: 12px;
 
   .platform-select {
@@ -586,7 +586,7 @@ function formatDuration(sec) {
 .welcome-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
   margin-bottom: 12px;
 
@@ -609,7 +609,7 @@ function formatDuration(sec) {
 .feature-section {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
   margin-bottom: 12px;
 
@@ -627,7 +627,7 @@ function formatDuration(sec) {
 
   .feature-card {
     background: #fff;
-    border: 1px solid #e8e8e8;
+    border: none;
     border-radius: 12px;
     padding: 14px;
     cursor: pointer;
@@ -658,7 +658,7 @@ function formatDuration(sec) {
 .filter-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
   margin-bottom: 12px;
 }
@@ -733,7 +733,7 @@ function formatDuration(sec) {
 .overview-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
   margin-bottom: 12px;
 }
@@ -762,7 +762,7 @@ function formatDuration(sec) {
 }
 
 .metric {
-  border: 1px solid #f0f0f0;
+  border: none;
   border-radius: 12px;
   padding: 12px;
   background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
@@ -792,7 +792,7 @@ function formatDuration(sec) {
 .list-card {
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: none;
   padding: 16px;
 }
 

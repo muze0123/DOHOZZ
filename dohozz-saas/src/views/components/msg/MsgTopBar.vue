@@ -114,7 +114,7 @@ defineEmits(['update:activeTab', 'openWechatBind', 'openMsgSettings'])
 .btn-msg-setting {
   height: 30px;
   padding: 0 14px;
-  border: 1px solid #D9D9D9;
+  border: none;
   border-radius: 4px;
   background: #fff;
   font-size: 13px;

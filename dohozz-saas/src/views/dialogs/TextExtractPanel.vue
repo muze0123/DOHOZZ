@@ -92,6 +92,6 @@ const copyText = () => {
 .extract-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 40px 0; color: #1677ff; }
 .loading-icon { font-size: 18px; }
 .extract-result { position: relative; }
-.result-text { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px; padding: 16px; font-size: 14px; line-height: 1.8; color: #262626; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
+.result-text { background: #fafafa; border: none; border-radius: 6px; padding: 16px; font-size: 14px; line-height: 1.8; color: #262626; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
 .extract-empty, .extract-error { text-align: center; padding: 20px 0; }
 </style>

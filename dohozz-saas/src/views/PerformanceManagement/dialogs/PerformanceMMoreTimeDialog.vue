@@ -104,7 +104,7 @@ const handleConfirm = () => {
 
 .dim-btn {
   padding: 6px 16px;
-  border: 1px solid #e8e8e8;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 13px;

@@ -1122,14 +1122,14 @@ $transition-fast: 150ms ease;
 // 通用区块样式
 .section {
   background: $white;
-  border: 1px solid $divider;
+  border: none;
   border-radius: $border-radius-lg;
   padding: 16px;
 }
 
 .platform-tabs-bar {
   background: $white;
-  border: 1px solid $divider;
+  border: none;
   border-bottom: none;
   border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
@@ -1186,7 +1186,7 @@ $transition-fast: 150ms ease;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border: 1px solid $divider;
+  border: none;
   border-top: none;
   border-radius: 0 0 $border-radius-lg $border-radius-lg;
   background: $white;

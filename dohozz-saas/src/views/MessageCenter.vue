@@ -265,7 +265,7 @@ onMounted(() => {
   height: 30px;
   padding: 0 14px;
   background: #fff;
-  border: 1px solid #1677FF;
+  border: none;
   border-radius: 4px;
   color: #1677FF;
   font-size: 13px;

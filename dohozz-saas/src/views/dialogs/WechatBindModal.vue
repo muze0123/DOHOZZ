@@ -43,7 +43,7 @@ defineEmits(['update:visible'])
 .wechat-qrcode {
   width: 120px;
   height: 120px;
-  border: 1px solid #F0F0F0;
+  border: none;
   border-radius: 4px;
   overflow: hidden;
 }

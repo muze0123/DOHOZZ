@@ -549,7 +549,7 @@ function handleLogPageChange() {
   gap: 8px;
   padding: 12px 16px;
   background: #fff7e6;
-  border: 1px solid #ffd591;
+  border: none;
   border-top: none;
   font-size: 13px;
   color: #666;

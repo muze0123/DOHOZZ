@@ -798,7 +798,7 @@ updateTabCounts()
     gap: 4px;
     margin-left: 6px;
     padding: 1px 6px;
-    border: 1px solid #D9D9D9;
+    border: none;
     border-radius: 3px;
     font-size: 11px;
     color: #595959;
