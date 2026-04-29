@@ -50,11 +50,11 @@ const handleDelete = (id) => {
 </script>
 
 <style scoped>
-.empty-tip { text-align: center; padding: 40px 0; color: #999; }
+.empty-tip { text-align: center; padding: 40px 0; color: var(--el-text-color-placeholder); }
 .history-list { max-height: 400px; overflow-y: auto; }
-.history-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+.history-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--el-border-color-lighter); }
 .history-info { flex: 1; min-width: 0; }
-.history-time { color: #999; font-size: 12px; margin-bottom: 4px; }
-.history-url { color: #333; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-time { color: var(--el-text-color-placeholder); font-size: 12px; margin-bottom: 4px; }
+.history-url { color: var(--el-text-color-primary); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .history-actions { display: flex; gap: 8px; flex-shrink: 0; margin-left: 16px; }
 </style>
