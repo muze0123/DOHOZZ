@@ -33,7 +33,7 @@
           <div class="step-image">
             <div class="image-label">示意图</div>
             <div class="image-box">
-              <img src="@/assets/help-step1.png" alt="设置基础规则" />
+              <img src="@/assets/images/help-step1.png" alt="设置基础规则" />
             </div>
           </div>
         </div>
@@ -53,7 +53,7 @@
           <div class="step-image">
             <div class="image-label">示意图</div>
             <div class="image-box">
-              <img src="@/assets/help-step2.png" alt="配置具体提成方案" />
+              <img src="@/assets/images/help-step2.png" alt="配置具体提成方案" />
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@
           <div class="step-image">
             <div class="image-label">示意图</div>
             <div class="image-box">
-              <img src="@/assets/help-step3.png" alt="查看提成方案" />
+              <img src="@/assets/images/help-step3.png" alt="查看提成方案" />
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@
           <div class="step-image">
             <div class="image-label">示意图</div>
             <div class="image-box">
-              <img src="@/assets/help-step4.png" alt="查看员工提成" />
+              <img src="@/assets/images/help-step4.png" alt="查看员工提成" />
             </div>
           </div>
         </div>

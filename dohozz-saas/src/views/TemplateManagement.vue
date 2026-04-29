@@ -692,7 +692,7 @@ onMounted(() => {
 .template-management-page {
   background: #F5F6F7;
   min-height: calc(100vh - 48px);
-  padding: 16px;
+  padding: 16px 0 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;

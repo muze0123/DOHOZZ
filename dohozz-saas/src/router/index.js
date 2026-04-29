@@ -509,15 +509,6 @@ const routes = [
     }
   },
   {
-    path: '/ai-rewrite',
-    name: 'AIRewrite',
-    component: () => import('@/views/AIRewrite.vue'),
-    meta: {
-      requiresAuth: true,
-      title: '智能仿写 - DOHOZZ'
-    }
-  },
-  {
     path: '/extract-script',
     name: 'ExtractScript',
     component: () => import('@/views/ExtractScript.vue'),
@@ -533,6 +524,42 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: '指挥中台 - DOHOZZ'
+    }
+  },
+  {
+    path: '/live-stream-analysis',
+    name: 'LiveStreamAnalysis',
+    component: () => import('@/views/LiveStreamAnalysis.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '达播 - DOHOZZ'
+    }
+  },
+  {
+    path: '/team-analysis',
+    name: 'TeamAnalysis',
+    component: () => import('@/views/TeamAnalysis.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '团队 - DOHOZZ'
+    }
+  },
+  {
+    path: '/content-analysis',
+    name: 'ContentAnalysis',
+    component: () => import('@/views/ContentAnalysis.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '内容 - DOHOZZ'
+    }
+  },
+  {
+    path: '/big-screen',
+    name: 'BigScreen',
+    component: () => import('@/views/BigScreen.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '大屏 - DOHOZZ'
     }
   }
 ]

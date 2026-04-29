@@ -720,7 +720,7 @@ function handleCopyProductId(row) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .order-management {
   padding: 16px 0 24px;

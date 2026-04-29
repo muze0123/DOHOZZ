@@ -10,7 +10,19 @@
           :class="{ active: activePlatform === platform.id }"
           @click="switchPlatform(platform.id)"
         >
-          <div class="platform-icon" v-html="platform.icon"></div>
+          <div class="platform-icon tiktok-icon" v-if="platform.id === 'tiktok'">
+            <component :is="platform.icon" />
+          </div>
+          <div class="platform-icon instagram-icon" v-else-if="platform.id === 'instagram'">
+            <component :is="platform.icon" />
+          </div>
+          <div class="platform-icon shopee-icon" v-else-if="platform.id === 'shopee'">
+            <component :is="platform.icon" />
+          </div>
+          <div class="platform-icon lazada-icon" v-else-if="platform.id === 'lazada'">
+            <component :is="platform.icon" />
+          </div>
+          <div class="platform-icon" v-else v-html="platform.icon"></div>
           <span>{{ platform.name }}</span>
         </div>
       </div>
@@ -345,9 +357,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, h } from 'vue'
+import { ref, reactive, computed, h, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElAvatar } from 'element-plus'
+import IconTikTokIcon from '@/components/icons/IconTikTokIcon.vue'
+import IconInstagramIcon from '@/components/icons/IconInstagramIcon.vue'
+import IconShopeeIcon from '@/components/icons/IconShopeeIcon.vue'
+import IconLazadaIcon from '@/components/icons/IconLazadaIcon.vue'
 
 const router = useRouter()
 
@@ -365,26 +381,54 @@ const selectedDate = ref('近N天')
 const selectedStatus = ref('all')
 const notifTab = ref('reminder')
 
+const TikTokIcon = defineComponent({
+  render() {
+    return h(IconTikTokIcon)
+  },
+  h
+})
+
+const InstagramIcon = defineComponent({
+  render() {
+    return h(IconInstagramIcon)
+  },
+  h
+})
+
+const ShopeeIcon = defineComponent({
+  render() {
+    return h(IconShopeeIcon)
+  },
+  h
+})
+
+const LazadaIcon = defineComponent({
+  render() {
+    return h(IconLazadaIcon)
+  },
+  h
+})
+
 const platforms = [
   {
     id: 'tiktok',
     name: 'TikTok',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>'
+    icon: TikTokIcon
   },
   {
     id: 'instagram',
     name: 'Instagram',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>'
+    icon: InstagramIcon
   },
   {
     id: 'shopee',
     name: 'Shopee',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.006 4.295c-1.61 0-3.145.55-4.332 1.45l-.247.194c-.617.475-1.118 1.07-1.49 1.747-.37.676-.563 1.43-.563 2.23 0 .78.18 1.54.527 2.2.347.66.837 1.22 1.44 1.64l.16.11c.35.24.74.41 1.16.51.42.1.85.15 1.29.15h2.9c.75 0 1.47-.12 2.13-.36.66-.24 1.25-.58 1.75-1.01l.03-.02c.47-.42.85-.93 1.11-1.51.27-.58.41-1.22.41-1.89 0-.67-.14-1.3-.41-1.89-.27-.58-.64-1.09-1.11-1.51l-.03-.02c-.5-.43-1.09-.77-1.75-1.01-.66-.24-1.38-.36-2.13-.36H13.4l-.63-1.06-.64 1.06h-2.9l-.55-.39c-.5-.35-1.05-.63-1.65-.82-.6-.19-1.24-.29-1.9-.29-.55 0-1.1.08-1.62.23-.53.15-1.02.38-1.45.68l-.13.09c-.39.29-.73.64-1.01 1.05-.28.41-.43.87-.43 1.36 0 .49.15.95.43 1.36.28.41.62.76 1.01 1.05l.13.09c.43.3.92.53 1.45.68.52.15 1.07.23 1.62.23.66 0 1.3-.1 1.9-.29.6-.19 1.15-.47 1.65-.82l.55-.39h3.79l.63 1.06.64-1.06h2.27c1.08 0 2.1.28 2.98.79.88.51 1.58 1.24 2.04 2.13.46.89.7 1.91.7 2.98 0 1.07-.24 2.09-.7 2.98-.46.89-1.16 1.62-2.04 2.13-.88.51-1.9.79-2.98.79H8.17c-.82 0-1.61.16-2.33.46-.73.3-1.37.74-1.91 1.29-.54.55-.96 1.21-1.24 1.95-.28.74-.42 1.55-.42 2.39 0 .84.14 1.65.42 2.39.28.74.7 1.4 1.24 1.95.54.55 1.18.99 1.91 1.29.72.3 1.51.46 2.33.46h13.65c1.64 0 3.19-.34 4.56-.98 1.37-.64 2.52-1.54 3.37-2.63.85-1.09 1.38-2.38 1.53-3.79.15-1.41-.05-2.83-.58-4.14-.53-1.31-1.38-2.43-2.48-3.28-1.1-.85-2.4-1.38-3.81-1.53-1.41-.15-2.83.05-4.14.58-1.31.53-2.43 1.38-3.28 2.48l-.16.21-.24-.33z"/></svg>'
+    icon: ShopeeIcon
   },
   {
     id: 'lazada',
     name: 'Lazada',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.91 6.18c-.02-.39-.35-.7-.74-.7H2.83c-.39 0-.72.31-.74.7l-.99 14.64c-.02.39.27.71.66.71h18.68c.39 0 .68-.32.66-.71l-.09-14.64zm-8.84 6.1l-3.4 3.4H3.7l4.37-5.58 3.4 3.4 1.4-1.4-3.4-3.4 2.86-3.72c.18-.23.5-.3.74-.15l3.02 1.87 2.45-3.17c.16-.2.46-.24.68-.1l2.6 1.63c.22.14.29.42.16.64l-2.9 4.83-2.45 3.17c-.16.2-.46.24-.68.1l-2.61-1.63c-.22-.14-.29-.42-.16-.64l.86-1.42-1.4 1.4-1.42.86z"/></svg>'
+    icon: LazadaIcon
   }
 ]
 
@@ -561,6 +605,30 @@ $transition-fast: 150ms ease;
     :deep(svg) {
       width: 100%;
       height: 100%;
+    }
+
+    &.tiktok-icon {
+      width: 24px;
+      height: 24px;
+      color: inherit;
+    }
+
+    &.instagram-icon {
+      width: 24px;
+      height: 24px;
+      color: inherit;
+    }
+
+    &.shopee-icon {
+      width: 24px;
+      height: 24px;
+      color: inherit;
+    }
+
+    &.lazada-icon {
+      width: 24px;
+      height: 24px;
+      color: inherit;
     }
   }
 }

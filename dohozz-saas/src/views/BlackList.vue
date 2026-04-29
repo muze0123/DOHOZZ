@@ -416,7 +416,7 @@ function formatNumber(num) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .black-list {
   @extend .page-container;

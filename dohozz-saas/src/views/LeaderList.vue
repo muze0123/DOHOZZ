@@ -502,7 +502,7 @@ function handleImportSuccess() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .leader-list {
   @extend .page-container;

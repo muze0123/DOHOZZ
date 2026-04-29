@@ -316,7 +316,7 @@ async function handleMoreCommand(command, row) {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .content-list-section {
   background: #fff;

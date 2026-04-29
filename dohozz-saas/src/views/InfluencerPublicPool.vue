@@ -737,7 +737,7 @@ function formatSales(num) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .influencer-public-pool {
   @extend .page-container;

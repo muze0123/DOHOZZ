@@ -617,7 +617,7 @@ function handleEditSampleSuccess() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .sample-management {
   @extend .page-container;

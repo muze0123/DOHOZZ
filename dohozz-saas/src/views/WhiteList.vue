@@ -373,7 +373,7 @@ function formatFollowers(num) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .white-list {
   @extend .page-container;

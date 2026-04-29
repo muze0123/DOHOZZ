@@ -561,7 +561,7 @@ function formatDuration(sec) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .live-recording-page {
   @extend .page-container;

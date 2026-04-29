@@ -177,7 +177,7 @@ function formatMoney(value) {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .leader-list-section {
   background: #fff;

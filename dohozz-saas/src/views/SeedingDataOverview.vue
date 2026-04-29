@@ -671,7 +671,7 @@ const RankBadge = {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 $bg: #f5f5f5;
 $white: #fff;

@@ -314,7 +314,7 @@ function formatMoney(v) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/_influencer-page.scss';
+@import '@/assets/styles/_influencer-page.scss';
 
 .product-library {
   padding: 16px 0 24px;

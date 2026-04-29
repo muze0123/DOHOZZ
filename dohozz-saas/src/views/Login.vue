@@ -3,7 +3,7 @@
     <!-- Left Side - Brand Panel -->
     <div class="brand-panel">
       <div class="brand-header">
-        <img src="@/assets/DOHOZZ_LOOGO.png" alt="DOHOZZ" class="brand-logo" />
+        <img src="@/assets/images/DOHOZZ_LOOGO.png" alt="DOHOZZ" class="brand-logo" />
         <h1 class="brand-name">DOHOZZ</h1>
       </div>
 
@@ -198,7 +198,7 @@ onMounted(async () => {
 .login-page {
   min-height: 100vh;
   display: flex;
-  background-image: url('@/assets/background.png');
+  background-image: url('@/assets/images/background.png');
   background-size: cover;
   background-position: center;
 }
@@ -206,7 +206,7 @@ onMounted(async () => {
 // Brand Panel (Left Side)
 .brand-panel {
   flex: 1;
-  background-image: url('@/assets/background.png');
+  background-image: url('@/assets/images/background.png');
   background-size: cover;
   background-position: center;
   position: relative;
