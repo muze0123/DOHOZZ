@@ -543,12 +543,12 @@ export function extractText(videoId) {
  * @param {string} videoUrl - 视频链接
  * @param {Object} options - 仿写选项
  * @param {string} options.style - 风格 (formal/casual/playful)
- * @param {number} options.length - 目标长度
  */
 export function aiRewrite(videoUrl, options = {}) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const { style = 'casual', length = 100 } = options
+      const validStyles = ['formal', 'casual', 'playful']
+      const style = validStyles.includes(options.style) ? options.style : 'casual'
 
       const stylePrefix = {
         formal: '【正式版】',
