@@ -540,12 +540,12 @@ export function extractText(videoId) {
 
 /**
  * AI智能仿写
- * @param {string} originalText - 原始文案
+ * @param {string} videoUrl - 视频链接
  * @param {Object} options - 仿写选项
  * @param {string} options.style - 风格 (formal/casual/playful)
  * @param {number} options.length - 目标长度
  */
-export function aiRewrite(originalText, options = {}) {
+export function aiRewrite(videoUrl, options = {}) {
   return new Promise((resolve) => {
     setTimeout(() => {
       const { style = 'casual', length = 100 } = options
@@ -567,7 +567,7 @@ export function aiRewrite(originalText, options = {}) {
         code: 0,
         message: '仿写成功',
         data: {
-          original: originalText,
+          original: videoUrl,
           rewritten: rewrittenTexts[style === 'formal' ? 0 : style === 'playful' ? 2 : 1],
           style,
           generatedAt: new Date().toISOString()
