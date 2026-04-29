@@ -22,6 +22,7 @@
       <!-- 引导标语 -->
       <div class="guide-slogan">
         <span class="slogan-text">打品就用</span>
+        <span>💥</span>
         <span class="gradient-text">爆款探测器</span>
       </div>
 
@@ -36,6 +37,7 @@
             class="url-input"
             v-model="videoUrl"
             placeholder="请输入抖音视频链接"
+            autofocus
             @keyup.enter="handleRewrite"
           />
           <button
@@ -187,7 +189,7 @@ const handleRecharge = (pkg) => {
 <style lang="scss" scoped>
 .ai-rewrite-page {
   min-height: calc(100vh - 48px);
-  background: #FFFFFF;
+  background: linear-gradient(135deg, #E8F4FF 0%, #FFF0F5 50%, #F0E6FF 100%);
   position: relative;
   overflow: hidden;
 
