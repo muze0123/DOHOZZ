@@ -265,8 +265,8 @@
         <!-- AI拉片页面 -->
         <AIFilmAnalysis v-else-if="activeSidebarMenu === 'AI拉片'" />
 
-        <!-- AI智能仿写页面 -->
-        <AIRewrite v-else-if="activeSidebarMenu === '智能仿写'" />
+        <!-- AI仿写页面 -->
+        <AIRewrite v-else-if="activeSidebarMenu === 'AI仿写'" />
 
         <!-- 提取脚本页面 -->
         <ExtractScript v-else-if="activeSidebarMenu === '提取脚本'" />
@@ -694,7 +694,8 @@ const sidebarMenuConfig = {
       ]},
       { name: 'AI创作', icon: icons.ai, children: [
         { name: 'AI拉片' },
-        { name: '智能仿写' }
+        { name: '提取脚本' },
+        { name: 'AI仿写' }
       ]},
       { name: '合作内容', icon: icons.content, children: [
         { name: '带货视频' },
