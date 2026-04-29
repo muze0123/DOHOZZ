@@ -498,6 +498,42 @@ const routes = [
       requiresAuth: true,
       title: '脚本管理 - DOHOZZ'
     }
+  },
+  {
+    path: '/ai-film-analysis',
+    name: 'AIFilmAnalysis',
+    component: () => import('@/views/AIFilmAnalysis.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'AI拉片 - DOHOZZ'
+    }
+  },
+  {
+    path: '/ai-rewrite',
+    name: 'AIRewrite',
+    component: () => import('@/views/AIRewrite.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '智能仿写 - DOHOZZ'
+    }
+  },
+  {
+    path: '/extract-script',
+    name: 'ExtractScript',
+    component: () => import('@/views/ExtractScript.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '提取脚本 - DOHOZZ'
+    }
+  },
+  {
+    path: '/command-center',
+    name: 'CommandCenter',
+    component: () => import('@/views/CommandCenter.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '指挥中台 - DOHOZZ'
+    }
   }
 ]
 
