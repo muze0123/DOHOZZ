@@ -10,19 +10,18 @@
           :class="{ active: activePlatform === platform.id }"
           @click="switchPlatform(platform.id)"
         >
-          <div class="platform-icon tiktok-icon" v-if="platform.id === 'tiktok'">
-            <component :is="platform.icon" />
+<div class="platform-icon tiktok-icon" v-if="platform.id === 'tiktok'">
+            <img src="@/assets/images/TikTok.png" alt="TikTok" />
           </div>
           <div class="platform-icon instagram-icon" v-else-if="platform.id === 'instagram'">
-            <component :is="platform.icon" />
+            <img src="@/assets/images/Instagram.png" alt="Instagram" />
           </div>
           <div class="platform-icon shopee-icon" v-else-if="platform.id === 'shopee'">
-            <component :is="platform.icon" />
+            <img src="@/assets/images/Shopee.png" alt="Shopee" />
           </div>
           <div class="platform-icon lazada-icon" v-else-if="platform.id === 'lazada'">
-            <component :is="platform.icon" />
+            <img src="@/assets/images/Lazada.png" alt="Lazada" />
           </div>
-          <div class="platform-icon" v-else v-html="platform.icon"></div>
           <span>{{ platform.name }}</span>
         </div>
       </div>
@@ -360,10 +359,6 @@
 import { ref, reactive, computed, h, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElAvatar } from 'element-plus'
-import IconTikTokIcon from '@/components/icons/IconTikTokIcon.vue'
-import IconInstagramIcon from '@/components/icons/IconInstagramIcon.vue'
-import IconShopeeIcon from '@/components/icons/IconShopeeIcon.vue'
-import IconLazadaIcon from '@/components/icons/IconLazadaIcon.vue'
 
 const router = useRouter()
 
@@ -381,54 +376,22 @@ const selectedDate = ref('近N天')
 const selectedStatus = ref('all')
 const notifTab = ref('reminder')
 
-const TikTokIcon = defineComponent({
-  render() {
-    return h(IconTikTokIcon)
-  },
-  h
-})
-
-const InstagramIcon = defineComponent({
-  render() {
-    return h(IconInstagramIcon)
-  },
-  h
-})
-
-const ShopeeIcon = defineComponent({
-  render() {
-    return h(IconShopeeIcon)
-  },
-  h
-})
-
-const LazadaIcon = defineComponent({
-  render() {
-    return h(IconLazadaIcon)
-  },
-  h
-})
-
 const platforms = [
   {
     id: 'tiktok',
-    name: 'TikTok',
-    icon: TikTokIcon
+    name: 'TikTok'
   },
   {
     id: 'instagram',
-    name: 'Instagram',
-    icon: InstagramIcon
+    name: 'Instagram'
   },
   {
     id: 'shopee',
-    name: 'Shopee',
-    icon: ShopeeIcon
+    name: 'Shopee'
   },
   {
     id: 'lazada',
-    name: 'Lazada',
-    icon: LazadaIcon
+    name: 'Lazada'
   }
 ]
 
@@ -610,6 +573,7 @@ $transition-fast: 150ms ease;
     &.tiktok-icon {
       width: 24px;
       height: 24px;
+      border-radius: 22px;
       color: inherit;
     }
 
@@ -622,12 +586,14 @@ $transition-fast: 150ms ease;
     &.shopee-icon {
       width: 24px;
       height: 24px;
+      border-radius: 22px;
       color: inherit;
     }
 
     &.lazada-icon {
       width: 24px;
       height: 24px;
+      border-radius: 22px;
       color: inherit;
     }
   }
