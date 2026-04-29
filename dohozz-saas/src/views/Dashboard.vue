@@ -5,7 +5,7 @@
       <div class="header-left">
         <!-- A区：logo、系统名、业务场景选择 -->
         <div class="logo-area">
-          <img src="@/assets/DOHOZZ_LOOGO.png" alt="DOHOZZ" class="logo-img" />
+          <img src="@/assets/images/DOHOZZ_LOOGO.png" alt="DOHOZZ" class="logo-img" />
           <span class="logo-text">DOHOZZ</span>
         </div>
 
@@ -262,6 +262,30 @@
         <!-- 邀约管理页面 -->
         <InvitationManagement v-else-if="activeSidebarMenu === '邀约管理'" />
 
+        <!-- AI拉片页面 -->
+        <AIFilmAnalysis v-else-if="activeSidebarMenu === 'AI拉片'" />
+
+        <!-- AI智能仿写页面 -->
+        <AIRewrite v-else-if="activeSidebarMenu === '智能仿写'" />
+
+        <!-- 提取脚本页面 -->
+        <ExtractScript v-else-if="activeSidebarMenu === '提取脚本'" />
+
+        <!-- 指挥中台页面 -->
+        <CommandCenter v-else-if="activeSidebarMenu === '大盘'" />
+
+        <!-- 达播页面 -->
+        <LiveStreamAnalysis v-else-if="activeSidebarMenu === '达播'" />
+
+        <!-- 团队页面 -->
+        <TeamAnalysis v-else-if="activeSidebarMenu === '团队'" />
+
+        <!-- 内容页面 -->
+        <ContentAnalysis v-else-if="activeSidebarMenu === '内容'" />
+
+        <!-- 大屏页面 -->
+        <BigScreen v-else-if="activeSidebarMenu === '大屏'" />
+
         <!-- 模板管理页面 -->
         <TemplateManagement v-else-if="activeSidebarMenu === '模板管理'" />
 
@@ -392,6 +416,14 @@ import ExchangeRate from './ExchangeRate.vue'
 import TaskCenter from './components/TaskCenter.vue'
 import SpuManagement from './SpuManagement.vue'
 import ProductLink from './ProductLink.vue'
+import AIFilmAnalysis from './AIFilmAnalysis.vue'
+import AIRewrite from './AIRewrite.vue'
+import ExtractScript from './ExtractScript.vue'
+import CommandCenter from './CommandCenter.vue'
+import LiveStreamAnalysis from './LiveStreamAnalysis.vue'
+import TeamAnalysis from './TeamAnalysis.vue'
+import ContentAnalysis from './ContentAnalysis.vue'
+import BigScreen from './BigScreen.vue'
 
 const UserIcon = {
   render() {
@@ -660,7 +692,10 @@ const sidebarMenuConfig = {
         { name: '品牌洞察' },
         { name: '行业热点' }
       ]},
-      { name: 'AI创作', icon: icons.ai },
+      { name: 'AI创作', icon: icons.ai, children: [
+        { name: 'AI拉片' },
+        { name: '智能仿写' }
+      ]},
       { name: '合作内容', icon: icons.content, children: [
         { name: '带货视频' },
         { name: '非挂车视频' },
