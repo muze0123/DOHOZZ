@@ -527,6 +527,15 @@ const routes = [
     }
   },
   {
+    path: '/command-center/product-shop-analysis',
+    name: 'ProductShopAnalysis',
+    component: () => import('@/views/ProductShopAnalysis.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '商品&店铺指标分析 - DOHOZZ'
+    }
+  },
+  {
     path: '/live-stream-analysis',
     name: 'LiveStreamAnalysis',
     component: () => import('@/views/LiveStreamAnalysis.vue'),
