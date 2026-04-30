@@ -1341,7 +1341,7 @@ $warning-amber: #F7B928;
 .amount-cell { font-weight: 600; }
 .sort-arrows { font-size: 11px; color: $text-3; margin-left: 2px; }
 
-.pagination-bar { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; gap: 12px; }
+.pagination-bar { display: flex; align-items: center; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; gap: 12px; }
 .page-info { font-size: 12px; color: $text-3; }
 .page-controls { display: flex; align-items: center; gap: 12px; }
 .page-size-select { width: 100px; }

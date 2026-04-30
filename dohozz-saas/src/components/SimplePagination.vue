@@ -148,7 +148,7 @@ const handlePageChange = (page) => {
   background: #fff;
   cursor: pointer;
   font-size: 14px;
-  color: #666;
+  color: #4E5969;
   transition: all 0.2s;
 
   &:hover:not(:disabled) {
@@ -178,8 +178,8 @@ const handlePageChange = (page) => {
   border: 1px solid #d9d9d9;
   background: #fff;
   cursor: pointer;
-  font-size: 13px;
-  color: #666;
+  font-size: 14px;
+  color: #4E5969;
   transition: all 0.2s;
 
   &:hover:not(.active) {
@@ -195,14 +195,14 @@ const handlePageChange = (page) => {
 }
 
 .ellipsis {
-  font-size: 13px;
-  color: #999;
+  font-size: 14px;
+  color: #4E5969;
   padding: 0 4px;
 }
 
 .total-info {
-  font-size: 13px;
-  color: #999;
+  font-size: 14px;
+  color: #4E5969;
   margin-left: 8px;
 }
 </style>

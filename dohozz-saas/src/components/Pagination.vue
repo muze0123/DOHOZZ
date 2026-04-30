@@ -170,7 +170,7 @@ const handleSizeChange = (val) => {
   background: #fff;
   cursor: pointer;
   font-size: 14px;
-  color: #666;
+  color: #4E5969;
   transition: all 0.2s;
 
   &:hover:not(:disabled) {
@@ -200,8 +200,8 @@ const handleSizeChange = (val) => {
   border: 1px solid #d9d9d9;
   background: #fff;
   cursor: pointer;
-  font-size: 13px;
-  color: #666;
+  font-size: 14px;
+  color: #4E5969;
   transition: all 0.2s;
 
   &:hover:not(.active) {
@@ -217,14 +217,14 @@ const handleSizeChange = (val) => {
 }
 
 .ellipsis {
-  font-size: 13px;
-  color: #999;
+  font-size: 14px;
+  color: #4E5969;
   padding: 0 4px;
 }
 
 .total-info {
-  font-size: 13px;
-  color: #999;
+  font-size: 14px;
+  color: #4E5969;
   margin-left: 8px;
 }
 
@@ -238,7 +238,7 @@ const handleSizeChange = (val) => {
   }
 
   :deep(.el-select__selected-item:nth-child(2) > span) {
-    color: #4e5969;
+    color: #4E5969;
   }
 }
 </style>
