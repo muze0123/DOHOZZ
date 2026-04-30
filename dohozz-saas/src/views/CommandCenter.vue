@@ -167,9 +167,21 @@
         <div class="overview-card target-card">
           <div class="card-header">
             <span class="card-title">业绩目标</span>
-            <el-tooltip content="业绩目标说明" placement="top">
-              <span class="help-icon">?</span>
-            </el-tooltip>
+            <div class="card-header-actions">
+              <el-date-picker
+                v-model="targetDateRange"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始"
+                end-placeholder="结束"
+                value-format="YYYY-MM-DD"
+                size="small"
+                style="width: 200px;"
+              />
+              <el-button size="small" circle @click="handlePerformanceSetting" title="绩效设置">
+                <el-icon><Setting /></el-icon>
+              </el-button>
+            </div>
           </div>
           <div class="target-table">
             <div class="target-row">
@@ -459,18 +471,201 @@
         </table>
       </div>
     </div>
+
+    <!-- 绩效设置抽屉 -->
+    <el-drawer
+      v-model="performanceDrawerVisible"
+      :title="null"
+      size="90%"
+      :before-close="handlePerformanceDrawerClose"
+      class="performance-drawer"
+    >
+      <template #default>
+        <div class="drawer-content">
+          <div class="drawer-header">
+            <div class="drawer-tabs">
+              <div
+                class="drawer-tab"
+                :class="{ active: performanceDrawerTab === 'setting' }"
+                @click="performanceDrawerTab = 'setting'"
+              >
+                绩效设置
+              </div>
+              <div
+                class="drawer-tab"
+                :class="{ active: performanceDrawerTab === 'detail' }"
+                @click="performanceDrawerTab = 'detail'"
+              >
+                业绩明细
+              </div>
+            </div>
+          </div>
+
+          <div v-if="performanceDrawerTab === 'setting'" class="drawer-body setting-body">
+            <div class="setting-config">
+              <div class="config-row">
+                <div class="config-item">
+                  <span class="config-label">绩效月份</span>
+                  <el-date-picker
+                    v-model="performanceSettingForm.month"
+                    type="month"
+                    value-format="YYYY-MM"
+                    placeholder="选择月份"
+                    style="width: 140px"
+                  />
+                </div>
+                <div class="config-item">
+                  <span class="config-label">绩效方式</span>
+                  <el-radio-group v-model="performanceSettingForm.type" class="type-radio">
+                    <el-radio value="department">部门业绩</el-radio>
+                    <el-radio value="member">员工业绩</el-radio>
+                  </el-radio-group>
+                </div>
+                <div class="config-item" v-if="performanceSettingForm.type === 'department'">
+                  <el-checkbox v-model="performanceSettingForm.distributeEqually">
+                    部门目标平均分配给成员
+                  </el-checkbox>
+                </div>
+              </div>
+              <div class="config-hint" v-if="performanceSettingForm.type === 'department' && performanceSettingForm.distributeEqually">
+                将部门业绩平均分配给所属员工，一级部门会减去二级部门的绩效，再平均给所属员工。若不勾选此项，则本次目标仅对部门生效，员工绩效需单独填写。
+              </div>
+            </div>
+
+            <div class="setting-main">
+              <div class="org-tree-panel">
+                <div class="panel-title">选择部门</div>
+                <el-tree
+                  :data="performanceOrgTreeData"
+                  :props="{ label: 'name', children: 'children' }"
+                  node-key="id"
+                  :default-expand-all="false"
+                  :expand-on-click-node="false"
+                  @node-click="handlePerformanceOrgNodeClick"
+                  highlight-current
+                >
+                  <template #default="{ data }">
+                    <span class="org-tree-node">
+                      <span>{{ data.name }}</span>
+                      <span v-if="data.memberCount" class="member-count">({{ data.memberCount }})</span>
+                    </span>
+                  </template>
+                </el-tree>
+              </div>
+
+              <div class="target-config-panel">
+                <div class="panel-title">
+                  {{ performanceSettingForm.type === 'department' ? '部门业绩目标设置' : '员工业绩目标设置' }}
+                  <span v-if="selectedOrgNode" class="selected-org">- {{ selectedOrgNode.name }}</span>
+                </div>
+
+                <div class="target-table-wrapper">
+                  <table class="target-table">
+                    <thead>
+                      <tr>
+                        <th class="col-org">部门/成员</th>
+                        <th>达人成交金额（元）</th>
+                        <th>建联达人数</th>
+                        <th>寄样达人数</th>
+                        <th>出单达人数</th>
+                        <th>交付视频数</th>
+                        <th>出单视频数</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="department-total-row" v-if="selectedOrgNode">
+                        <td class="col-org">{{ selectedOrgNode.name }}（部门目标）</td>
+                        <td class="money-cell">
+                          <el-input-number v-model="performanceTargetForm.departmentTarget.dealAmount" :precision="2" :min="0" controls-position="right" placeholder="请输入" />
+                        </td>
+                        <td><el-input-number v-model="performanceTargetForm.departmentTarget.contactCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="performanceTargetForm.departmentTarget.sampleCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="performanceTargetForm.departmentTarget.orderCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="performanceTargetForm.departmentTarget.deliveryVideoCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="performanceTargetForm.departmentTarget.orderVideoCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                      </tr>
+                      <tr v-for="member in performanceTargetForm.members" :key="member.id">
+                        <td class="col-org member-cell">
+                          <el-avatar :size="24" :src="member.avatar" />
+                          <span>{{ member.name }}</span>
+                        </td>
+                        <td class="money-cell"><el-input-number v-model="member.dealAmount" :precision="2" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="member.contactCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="member.sampleCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="member.orderCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="member.deliveryVideoCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                        <td><el-input-number v-model="member.orderVideoCount" :precision="0" :min="0" controls-position="right" placeholder="请输入" /></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-footer">
+              <el-button @click="handlePerformanceDrawerClose">取消</el-button>
+              <el-button type="primary" @click="handleSavePerformance">保存</el-button>
+            </div>
+          </div>
+
+          <div v-if="performanceDrawerTab === 'detail'" class="drawer-body detail-body">
+            <div class="detail-main">
+              <div class="dept-tree-panel">
+                <div class="panel-title">选择部门</div>
+                <el-tree
+                  :data="performanceOrgTreeData"
+                  :props="{ label: 'name', children: 'children' }"
+                  node-key="id"
+                  :default-expand-all="false"
+                  :expand-on-click-node="false"
+                  highlight-current
+                >
+                  <template #default="{ data }">
+                    <span class="org-tree-node">
+                      <span>{{ data.name }}</span>
+                      <span v-if="data.memberCount" class="member-count">({{ data.memberCount }})</span>
+                    </span>
+                  </template>
+                </el-tree>
+              </div>
+              <div class="report-panel">
+                <div class="report-config">
+                  <div class="config-row">
+                    <div class="config-item">
+                      <span class="config-label">选择平台</span>
+                      <el-select v-model="activePlatform" style="width: 120px">
+                        <el-option v-for="p in platforms" :key="p.id" :label="p.name" :value="p.id" />
+                      </el-select>
+                    </div>
+                    <div class="config-item">
+                      <span class="config-label">业绩月份</span>
+                      <el-date-picker v-model="performanceSettingForm.month" type="month" value-format="YYYY-MM" style="width: 140px" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Setting } from '@element-plus/icons-vue'
+import TikTokIcon from '@/assets/images/TikTok.png'
+import InstagramIcon from '@/assets/images/Instagram.png'
+import ShopeeIcon from '@/assets/images/Shopee.png'
+import LazadaIcon from '@/assets/images/Lazada.png'
 
 const platforms = [
-  { id: 'tiktok', name: 'TikTok', icon: require('@/assets/images/TikTok.png') },
-  { id: 'instagram', name: 'Instagram', icon: require('@/assets/images/Instagram.png') },
-  { id: 'shopee', name: 'Shopee', icon: require('@/assets/images/Shopee.png') },
-  { id: 'lazada', name: 'Lazada', icon: require('@/assets/images/Lazada.png') },
+  { id: 'tiktok', name: 'TikTok', icon: TikTokIcon },
+  { id: 'instagram', name: 'Instagram', icon: InstagramIcon },
+  { id: 'shopee', name: 'Shopee', icon: ShopeeIcon },
+  { id: 'lazada', name: 'Lazada', icon: LazadaIcon },
 ]
 const activePlatform = ref('tiktok')
 const attrOptions = ['全部出单达人', '团队建联达人']
@@ -486,6 +681,100 @@ const quickTimeOptions = [
 ]
 const activeQuickTime = ref('month')
 const targetMonth = ref('2026-04')
+const targetDateRange = ref(['2026-04-01', '2026-04-29'])
+
+// 绩效设置抽屉相关
+const performanceDrawerVisible = ref(false)
+const performanceDrawerTab = ref('setting')
+const performanceSettingForm = reactive({
+  month: '',
+  type: 'department',
+  distributeEqually: false
+})
+const performanceTargetForm = reactive({
+  departmentTarget: {
+    dealAmount: 0,
+    contactCount: 0,
+    sampleCount: 0,
+    orderCount: 0,
+    deliveryVideoCount: 0,
+    orderVideoCount: 0
+  },
+  members: [],
+  get total() {
+    let dealAmount = 0
+    let contactCount = 0
+    let sampleCount = 0
+    let orderCount = 0
+    let deliveryVideoCount = 0
+    let orderVideoCount = 0
+    this.members.forEach(m => {
+      dealAmount += m.dealAmount || 0
+      contactCount += m.contactCount || 0
+      sampleCount += m.sampleCount || 0
+      orderCount += m.orderCount || 0
+      deliveryVideoCount += m.deliveryVideoCount || 0
+      orderVideoCount += m.orderVideoCount || 0
+    })
+    return { dealAmount, contactCount, sampleCount, orderCount, deliveryVideoCount, orderVideoCount }
+  }
+})
+const selectedOrgNode = ref(null)
+const performanceOrgTreeData = ref([
+  { id: 1, name: '销售部', memberCount: 12, children: [
+    { id: 11, name: '销售一部', memberCount: 4 },
+    { id: 12, name: '销售二部', memberCount: 5 },
+    { id: 13, name: '销售三部', memberCount: 3 }
+  ]},
+  { id: 2, name: '运营部', memberCount: 8, children: [
+    { id: 21, name: '运营一组', memberCount: 4 },
+    { id: 22, name: '运营二组', memberCount: 4 }
+  ]},
+  { id: 3, name: '市场部', memberCount: 6, children: [] }
+])
+
+const handlePerformanceSetting = () => {
+  performanceDrawerTab.value = 'setting'
+  performanceSettingForm.month = targetMonth.value || new Date().toISOString().slice(0, 7)
+  performanceSettingForm.type = 'department'
+  performanceSettingForm.distributeEqually = false
+  performanceTargetForm.departmentTarget = {
+    dealAmount: 0,
+    contactCount: 0,
+    sampleCount: 0,
+    orderCount: 0,
+    deliveryVideoCount: 0,
+    orderVideoCount: 0
+  }
+  performanceTargetForm.members = []
+  selectedOrgNode.value = null
+  performanceDrawerVisible.value = true
+}
+
+const handlePerformanceDrawerClose = () => {
+  performanceDrawerVisible.value = false
+}
+
+const handlePerformanceOrgNodeClick = (data) => {
+  selectedOrgNode.value = data
+  const memberNames = ['张三', '李四', '王五', '赵六']
+  performanceTargetForm.members = memberNames.map((name, index) => ({
+    id: data.id * 100 + index,
+    name,
+    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+    dealAmount: 0,
+    contactCount: 0,
+    sampleCount: 0,
+    orderCount: 0,
+    deliveryVideoCount: 0,
+    orderVideoCount: 0
+  }))
+}
+
+const handleSavePerformance = () => {
+  ElMessage.success('保存成功')
+  performanceDrawerVisible.value = false
+}
 
 const metrics = ref([
   { key: 'creator_sales', label: '达人成交金额', value: '¥73.15w', trend: 5.64 },
@@ -805,6 +1094,29 @@ const handleViewMore = (type) => {
 .card-title {
   font-size: 13px;
   color: #595959;
+}
+
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.setting-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  color: #8C8C8C;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #1677FF;
+    background: #E6F4FF;
+  }
 }
 
 .card-value {
@@ -1341,5 +1653,219 @@ const handleViewMore = (type) => {
 .influencer-fans {
   font-size: 11px;
   color: #8C8C8C;
+}
+
+/* 绩效设置抽屉 */
+.performance-drawer {
+  :deep(.el-drawer__body) {
+    padding: 0;
+  }
+}
+
+.drawer-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #E8E8E8;
+}
+
+.drawer-tabs {
+  display: flex;
+  gap: 32px;
+}
+
+.drawer-tab {
+  font-size: 15px;
+  color: #65676B;
+  cursor: pointer;
+  padding-bottom: 12px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+
+  &.active {
+    color: #1677FF;
+    font-weight: 600;
+    border-bottom-color: #1677FF;
+  }
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.setting-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.setting-config {
+  background: #F5F6F7;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.config-label {
+  font-size: 13px;
+  color: #65676B;
+}
+
+.config-hint {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #8C8C8C;
+  line-height: 1.5;
+}
+
+.type-radio {
+  :deep(.el-radio) {
+    margin-right: 16px;
+  }
+}
+
+.setting-main {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 400px;
+}
+
+.org-tree-panel {
+  width: 240px;
+  flex-shrink: 0;
+  background: #F5F6F7;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 12px;
+}
+
+.org-tree-node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .member-count {
+    color: #8C8C8C;
+    font-size: 12px;
+  }
+}
+
+.target-config-panel {
+  flex: 1;
+  background: #F5F6F7;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.selected-org {
+  color: #1677FF;
+  font-weight: normal;
+}
+
+.target-table-wrapper {
+  overflow-x: auto;
+}
+
+.target-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th, td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #E8E8E8;
+  }
+
+  th {
+    background: #FFFFFF;
+    font-weight: 600;
+    color: #262626;
+    white-space: nowrap;
+  }
+
+  .col-org {
+    width: 180px;
+  }
+
+  .money-cell {
+    width: 140px;
+  }
+
+  .member-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .department-total-row {
+    background: #FFFFFF;
+    font-weight: 600;
+  }
+}
+
+.setting-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #E8E8E8;
+}
+
+.detail-body {
+  padding: 0;
+}
+
+.detail-main {
+  display: flex;
+  height: 100%;
+}
+
+.dept-tree-panel {
+  width: 240px;
+  flex-shrink: 0;
+  background: #F5F6F7;
+  padding: 16px;
+  border-right: 1px solid #E8E8E8;
+}
+
+.report-panel {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.report-config {
+  background: #F5F6F7;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
 }
 </style>

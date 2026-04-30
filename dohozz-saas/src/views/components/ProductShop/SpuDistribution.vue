@@ -102,8 +102,9 @@ function initChart() {
       }
     },
     series: [{
-      type: 'heatmap',
+      type: 'scatter',
       data: heatmapData,
+      symbolSize: (val) => Math.sqrt(val[2]) * 8,
       emphasis: {
         itemStyle: {
           shadowBlur: 10,

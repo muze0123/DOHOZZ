@@ -466,12 +466,16 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
+import TikTokIcon from '@/assets/images/TikTok.png'
+import InstagramIcon from '@/assets/images/Instagram.png'
+import ShopeeIcon from '@/assets/images/Shopee.png'
+import LazadaIcon from '@/assets/images/Lazada.png'
 
 const platforms = [
-  { id: 'tiktok', name: 'TikTok', icon: require('@/assets/images/TikTok.png') },
-  { id: 'instagram', name: 'Instagram', icon: require('@/assets/images/Instagram.png') },
-  { id: 'shopee', name: 'Shopee', icon: require('@/assets/images/Shopee.png') },
-  { id: 'lazada', name: 'Lazada', icon: require('@/assets/images/Lazada.png') },
+  { id: 'tiktok', name: 'TikTok', icon: TikTokIcon },
+  { id: 'instagram', name: 'Instagram', icon: InstagramIcon },
+  { id: 'shopee', name: 'Shopee', icon: ShopeeIcon },
+  { id: 'lazada', name: 'Lazada', icon: LazadaIcon },
 ]
 const activePlatform = ref('tiktok')
 const attrOptions = ['全部出单达人', '团队建联达人']

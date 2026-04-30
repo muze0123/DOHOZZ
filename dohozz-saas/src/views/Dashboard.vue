@@ -89,11 +89,69 @@
           </el-tooltip>
 
           <!-- 个人中心 -->
-          <el-tooltip content="个人中心" placement="bottom" :show-after="300">
+          <el-dropdown
+            trigger="hover"
+            :show-timeout="100"
+            :hide-timeout="200"
+            @command="handleUserCommand"
+          >
             <div class="c-btn-avatar">
               <el-avatar :size="32" :icon="UserIcon" class="header-avatar" />
             </div>
-          </el-tooltip>
+            <template #dropdown>
+              <el-dropdown-menu class="user-dropdown-menu">
+                <!-- 用户信息区域 -->
+                <div class="user-info-section">
+                  <el-avatar :size="60" :icon="UserIcon" class="user-avatar-large" />
+                  <div class="user-name-row">
+                    <span class="user-name-text">张三</span>
+                    <span class="edit-btn" @click="handleEditProfile">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <el-dropdown-item command="accountInfo">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.93 0 3.5 1.57 3.5 3.5S13.93 12 12 12s-3.5-1.57-3.5-3.5S10.07 5 12 5zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"/>
+                  </svg>
+                  <span>账号信息</span>
+                  <svg class="arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </el-dropdown-item>
+                <el-dropdown-item command="myData">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                  </svg>
+                  <span>我的数据</span>
+                  <svg class="arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </el-dropdown-item>
+                <el-dropdown-item command="operationLog">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                  </svg>
+                  <span>操作日志</span>
+                  <svg class="arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </el-dropdown-item>
+                <div class="dropdown-divider"></div>
+                <el-dropdown-item command="logout">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                  </svg>
+                  <span>退出登录</span>
+                  <svg class="arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </div>
     </header>
@@ -277,6 +335,9 @@
         <!-- 达播页面 -->
         <LiveStreamAnalysis v-else-if="activeSidebarMenu === '达播'" />
 
+        <!-- 商品页面 -->
+        <ProductShopAnalysis v-else-if="activeSidebarMenu === '商品'" />
+
         <!-- 团队页面 -->
         <TeamAnalysis v-else-if="activeSidebarMenu === '团队'" />
 
@@ -351,6 +412,9 @@
 
     <!-- 任务中心抽屉 -->
     <TaskCenter v-model="showTaskCenter" />
+
+    <!-- 个人信息弹窗 -->
+    <ProfileDialog v-model="showProfileDialog" />
   </div>
 </template>
 
@@ -416,6 +480,7 @@ import ExchangeRate from './ExchangeRate.vue'
 import TaskCenter from './components/TaskCenter.vue'
 import SpuManagement from './SpuManagement.vue'
 import ProductLink from './ProductLink.vue'
+import ProductShopAnalysis from './ProductShopAnalysis.vue'
 import AIFilmAnalysis from './AIFilmAnalysis.vue'
 import AIRewrite from './AIRewrite.vue'
 import ExtractScript from './ExtractScript.vue'
@@ -424,6 +489,8 @@ import LiveStreamAnalysis from './LiveStreamAnalysis.vue'
 import TeamAnalysis from './TeamAnalysis.vue'
 import ContentAnalysis from './ContentAnalysis.vue'
 import BigScreen from './BigScreen.vue'
+import IconCamera from '@/components/icons/IconCamera.vue'
+import ProfileDialog from './components/ProfileDialog.vue'
 
 const UserIcon = {
   render() {
@@ -446,6 +513,40 @@ const thirdLevelPage = ref(localStorage.getItem('lastThirdLevelPage') || '') // 
 const openSubmenus = reactive({})
 const isRestoring = ref(false) // 标记是否正在恢复保存的菜单状态
 const showTaskCenter = ref(false) // 控制任务中心抽屉显示
+const showMessageCenter = ref(false) // 控制消息中心显示
+const showProfileDialog = ref(false) // 控制个人信息弹窗显示
+
+// 用户下拉菜单命令处理
+const handleUserCommand = (command) => {
+  switch (command) {
+    case 'accountInfo':
+      // 跳转到系统设置-账号信息
+      activeNavMenu.value = '系统设置'
+      activeSidebarMenu.value = '账号信息'
+      openSubmenus['系统设置'] = true
+      break
+    case 'myData':
+      // TODO: 跳转到BD数据页面
+      ElMessage.info('我的数据 - 功能开发中')
+      break
+    case 'operationLog':
+      // TODO: 跳转到操作日志页面
+      ElMessage.info('操作日志 - 功能开发中')
+      break
+    case 'logout':
+      // 退出登录
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('lastActiveMenu')
+      localStorage.removeItem('lastThirdLevelPage')
+      router.push('/login')
+      break
+  }
+}
+
+// 编辑个人信息弹窗
+const handleEditProfile = () => {
+  showProfileDialog.value = true
+}
 
 // 消息中心点击处理
 const handleMessageCenterClick = () => {
@@ -482,6 +583,8 @@ watch(thirdLevelPage, (newVal) => {
   localStorage.setItem('lastThirdLevelPage', newVal)
 })
 
+const restoreComplete = ref(false)
+
 onMounted(() => {
   const lastMenu = localStorage.getItem('lastActiveMenu')
   if (lastMenu) {
@@ -512,9 +615,14 @@ onMounted(() => {
       // 最后设置选中的侧边栏菜单
       activeSidebarMenu.value = lastMenu
 
-      // 恢复完成
-      isRestoring.value = false
+      // 延迟标记恢复完成，确保 DOM 已更新
+      setTimeout(() => {
+        isRestoring.value = false
+        restoreComplete.value = true
+      }, 100)
     })
+  } else {
+    restoreComplete.value = true
   }
 })
 
@@ -579,9 +687,9 @@ watch(currentScenario, (newVal) => {
 
 // 当B区菜单切换时，重置左侧激活菜单
 watch(activeNavMenu, (newVal, oldVal) => {
-  // 如果是初始加载且已有保存的菜单，不重置activeSidebarMenu
-  if (isRestoring.value && localStorage.getItem('lastActiveMenu')) {
-    return
+  // 任何用户交互都标记恢复完成
+  if (!restoreComplete.value) {
+    restoreComplete.value = true
   }
   const items = sidebarMenuItems.value
   if (items.length > 0) {
@@ -593,6 +701,14 @@ watch(activeNavMenu, (newVal, oldVal) => {
         openSubmenus[key] = false
       })
       openSubmenus['内容洞察'] = true
+    } else if (newVal === '系统设置') {
+      // 系统设置默认选中成员管理
+      activeSidebarMenu.value = '成员管理'
+      // 展开系统设置子菜单
+      Object.keys(openSubmenus).forEach(key => {
+        openSubmenus[key] = false
+      })
+      openSubmenus['系统设置'] = true
     } else {
       activeSidebarMenu.value = items[0].name
       // 重置子菜单展开状态
@@ -1045,6 +1161,84 @@ $transition-fast: 150ms ease;
 :deep(.scenario-dropdown-menu .el-dropdown-menu__item.active) {
   color: $meta-blue;
   background-color: #f0f5ff;
+}
+
+// 用户下拉菜单样式
+:deep(.user-dropdown-menu) {
+  padding: 0;
+  min-width: 220px;
+
+  .user-info-section {
+    padding: 20px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid #E8E8E8;
+    margin-bottom: 8px;
+
+    .user-avatar-large {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .user-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .user-name-text {
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .edit-btn {
+        padding: 2px;
+        color: #999;
+        cursor: pointer;
+
+        &:hover {
+          color: #1677FF;
+        }
+      }
+    }
+  }
+
+  .el-dropdown-menu__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    height: 44px;
+    color: #333;
+
+    svg {
+      color: #666;
+      flex-shrink: 0;
+    }
+
+    .arrow-icon {
+      margin-left: auto;
+      color: #ccc;
+    }
+
+    &:hover {
+      background: #f0f5ff;
+
+      svg {
+        color: #1677FF;
+      }
+    }
+  }
+
+  .dropdown-divider {
+    height: 1px;
+    background: #E8E8E8;
+    margin: 8px 0;
+  }
 }
 
 // 主内容包装
