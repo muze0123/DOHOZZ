@@ -161,7 +161,7 @@
             <el-table-column label="达人信息" min-width="220">
               <template #default="{ row }">
                 <div class="influencer-cell">
-                  <el-avatar :size="48" :src="row.avatar" class="inf-avatar" />
+                  <el-avatar :size="48" :src="row.avatar" class="inf-avatar clickable" @click="goToDetail(row)" />
                   <div class="inf-info">
                     <div class="inf-name">
                       <span @click="goToDetail(row)" class="clickable">{{ row.name }}</span>
@@ -169,7 +169,7 @@
                       <el-tag v-if="row.salesType === 'video'" size="small" type="info">视频</el-tag>
                       <el-tag v-else size="small" type="warning">直播</el-tag>
                     </div>
-                    <div class="inf-username" @mouseenter="showCopyTooltip($event, row)" @mouseleave="hideCopyTooltip">
+                    <div class="inf-username clickable" @mouseenter="showCopyTooltip($event, row)" @mouseleave="hideCopyTooltip" @click="goToDetail(row)">
                       {{ row.username }}
                     </div>
                     <div class="inf-country">
@@ -502,8 +502,7 @@ function checkSelectable(row) {
 
 // 跳转详情
 function goToDetail(row) {
-  // 后续实现
-  console.log('go to detail:', row.id)
+  window.open(`/influencer/detail/basic-analysis?id=${row.id}`, '_blank')
 }
 
 // 复制相关

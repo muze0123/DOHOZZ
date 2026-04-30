@@ -482,6 +482,15 @@ const routes = [
     }
   },
   {
+    path: '/influencer/detail/basic-analysis',
+    name: 'InfluencerDetailBasicAnalysis',
+    component: () => import('@/views/influencer/detail/InfluencerDetailBasicAnalysis.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '达人详情-基础分析 - DOHOZZ'
+    }
+  },
+  {
     path: '/content-tags',
     name: 'ContentTags',
     component: () => import('@/views/ContentTags/ContentTags.vue'),

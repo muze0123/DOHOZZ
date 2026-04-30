@@ -112,7 +112,7 @@
         <el-table-column label="达人信息" min-width="200">
           <template #default="{ row }">
             <div class="influencer-cell">
-              <el-avatar :size="48" :src="row.avatar" class="inf-avatar" />
+              <el-avatar :size="48" :src="row.avatar" class="inf-avatar clickable" @click="goToDetail(row)" />
               <div class="inf-info">
                 <div class="inf-name">
                   <span class="clickable">{{ row.name }}</span>
@@ -430,6 +430,10 @@ function formatNumber(num) {
 function formatSales(num) {
   if (num >= 1000) return (num / 1000).toFixed(1) + 'k'
   return num.toLocaleString()
+}
+
+function goToDetail(row) {
+  window.open(`/influencer/detail/basic-analysis?id=${row.id}`, '_blank')
 }
 </script>
 

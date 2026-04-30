@@ -96,7 +96,7 @@
         <el-table-column label="达人信息" min-width="200">
           <template #default="{ row }">
             <div class="cell-user">
-              <el-avatar :size="36" :src="row.avatar || undefined" />
+              <el-avatar :size="36" :src="row.avatar || undefined" class="clickable" @click="goToDetail(row)" />
               <div class="cell-user-meta">
                 <div class="name">{{ row.name }}</div>
                 <div class="sub">{{ row.id }}</div>
@@ -617,6 +617,10 @@ function formatDuration(sec) {
   const h = Math.floor(m / 60)
   const mm = m % 60
   return `${h}小时${mm ? `${mm}分` : ''}`
+}
+
+function goToDetail(row) {
+  window.open(`/influencer/detail/basic-analysis?id=${row.id}`, '_blank')
 }
 
 onMounted(() => {

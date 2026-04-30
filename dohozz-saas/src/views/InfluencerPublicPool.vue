@@ -176,7 +176,7 @@
         <el-table-column label="达人信息" min-width="220" fixed="left">
           <template #default="{ row }">
             <div class="influencer-cell">
-              <el-avatar :size="46" :src="row.avatar" class="inf-avatar">
+              <el-avatar :size="46" :src="row.avatar" class="inf-avatar clickable" @click="goToDetail(row)">
                 <template #default>
                   <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI0U4QThFOiIvPjwvc3ZnPg==" />
                 </template>
@@ -733,6 +733,10 @@ function formatNumber(num) {
 // 格式化销量
 function formatSales(num) {
   return num.toLocaleString()
+}
+
+function goToDetail(row) {
+  window.open(`/influencer/detail/basic-analysis?id=${row.id}`, '_blank')
 }
 </script>
 

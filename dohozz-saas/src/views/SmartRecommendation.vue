@@ -101,7 +101,7 @@
           <!-- Row 1: Avatar + Name + Contact icon + Level tag -->
           <div class="card-row1">
             <div class="influencer-info">
-              <el-avatar :src="card.avatar" :size="48" class="influencer-avatar" />
+              <el-avatar :src="card.avatar" :size="48" class="influencer-avatar clickable" @click="goToDetail(card)" />
               <div class="influencer-name-row">
                 <span class="influencer-name">{{ card.name }}</span>
                 <span v-if="card.contactAvailable" class="contact-icon" @click="handleContactClick(card)">
@@ -883,6 +883,10 @@ const addCompetitor = () => {
 
 const resetToDefault = () => {
   sourceTypes.forEach(s => s.weight = 50)
+}
+
+const goToDetail = (row) => {
+  window.open(`/influencer/detail/basic-analysis?id=${row.id}`, '_blank')
 }
 
 // Sticky scroll handling
