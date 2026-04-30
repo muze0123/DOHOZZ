@@ -201,12 +201,10 @@
       </div>
 
       <div class="pagination-section">
-        <el-pagination
-          v-model:current-page="pagination.page"
-          v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
+        <Pagination
+          v-model="pagination"
           :total="filteredRecordings.length"
-          layout="total, sizes, prev, pager, next, jumper"
+          :page-sizes="[10, 20, 50, 100]"
         />
       </div>
     </div>
@@ -272,12 +270,10 @@
       <div v-if="monitorInfluencersFiltered.length === 0" class="empty-state">暂无监控达人</div>
 
       <div class="pagination-section">
-        <el-pagination
-          v-model:current-page="monitorPagination.page"
-          v-model:page-size="monitorPagination.pageSize"
-          :page-sizes="[10, 20, 50]"
+        <Pagination
+          v-model="monitorPagination"
           :total="monitorInfluencersFiltered.length"
-          layout="total, sizes, prev, pager, next, jumper"
+          :page-sizes="[10, 20, 50]"
         />
       </div>
     </el-dialog>
@@ -287,6 +283,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 // ============= 顶部平台选择区（按PRD：4个下拉） =============
 const platformOptions = [

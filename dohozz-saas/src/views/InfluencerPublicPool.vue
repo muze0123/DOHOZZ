@@ -272,12 +272,10 @@
 
       <!-- 分页 -->
       <div class="pagination-area">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50]"
+        <Pagination
+          v-model="paginationState"
           :total="totalCount"
-          layout="total, sizes, prev, pager, next, jumper"
+          :page-sizes="[10, 20, 50]"
         />
       </div>
     </div>
@@ -343,6 +341,7 @@
 import { ref, computed } from 'vue'
 import { Search, Plus, ArrowUp, ArrowDown, CircleCheck, User } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 // 平台Tab
 const platformTabs = [
@@ -366,8 +365,7 @@ const totalCount = ref(156)
 const selectedRows = ref([])
 
 // 分页
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 
 // 弹窗
 const isAssignDialogVisible = ref(false)
@@ -586,8 +584,8 @@ const mockData = ref([
 
 // 计算分页数据
 const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
+  const start = (paginationState.value.page - 1) * paginationState.value.pageSize
+  const end = start + paginationState.value.pageSize
   return mockData.value.slice(start, end)
 })
 

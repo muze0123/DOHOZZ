@@ -132,15 +132,10 @@
       </div>
 
       <div class="card-footer" v-if="total > 0">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
+        <Pagination
+          v-model="paginationState"
           :total="total"
-          layout="prev, pager, next, sizes, jumper, total"
-          :pager-count="5"
-          @current-change="fetchData"
-          @size-change="handlePageSizeChange"
+          :page-sizes="[10, 20, 50, 100]"
         />
       </div>
     </div>
@@ -168,13 +163,13 @@ import {
   updateScriptRemark
 } from '@/api/scriptManagement'
 import ScriptFormDialog from './dialogs/ScriptFormDialog.vue'
+import Pagination from '@/components/Pagination.vue'
 
 // ==================== 状态 ====================
 const loading = ref(false)
 const scriptList = ref([])
 const searchKeyword = ref('')
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 const total = ref(0)
 
 // 弹窗
@@ -193,8 +188,8 @@ async function fetchData() {
   loading.value = true
   try {
     const res = await getScriptList({
-      page: currentPage.value,
-      pageSize: pageSize.value,
+      page: paginationState.value.page,
+      pageSize: paginationState.value.pageSize,
       keyword: searchKeyword.value
     })
     if (res.code === 0) {

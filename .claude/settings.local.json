@@ -51,7 +51,8 @@
       "Bash(grep -h \"border:\\\\s*1px solid\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/*.vue /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/**/*.vue)",
       "Bash(find:*)",
       "Bash(grep -rh \"border: 1px solid \\\\$\\(border|divider|primary|secondary\\)\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/)",
-      "Bash(grep -rh \"border: 1px solid \\\\$\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/)"
+      "Bash(grep -rh \"border: 1px solid \\\\$\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/)",
+      "Bash(gh pr:*)"
     ]
   }
 }

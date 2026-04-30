@@ -189,14 +189,10 @@
         </div>
 
         <div class="pagination-wrapper">
-          <el-pagination
-            v-model:current-page="historyPagination.page"
-            v-model:page-size="historyPagination.pageSize"
-            :page-sizes="[10, 20, 50]"
+          <Pagination
+            v-model="historyPagination"
             :total="historyTotal"
-            layout="total, sizes, prev, pager, next"
-            @size-change="handleHistoryPageSizeChange"
-            @current-change="handleHistoryPageChange"
+            :page-sizes="[10, 20, 50]"
           />
         </div>
       </div>
@@ -221,14 +217,10 @@
       </div>
 
       <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="logPagination.page"
-          v-model:page-size="logPagination.pageSize"
-          :page-sizes="[10, 20, 50]"
+        <Pagination
+          v-model="logPagination"
           :total="logTotal"
-          layout="total, sizes, prev, pager, next"
-          @size-change="handleLogPageSizeChange"
-          @current-change="handleLogPageChange"
+          :page-sizes="[10, 20, 50]"
         />
       </div>
       <template #footer>
@@ -243,6 +235,7 @@ import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, QuestionFilled, WarningFilled } from '@element-plus/icons-vue'
 import router from '@/router'
+import Pagination from '@/components/Pagination.vue'
 
 // Mock货币数据
 const mockCurrencyList = [

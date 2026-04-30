@@ -1,18 +1,35 @@
 <template>
-  <div class="pagination-wrapper">
-    <el-pagination
-      v-model:current-page="currentPageModel"
-      v-model:page-size="pageSizeModel"
-      :page-sizes="pageSizes"
-      :total="total"
-      :disabled="disabled"
-      :background="background"
-      :layout="layout"
-      :prev-text="prevText"
-      :next-text="nextText"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+  <div class="pagination">
+    <button class="pagination-btn prev" @click="handlePrev" :disabled="currentPage <= 1">‹</button>
+    <div class="page-numbers">
+      <button
+        v-for="page in displayedPages"
+        :key="page"
+        class="page-btn"
+        :class="{ active: currentPage === page }"
+        @click="handlePageChange(page)"
+      >
+        {{ page }}
+      </button>
+      <span v-if="showEllipsisBefore" class="ellipsis">...</span>
+      <button
+        v-if="showLastPage"
+        class="page-btn"
+        @click="handlePageChange(totalPages)"
+      >
+        {{ totalPages }}
+      </button>
+    </div>
+    <button class="pagination-btn next" @click="handleNext" :disabled="currentPage >= totalPages">›</button>
+    <span class="total-info">共 {{ total }} 条</span>
+    <el-select v-model="pageSize" class="page-size-select" size="small" @change="handleSizeChange">
+      <el-option
+        v-for="size in pageSizes"
+        :key="size"
+        :label="`${size}条/页`"
+        :value="size"
+      />
+    </el-select>
   </div>
 </template>
 
@@ -30,135 +47,198 @@ const props = defineProps({
   },
   pageSizes: {
     type: Array,
-    default: () => [10, 20, 50]
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  background: {
-    type: Boolean,
-    default: true
-  },
-  layout: {
-    type: String,
-    default: 'total, sizes, prev, pager, next, jumper'
-  },
-  prevText: {
-    type: String,
-    default: '上一页'
-  },
-  nextText: {
-    type: String,
-    default: '下一页'
+    default: () => [10, 20, 30, 40, 50]
   }
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
-const currentPageModel = computed({
+const currentPage = computed({
   get: () => props.modelValue.page,
   set: (val) => {
     emit('update:modelValue', { ...props.modelValue, page: val })
+    emit('change', { ...props.modelValue, page: val })
   }
 })
 
-const pageSizeModel = computed({
+const pageSize = computed({
   get: () => props.modelValue.pageSize,
   set: (val) => {
-    emit('update:modelValue', { ...props.modelValue, pageSize: val })
+    emit('update:modelValue', { ...props.modelValue, pageSize: val, page: 1 })
+    emit('change', { ...props.modelValue, pageSize: val, page: 1 })
   }
 })
 
-const handleSizeChange = (val) => {
-  emit('change', { ...props.modelValue, pageSize: val, page: 1 })
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(props.total / props.modelValue.pageSize))
+})
+
+const displayedPages = computed(() => {
+  const pages = []
+  const total = totalPages.value
+  const current = props.modelValue.page
+  
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) {
+      pages.push(i)
+    }
+  } else {
+    if (current <= 4) {
+      for (let i = 1; i <= 5; i++) {
+        pages.push(i)
+      }
+    } else if (current >= total - 3) {
+      for (let i = total - 4; i <= total; i++) {
+        pages.push(i)
+      }
+    } else {
+      pages.push(current - 2)
+      pages.push(current - 1)
+      pages.push(current)
+      pages.push(current + 1)
+      pages.push(current + 2)
+    }
+  }
+  
+  return pages
+})
+
+const showEllipsisBefore = computed(() => {
+  const total = totalPages.value
+  const current = props.modelValue.page
+  
+  if (total <= 7) return false
+  
+  if (current >= total - 3) {
+    return displayedPages.value[0] > 1
+  }
+  
+  return current > 4
+})
+
+const showLastPage = computed(() => {
+  const total = totalPages.value
+  const current = props.modelValue.page
+  
+  if (total <= 7) return false
+  
+  if (current <= 4) {
+    return true
+  }
+  
+  return displayedPages.value[displayedPages.value.length - 1] < total
+})
+
+const handlePrev = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
 }
 
-const handleCurrentChange = (val) => {
-  emit('change', { ...props.modelValue, page: val })
+const handleNext = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+  }
+}
+
+const handlePageChange = (page) => {
+  currentPage.value = page
+}
+
+const handleSizeChange = (val) => {
+  pageSize.value = val
 }
 </script>
 
 <style lang="scss" scoped>
-.pagination-wrapper {
+.pagination {
   display: flex;
+  align-items: center;
+  gap: 8px;
   justify-content: flex-end;
-  padding: 16px 0 0;
+  padding: 16px 0;
 }
 
-:deep(.el-pagination) {
-  --el-pagination-button-bg-color: #ffffff;
-  --el-pagination-button-color: #65676B;
-  --el-pagination-button-disabled-bg-color: #f5f7fa;
-  --el-pagination-hover-color: #0064E0;
+.pagination-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s;
 
-  font-weight: 400;
-
-  .el-pagination__total {
-    font-size: 13px;
-    color: #65676B;
+  &:hover:not(:disabled) {
+    border-color: #1890ff;
+    color: #1890ff;
   }
 
-  .el-pagination__sizes {
-    margin: 0 16px 0 8px;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
 
-    .el-select {
-      --el-select-border-color-hover: #0064E0;
-    }
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.page-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: #666;
+  transition: all 0.2s;
+
+  &:hover:not(.active) {
+    border-color: #1890ff;
+    color: #1890ff;
   }
 
-  .btn-prev,
-  .btn-next {
+  &.active {
+    background: #1890ff;
+    color: #fff;
+    border-color: #1890ff;
+  }
+}
+
+.ellipsis {
+  font-size: 13px;
+  color: #999;
+  padding: 0 4px;
+}
+
+.total-info {
+  font-size: 13px;
+  color: #999;
+  margin-left: 8px;
+}
+
+.page-size-select {
+  width: 90px;
+  margin-left: 8px;
+
+  :deep(.el-select__wrapper) {
+    height: 32px;
     border-radius: 6px;
-    border: 1px solid #e5e7eb;
-
-    &:hover {
-      color: #0064E0;
-      border-color: #0064E0;
-    }
-
-    &.is-disabled {
-      color: #BCC0C4;
-      border-color: #e5e7eb;
-    }
   }
 
-  .el-pager {
-    li {
-      border-radius: 6px;
-      border: 1px solid transparent;
-      margin: 0 2px;
-      font-weight: 400;
-
-      &:hover {
-        color: #0064E0;
-      }
-
-      &.is-active {
-        background: #0064E0;
-        color: #ffffff;
-        border-color: #0064E0;
-      }
-
-      &.is-disabled {
-        color: #BCC0C4;
-      }
-    }
-  }
-
-  .el-pagination__jump {
-    margin-left: 16px;
-    color: #65676B;
-
-    .el-input {
-      --el-input-border-color: #e5e7eb;
-      --el-input-hover-border-color: #0064E0;
-      --el-input-focus-border-color: #0064E0;
-
-      .el-input__wrapper {
-        border-radius: 6px;
-      }
-    }
+  :deep(.el-select__selected-item:nth-child(2) > span) {
+    color: #4e5969;
   }
 }
 </style>

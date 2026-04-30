@@ -88,19 +88,11 @@
 
     <!-- 分页 -->
     <div class="pagination-wrapper">
-      <span class="total-count">共 {{ total }} 条</span>
-      <el-pagination
-        v-model:current-page="currentPage"
-        :page-size="pageSize"
+      <Pagination
+        v-model="paginationState"
         :total="total"
-        layout="prev, pager, next"
-        @current-change="handlePageChange"
+        :page-sizes="[10, 20, 50]"
       />
-      <el-select v-model="pageSize" size="small" style="width: 100px;" @change="handlePageSizeChange">
-        <el-option label="10条/页" :value="10" />
-        <el-option label="20条/页" :value="20" />
-        <el-option label="50条/页" :value="50" />
-      </el-select>
     </div>
   </div>
 </template>
@@ -108,6 +100,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 const props = defineProps({
   data: {
@@ -123,8 +116,7 @@ const props = defineProps({
 
 const activeTab = ref('spu')
 const searchKeyword = ref('')
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 const sortProp = ref('salesAmount')
 const sortOrder = ref('descending')
 

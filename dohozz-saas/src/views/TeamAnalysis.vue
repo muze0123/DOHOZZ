@@ -341,14 +341,10 @@
       </table>
 
       <div class="pagination">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50]"
+        <Pagination
+          v-model="paginationState"
           :total="totalCount"
-          layout="prev, pager, next, sizes, total"
-          @size-change="handlePageSizeChange"
-          @current-change="handlePageChange"
+          :page-sizes="[10, 20, 50]"
         />
       </div>
     </div>
@@ -362,6 +358,7 @@ import TikTokIcon from '@/assets/images/TikTok.png'
 import InstagramIcon from '@/assets/images/Instagram.png'
 import ShopeeIcon from '@/assets/images/Shopee.png'
 import LazadaIcon from '@/assets/images/Lazada.png'
+import Pagination from '@/components/Pagination.vue'
 
 const platforms = [
   { id: 'tiktok', name: 'TikTok', icon: TikTokIcon },
@@ -384,8 +381,7 @@ const quickTimeOptions = [
 const activeQuickTime = ref('month')
 const activeTab = ref('employee')
 const performanceMonth = ref('2026-04')
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 const totalCount = ref(480)
 
 const chartLegend = [

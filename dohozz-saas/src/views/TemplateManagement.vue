@@ -164,14 +164,10 @@
 
     <!-- 分页区域 -->
     <div class="pagination-bar">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
+      <Pagination
+        v-model="pagination"
         :total="pagination.total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        :page-sizes="[10, 20, 50, 100]"
       />
     </div>
 
@@ -470,6 +466,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { Search, Plus, Picture, DocumentCopy } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 // ==== State ====
 const activeTab = ref('contact')

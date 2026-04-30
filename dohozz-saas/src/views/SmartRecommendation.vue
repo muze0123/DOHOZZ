@@ -323,12 +323,9 @@
 
     <!-- Pagination -->
     <div class="pagination-bar">
-      <el-pagination
-        v-model:current-page="currentPage"
-        :page-size="pageSize"
+      <Pagination
+        v-model="paginationState"
         :total="recommendationStats.totalInfluencers"
-        layout="prev, pager, next"
-        @current-change="handlePageChange"
       />
     </div>
 
@@ -479,6 +476,7 @@
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ArrowDown, Check, QuestionFilled, Warning } from '@element-plus/icons-vue'
+import Pagination from '@/components/Pagination.vue'
 
 // Tab state
 const activeTab = ref('shop')
@@ -527,8 +525,7 @@ const recommendationStats = reactive({
 const displayedCount = ref(6)
 
 // Pagination
-const currentPage = ref(1)
-const pageSize = ref(6)
+const paginationState = ref({ page: 1, pageSize: 6 })
 
 // Card list with mock data
 const cardList = ref([

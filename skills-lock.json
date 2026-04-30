@@ -11,6 +11,12 @@
       "sourceType": "github",
       "computedHash": "03e0eaaa9bf13ba1e7ffa387f5893de6f324c0868c627001f179395a8feaa7c9"
     },
+    "dev-builder": {
+      "source": "zinohome/cozyengine",
+      "sourceType": "github",
+      "skillPath": ".github/skills/dev-builder/SKILL.md",
+      "computedHash": "13068db4f2a38643234187c35fabfda822f8a36b9ff28c6eb502b1de6e57434f"
+    },
     "do": {
       "source": "thedotmack/claude-mem",
       "sourceType": "github",
@@ -50,6 +56,12 @@
       "source": "othmanadi/planning-with-files",
       "sourceType": "github",
       "computedHash": "93522d6989e542f4670d9d7a347b2e0013c46935845d599a15fafd77643b9d42"
+    },
+    "product-spec-builder": {
+      "source": "tclxshunquan-wang/ai-ppt-design",
+      "sourceType": "github",
+      "skillPath": ".cursor/skills/product-spec-builder/SKILL.md",
+      "computedHash": "3570d15b2f826410eb2ff96f39e39c626771cfe77e581771976e6c29b50ae470"
     },
     "remotion-best-practices": {
       "source": "remotion-dev/skills",

@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import StickyHeader from './components/StickyHeader.vue'
 import LeftNavigation from './components/LeftNavigation.vue'
@@ -47,12 +47,14 @@ const route = useRoute()
 const activeMenu = ref('基础分析')
 
 // 滚动状态
-const scrollY = ref(0)
 const showStickyHeader = ref(false)
 const isNavSticky = ref(false)
 
 // 吸顶阈值 (区域A + 区域B 的高度)
 const STICKY_THRESHOLD = 240
+
+// 节流定时器
+let scrollTimer = null
 
 // 模拟达人数据
 const influencerData = ref({
@@ -104,15 +106,17 @@ const handleMenuChange = (menu) => {
   activeMenu.value = menu
 }
 
-// 滚动监听
+// 滚动监听 (带节流)
 const handleScroll = () => {
-  scrollY.value = window.scrollY
-
-  // 当滚动超过阈值时，显示吸顶header
-  showStickyHeader.value = scrollY.value > STICKY_THRESHOLD
-
-  // 当滚动超过阈值时，左侧导航变为sticky
-  isNavSticky.value = scrollY.value > STICKY_THRESHOLD
+  if (scrollTimer) return
+  scrollTimer = setTimeout(() => {
+    const scrollY = window.scrollY
+    // 当滚动超过阈值时，显示吸顶header
+    showStickyHeader.value = scrollY > STICKY_THRESHOLD
+    // 当滚动超过阈值时，左侧导航变为sticky
+    isNavSticky.value = scrollY > STICKY_THRESHOLD
+    scrollTimer = null
+  }, 50)
 }
 
 onMounted(() => {
@@ -122,11 +126,15 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  if (scrollTimer) {
+    clearTimeout(scrollTimer)
+  }
 })
 </script>
 
 <style scoped>
 .influencer-detail-basic-analysis {
+  --page-bg: #F5F6F7;
   min-height: 100vh;
 }
 

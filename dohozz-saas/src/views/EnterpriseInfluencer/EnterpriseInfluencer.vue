@@ -129,14 +129,10 @@
 
         <!-- 分页 -->
         <div class="pagination-wrapper" v-if="!loading && total > 0">
-          <el-pagination
-            v-model:current-page="currentPage"
-            v-model:page-size="pageSize"
-            :page-sizes="[10, 20, 50, 100]"
+          <Pagination
+            v-model="paginationState"
             :total="total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+            :page-sizes="[10, 20, 50, 100]"
           />
         </div>
       </div>
@@ -181,6 +177,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import api from '@/api/enterpriseInfluencer'
+import Pagination from '@/components/Pagination.vue'
 
 // ==================== 组件引用 ====================
 // Task 4: 数据统计区组件
@@ -255,8 +252,7 @@ const filters = reactive({
 // 列表数据
 const influencerList = ref([])
 const total = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 const loading = ref(false)
 const listLoading = ref(false)
 const selectedIds = ref([])

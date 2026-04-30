@@ -187,12 +187,10 @@
 
     <!-- 分页 -->
     <div class="pagination-bar">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50]"
+      <Pagination
+        v-model="pagination"
         :total="pagination.total"
-        layout="total, sizes, prev, pager, next, jumper"
+        :page-sizes="[10, 20, 50]"
       />
     </div>
 
@@ -252,6 +250,7 @@
 import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ArrowDown, CircleCheck } from '@element-plus/icons-vue'
+import Pagination from '@/components/Pagination.vue'
 
 // 平台数据
 const platforms = ref([

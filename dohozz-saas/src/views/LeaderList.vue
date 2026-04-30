@@ -71,12 +71,10 @@
 
     <!-- ==================== 分页控制区 ==================== -->
     <div class="pagination-section">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50]"
+      <Pagination
+        v-model="pagination"
         :total="filteredLeaders.length"
-        layout="total, sizes, prev, pager, next, jumper"
+        :page-sizes="[10, 20, 50]"
       />
     </div>
 
@@ -137,6 +135,7 @@ import AddLeaderDialog from './LeaderList/dialogs/AddLeaderDialog.vue'
 import ImportLeaderDialog from './LeaderList/dialogs/ImportLeaderDialog.vue'
 import FollowUpDialog from './LeaderList/dialogs/FollowUpDialog.vue'
 import LeaderDetailDialog from './LeaderList/dialogs/LeaderDetailDialog.vue'
+import Pagination from '@/components/Pagination.vue'
 
 // ==================== 平台Tab ====================
 const platformTabs = [

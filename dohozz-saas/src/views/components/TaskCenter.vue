@@ -280,14 +280,10 @@
 
       <!-- 分页 -->
       <div class="modal-pagination">
-        <el-pagination
-          v-model:current-page="pagination.page"
-          v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
+        <Pagination
+          v-model="pagination"
           :total="pagination.total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handlePageSizeChange"
-          @current-change="handlePageChange"
+          :page-sizes="[10, 20, 50, 100]"
         />
       </div>
     </div>
@@ -297,6 +293,7 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 const props = defineProps({
   modelValue: {

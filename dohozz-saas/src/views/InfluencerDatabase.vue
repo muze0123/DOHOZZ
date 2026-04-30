@@ -293,12 +293,10 @@
 
         <!-- 分页 -->
         <div class="pagination-area">
-          <el-pagination
-            v-model:current-page="store.pagination.page"
-            v-model:page-size="store.pagination.pageSize"
-            :page-sizes="[10, 20, 50]"
+          <Pagination
+            v-model="store.pagination"
             :total="store.pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
+            :page-sizes="[10, 20, 50]"
           />
         </div>
       </div>
@@ -423,6 +421,7 @@ import { ElMessage } from 'element-plus'
 import PluginFinderDialog from './dialogs/PluginFinderDialog.vue'
 import AddInfluencerDialog from './dialogs/AddInfluencerDialog.vue'
 import TaskListDialog from './dialogs/TaskListDialog.vue'
+import Pagination from '@/components/Pagination.vue'
 
 const store = useInfluencerDatabaseStore()
 

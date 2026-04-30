@@ -200,14 +200,10 @@
 
     <!-- 分页组件 -->
     <div class="pagination-container">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="currentPageSize"
-        :page-sizes="[10, 20, 50, 100]"
+      <Pagination
+        v-model="paginationState"
         :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        :page-sizes="[10, 20, 50, 100]"
       />
     </div>
   </div>
@@ -216,6 +212,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { VideoPlay, User, Goods, Loading } from '@element-plus/icons-vue'
+import Pagination from '@/components/Pagination.vue'
 
 const props = defineProps({
   listData: {
@@ -257,8 +254,7 @@ const safeSubTabs = computed(() => props.subTabs || {})
 const currentSubTab = ref('all')
 const searchTitle = ref('')
 const currentHasPromote = ref(props.hasPromote || '')
-const currentPage = ref(1)
-const currentPageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 
 // 监听hasPromote prop变化
 watch(

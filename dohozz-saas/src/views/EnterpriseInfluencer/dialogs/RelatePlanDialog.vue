@@ -53,14 +53,10 @@
 
     <!-- 分页 -->
     <div class="pagination-wrapper">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50]"
+      <Pagination
+        v-model="paginationState"
         :total="total"
-        layout="total, prev, pager, next"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        :page-sizes="[10, 20, 50]"
       />
     </div>
 
@@ -75,6 +71,7 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import api from '@/api/enterpriseInfluencer'
+import Pagination from '@/components/Pagination.vue'
 
 const props = defineProps({
   visible: Boolean,
@@ -93,8 +90,7 @@ const tableRef = ref(null)
 const searchKeyword = ref('')
 const planList = ref([])
 const total = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 const selectedPlanIds = ref([])
 const relatedPlanIds = ref([])
 

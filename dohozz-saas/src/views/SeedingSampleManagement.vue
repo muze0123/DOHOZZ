@@ -55,12 +55,10 @@
 
     <!-- ==================== 分页控制区 ==================== -->
     <div class="pagination-section">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50]"
+      <Pagination
+        v-model="pagination"
         :total="filteredSamples.length"
-        layout="total, sizes, prev, pager, next, jumper"
+        :page-sizes="[10, 20, 50]"
       />
     </div>
 
@@ -124,6 +122,7 @@ import SeedingDetailDialog from './SeedingSampleManagement/dialogs/SeedingDetail
 import SeedingEditNoteDialog from './SeedingSampleManagement/dialogs/SeedingEditNoteDialog.vue'
 import SeedingEditSampleDialog from './SeedingSampleManagement/dialogs/SeedingEditSampleDialog.vue'
 import SeedingDeleteDialog from './SeedingSampleManagement/dialogs/SeedingDeleteDialog.vue'
+import Pagination from '@/components/Pagination.vue'
 
 // ==================== 平台Tab ====================
 const platformTabs = [

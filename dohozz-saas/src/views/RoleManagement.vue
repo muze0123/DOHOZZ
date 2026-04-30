@@ -169,14 +169,10 @@
 
             <!-- 分页器 -->
             <div class="pagination-wrapper">
-              <el-pagination
-                v-model:current-page="pagination.page"
-                v-model:page-size="pagination.pageSize"
-                :page-sizes="[10, 20, 50, 100]"
+              <Pagination
+                v-model="pagination"
                 :total="currentRoleMembers.length"
-                layout="total, sizes, prev, pager, next, jumper"
-                @size-change="handlePageSizeChange"
-                @current-change="handlePageChange"
+                :page-sizes="[10, 20, 50, 100]"
               />
             </div>
           </div>
@@ -369,6 +365,7 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, MoreFilled, User, Lock, InfoFilled } from '@element-plus/icons-vue'
+import Pagination from '@/components/Pagination.vue'
 
 // Mock角色数据
 const mockRoleList = [

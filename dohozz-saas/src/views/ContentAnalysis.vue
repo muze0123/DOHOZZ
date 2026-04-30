@@ -244,14 +244,10 @@
       </table>
 
       <div class="pagination">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50]"
+        <Pagination
+          v-model="pagination"
           :total="totalCount"
-          layout="prev, pager, next, sizes, total"
-          @size-change="handlePageSizeChange"
-          @current-change="handlePageChange"
+          :page-sizes="[10, 20, 50]"
         />
       </div>
     </div>
@@ -261,6 +257,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 const dateRange = ref(['2026-04-01', '2026-04-29'])
 const activeQuickTime = ref('month')
@@ -276,8 +273,10 @@ const activeAttr = ref('全部出单达人')
 const activeShop = ref('所有店铺')
 const contentType = ref('live')
 const tableType = ref('live')
-const currentPage = ref(1)
-const pageSize = ref(10)
+const pagination = reactive({
+  page: 1,
+  pageSize: 10
+})
 const totalCount = ref(1655)
 
 const stackedChartData = ref([1200, 1800, 900, 2100, 1500, 2000, 800, 1900, 1400, 2200, 1100, 1700, 1300, 1600, 900, 2000, 1500, 1800, 1200, 1600, 1000, 1400, 1700, 1900, 1300, 1500, 1100, 2000, 1400])
@@ -314,12 +313,12 @@ const handleSort = (field) => {
   ElMessage.info(`按${field}排序`)
 }
 
-const handlePageChange = (page) => {
-  currentPage.value = page
+const handlePageChange = (val) => {
+  pagination.page = val
 }
 
-const handlePageSizeChange = (size) => {
-  pageSize.value = size
+const handlePageSizeChange = (val) => {
+  pagination.pageSize = val
 }
 </script>
 

@@ -196,12 +196,10 @@
 
     <!-- 分页 -->
     <div v-if="filteredPlans.length > 0" class="pagination-section">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50]"
+      <Pagination
+        v-model="pagination"
         :total="filteredPlans.length"
-        layout="total, sizes, prev, pager, next, jumper"
+        :page-sizes="[10, 20, 50]"
       />
     </div>
 
@@ -302,12 +300,10 @@
         </el-table-column>
       </el-table>
       <div class="pagination-section">
-        <el-pagination
-          v-model:current-page="groupPagination.page"
-          v-model:page-size="groupPagination.pageSize"
-          :page-sizes="[10, 20]"
+        <Pagination
+          v-model="groupPagination"
           :total="planGroups.length"
-          layout="total, sizes, prev, pager, next"
+          :page-sizes="[10, 20]"
         />
       </div>
     </el-dialog>
@@ -394,6 +390,7 @@ import {
   updateGroup,
   deleteGroup
 } from '@/api/planManagement'
+import Pagination from '@/components/Pagination.vue'
 
 const loading = ref(false)
 

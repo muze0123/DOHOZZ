@@ -1,20 +1,16 @@
 <template>
   <div class="msg-pagination">
-    <el-pagination
-      v-model:current-page="currentPageModel"
-      v-model:page-size="pageSizeModel"
-      :page-sizes="[10, 20, 50, 100]"
-      layout="total, sizes, prev, pager, next, jumper"
+    <Pagination
+      v-model="paginationState"
       :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
+      :page-sizes="[10, 20, 50, 100]"
     />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { ElPagination } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 const props = defineProps({
   total: { type: Number, default: 0 },
@@ -24,23 +20,17 @@ const props = defineProps({
 
 const emit = defineEmits(['update:currentPage', 'update:pageSize', 'change'])
 
-const currentPageModel = computed({
-  get: () => props.currentPage,
-  set: (val) => emit('update:currentPage', val)
+const paginationState = computed({
+  get: () => ({ page: props.currentPage, pageSize: props.pageSize }),
+  set: (val) => {
+    if (val.page !== props.currentPage) {
+      emit('update:currentPage', val.page)
+    }
+    if (val.pageSize !== props.pageSize) {
+      emit('update:pageSize', val.pageSize)
+    }
+  }
 })
-
-const pageSizeModel = computed({
-  get: () => props.pageSize,
-  set: (val) => emit('update:pageSize', val)
-})
-
-function handleSizeChange() {
-  emit('change', { page: 1, pageSize: props.pageSize })
-}
-
-function handleCurrentChange() {
-  emit('change', { page: props.currentPage, pageSize: props.pageSize })
-}
 </script>
 
 <style scoped>

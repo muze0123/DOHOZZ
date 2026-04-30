@@ -115,12 +115,10 @@
 
           <!-- 卡片底部分页 -->
           <div class="card-footer">
-            <el-pagination
-              v-model:current-page="group.currentPage"
-              :page-size="group.pageSize"
+            <Pagination
+              :model-value="getGroupPagination(group)"
+              @update:model-value="v => Object.assign(group, { currentPage: v.page, pageSize: v.pageSize })"
               :total="group.totalTags"
-              layout="prev, pager, next"
-              @current-change="(page) => handleCardPageChange(group, page)"
             />
             <span class="total-tags">总共{{ group.totalTags }}个标签</span>
           </div>
@@ -129,12 +127,10 @@
 
       <!-- 总计分页 -->
       <div v-if="filteredTagGroups.length > 0" class="pagination-area">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50]"
+        <Pagination
+          v-model="paginationState"
           :total="totalTagGroups"
-          layout="total, sizes, prev, pager, next, jumper"
+          :page-sizes="[10, 20, 50]"
         />
       </div>
     </div>
@@ -260,6 +256,7 @@
 import { ref, reactive, computed } from 'vue'
 import { Search, Plus, Edit, Delete, QuestionFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 // ==================== 平台Tab ====================
 const platformTabs = [
@@ -370,8 +367,7 @@ const availableTags = ref([
 ])
 
 // ==================== 分页 ====================
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 
 const totalTagGroups = computed(() => filteredTagGroups.value.length)
 
@@ -459,6 +455,16 @@ function handleSearchClear() {
 // 卡片内分页变化
 function handleCardPageChange(group, page) {
   group.currentPage = page
+}
+
+// 获取卡片分页包装对象
+function getGroupPagination(group) {
+  return {
+    get page() { return group.currentPage },
+    set page(val) { group.currentPage = val },
+    get pageSize() { return group.pageSize },
+    set pageSize(val) { group.pageSize = val }
+  }
 }
 
 // 打开添加弹窗

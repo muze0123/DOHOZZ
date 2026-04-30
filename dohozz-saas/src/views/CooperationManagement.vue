@@ -55,12 +55,10 @@
 
     <!-- ==================== 分页控制区 ==================== -->
     <div class="pagination-section">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50]"
+      <Pagination
+        v-model="pagination"
         :total="filteredCooperations.length"
-        layout="total, sizes, prev, pager, next, jumper"
+        :page-sizes="[10, 20, 50]"
       />
     </div>
 
@@ -126,6 +124,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 import CooperationFilterSection from './components/CooperationFilterSection.vue'
 import CooperationListSection from './components/CooperationListSection.vue'
 import AddCooperationDialog from './CooperationManagement/dialogs/AddCooperationDialog.vue'

@@ -204,17 +204,10 @@
 
     <!-- 分页区 -->
     <div class="pagination-section">
-      <div class="pagination-info">
-        共 {{ total }} 条记录 第 {{ currentPage }}/{{ totalPages }} 页
-      </div>
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
+      <Pagination
+        v-model="paginationState"
         :total="total"
-        layout="sizes, prev, pager, next"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        :page-sizes="[10, 20, 50, 100]"
       />
     </div>
 
@@ -240,6 +233,7 @@ import DeleteCooperationDialog from './LeaderCooperation/dialogs/DeleteCooperati
 import BatchDeleteDialog from './LeaderCooperation/dialogs/BatchDeleteDialog.vue'
 import ExportConfirmDialog from './LeaderCooperation/dialogs/ExportConfirmDialog.vue'
 import CooperationDetailDialog from './LeaderCooperation/dialogs/CooperationDetailDialog.vue'
+import Pagination from '@/components/Pagination.vue'
 
 // 平台Tab配置
 const platformTabs = [
@@ -314,10 +308,9 @@ const selectedRows = ref([])
 const tableRef = ref(null)
 
 // 分页
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 const total = ref(40)
-const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
+const totalPages = computed(() => Math.ceil(total.value / paginationState.value.pageSize))
 
 // 弹窗状态
 const addDialogVisible = ref(false)

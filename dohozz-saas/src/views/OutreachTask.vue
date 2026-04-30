@@ -264,19 +264,11 @@
 
     <!-- 区域四：分页栏 -->
     <div class="pagination-section" v-if="filteredList.length > 0">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50]"
+      <Pagination
+        v-model="pagination"
         :total="pagination.total"
-        layout="prev, pager, next, sizes, jumper, total"
-        @size-change="handlePageSizeChange"
-        @current-change="handlePageChange"
-      >
-        <template #total>
-          <span class="custom-total">共{{ pagination.total }}条记录 第{{ pagination.page }}/{{ Math.ceil(pagination.total / pagination.pageSize) }}页</span>
-        </template>
-      </el-pagination>
+        :page-sizes="[10, 20, 50]"
+      />
     </div>
 
     <!-- 终止任务确认弹窗 (站内信) -->
@@ -450,6 +442,7 @@
 <script setup>
 import { ref, reactive, computed, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 const activeTab = ref('定向邀约')
 

@@ -447,14 +447,10 @@
           </table>
 
           <div class="pagination">
-            <el-pagination
-              v-model:current-page="currentPage"
-              v-model:page-size="pageSize"
-              :page-sizes="[10, 20, 50]"
+            <Pagination
+              v-model="paginationState"
               :total="totalCount"
-              layout="prev, pager, next, sizes"
-              @size-change="handlePageSizeChange"
-              @current-change="handlePageChange"
+              :page-sizes="[10, 20, 50]"
             />
           </div>
         </div>
@@ -470,6 +466,7 @@ import TikTokIcon from '@/assets/images/TikTok.png'
 import InstagramIcon from '@/assets/images/Instagram.png'
 import ShopeeIcon from '@/assets/images/Shopee.png'
 import LazadaIcon from '@/assets/images/Lazada.png'
+import Pagination from '@/components/Pagination.vue'
 
 const platforms = [
   { id: 'tiktok', name: 'TikTok', icon: TikTokIcon },
@@ -500,8 +497,7 @@ const quadrantTabs = ['低成交高退款', '高成交高退款', '低成交低�
 const activeQuadrantTab = ref('低成交高退款')
 const quadrantType = ref('fans')
 const refundLevel = ref('avg')
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 const totalCount = ref(50)
 
 const salesLevelData = ref([

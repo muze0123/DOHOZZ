@@ -49,11 +49,9 @@
 
       <!-- Pagination -->
       <div class="pagination-bar">
-        <el-pagination
-          v-model:current-page="pagination.page"
-          :page-size="pagination.pageSize"
+        <Pagination
+          v-model="pagination"
           :total="pagination.total"
-          layout="prev, pager, next, total"
         />
       </div>
     </div>
@@ -241,6 +239,7 @@
 import { ref, computed, reactive, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Close, Check, Top, TrendCharts, Loading } from '@element-plus/icons-vue'
+import Pagination from '@/components/Pagination.vue'
 
 const industryList = ['全部', '美妆', '服饰', '食品', '数码', '家电', '家居', '母婴']
 const activeIndustry = ref('全部')

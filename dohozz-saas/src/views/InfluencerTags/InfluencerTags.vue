@@ -106,15 +106,10 @@
     <!-- ==================== 分页区域 ==================== -->
     <div v-if="total > 0" class="pagination-section">
       <div class="pagination-inner">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
+        <Pagination
+          v-model="paginationState"
           :total="total"
-          layout="prev, pager, next, sizes, jumper, total"
-          :pager-count="5"
-          @current-change="fetchData"
-          @size-change="handlePageSizeChange"
+          :page-sizes="[10, 20, 50, 100]"
         />
       </div>
     </div>
@@ -165,6 +160,7 @@ import AddTagGroupDialog from '@/views/components/TagDialogs/AddTagGroupDialog.v
 import EditTagGroupDialog from '@/views/components/TagDialogs/EditTagGroupDialog.vue'
 import AddTagDialog from '@/views/components/TagDialogs/AddTagDialog.vue'
 import DeleteConfirmDialog from '@/views/components/TagDialogs/DeleteConfirmDialog.vue'
+import Pagination from '@/components/Pagination.vue'
 
 const MAX_VISIBLE_TAGS = 7
 
@@ -173,8 +169,7 @@ const loading = ref(false)
 const tagGroupList = ref([])
 const tagGroupOptions = ref([])
 const searchKeyword = ref('')
-const currentPage = ref(1)
-const pageSize = ref(10)
+const paginationState = ref({ page: 1, pageSize: 10 })
 const total = ref(0)
 
 // 展开/折叠

@@ -186,12 +186,10 @@
       </div>
 
       <div class="pagination-section">
-        <el-pagination
-          v-model:current-page="pagination.page"
-          v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 20, 50]"
+        <Pagination
+          v-model="pagination"
           :total="filteredInfluencers.length"
-          layout="total, sizes, prev, pager, next, jumper"
+          :page-sizes="[10, 20, 50]"
         />
       </div>
     </div>
@@ -272,12 +270,10 @@
       </el-table>
       <div v-if="monitoringRecords.length === 0" class="empty-state">暂无监控记录</div>
       <div class="pagination-section">
-        <el-pagination
-          v-model:current-page="recordsPagination.page"
-          v-model:page-size="recordsPagination.pageSize"
-          :page-sizes="[10, 20]"
+        <Pagination
+          v-model="recordsPagination"
           :total="monitoringRecords.length"
-          layout="total, sizes, prev, pager, next"
+          :page-sizes="[10, 20]"
         />
       </div>
     </el-dialog>
@@ -301,12 +297,10 @@
       </el-table>
       <div v-if="quotaRecords.length === 0" class="empty-state">暂无配额消耗记录</div>
       <div class="pagination-section">
-        <el-pagination
-          v-model:current-page="quotaPagination.page"
-          v-model:page-size="quotaPagination.pageSize"
-          :page-sizes="[10, 20]"
+        <Pagination
+          v-model="quotaPagination"
           :total="quotaRecords.length"
-          layout="total, sizes, prev, pager, next"
+          :page-sizes="[10, 20]"
         />
       </div>
     </el-dialog>
@@ -326,6 +320,7 @@ import {
   getMonitoringRecords,
   getQuotaRecords
 } from '@/api/trackedInfluencer'
+import Pagination from '@/components/Pagination.vue'
 
 const loading = ref(false)
 

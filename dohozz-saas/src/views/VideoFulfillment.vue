@@ -56,12 +56,10 @@
 
     <!-- ==================== 分页控制区 ==================== -->
     <div class="pagination-section">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50]"
+      <Pagination
+        v-model="pagination"
         :total="filteredVideos.length"
-        layout="total, sizes, prev, pager, next, jumper"
+        :page-sizes="[10, 20, 50]"
       />
     </div>
 
@@ -114,6 +112,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 import VideoFilterSection from './components/VideoFilterSection.vue'
 import VideoStatsSection from './components/VideoStatsSection.vue'
 import VideoListSection from './components/VideoListSection.vue'

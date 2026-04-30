@@ -265,17 +265,10 @@
 
         <!-- 分页 -->
         <div class="pagination-wrapper">
-          <!-- TODO: Pagination 组件 (Task 12) -->
-          <div class="pagination-placeholder">
-            <el-pagination
-              background
-              layout="total, prev, pager, next"
-              :total="100"
-              :page-size="20"
-              :current-page="1"
-              @current-change="handlePageChange"
-            />
-          </div>
+          <Pagination
+            v-model="paginationState"
+            :total="totalVideoCount"
+          />
         </div>
       </div>
     </div>
@@ -285,6 +278,7 @@
 <script setup>
 import { reactive, ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 // ==================== 状态管理 ====================
 const state = reactive({
@@ -381,9 +375,13 @@ const handleBatchPublish = () => {
   ElMessage.success(`已选择 ${state.selectedVideos.length} 条视频进行批量投放`)
 }
 
+// ==================== 分页状态 ====================
+const paginationState = ref({ page: 1, pageSize: 20 })
+const totalVideoCount = ref(100)
+
 // ==================== 分页变化 ====================
 const handlePageChange = (page) => {
-  // TODO: Task 12 实现分页变化逻辑
+  paginationState.value.page = page
 }
 </script>
 

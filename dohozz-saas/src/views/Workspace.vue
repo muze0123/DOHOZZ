@@ -114,57 +114,22 @@
         <div class="section performance-section">
           <div class="section-header">
             <span class="section-title">业绩目标</span>
-          </div>
-
-          <div class="performance-chart">
-            <div class="chart-header">
-              <div class="completion-rate success">
-                <span class="rate-value">93.55%</span>
-                <span class="rate-label">完成目标</span>
-              </div>
-              <div class="chart-date">
-                <el-date-picker
-                  v-model="performanceMonth"
-                  type="month"
-                  placeholder="选择月份"
-                  format="YYYY.MM"
-                  value-format="YYYY.MM"
-                  :clearable="false"
-                  class="performance-month-picker"
-                />
-              </div>
-            </div>
-
-            <div class="chart-area">
-              <div class="chart-lines">
-                <div class="chart-line target"></div>
-                <div class="chart-line actual"></div>
-              </div>
-              <div class="chart-dots">
-                <span class="dot success"></span>
-                <span class="dot success"></span>
-                <span class="dot success"></span>
-                <span class="dot success"></span>
-                <span class="dot success"></span>
-                <span class="dot current"></span>
-              </div>
-              <div class="chart-labels">
-                <span>02-01</span>
-                <span>02-7</span>
-                <span>02-13</span>
-                <span>02-19</span>
-                <span>02-25</span>
-                <span>02-28</span>
-              </div>
-              <div class="chart-values">
-                <div class="value-item current">
-                  <span class="value-dot"></span>
-                  <span>当前：16.88w元</span>
-                </div>
-                <div class="value-item target">
-                  <span class="value-dot"></span>
-                  <span>目标：20w元</span>
-                </div>
+            <div class="header-right">
+              <el-date-picker
+                v-model="performanceMonth"
+                type="month"
+                placeholder="选择月份"
+                format="YYYY年MM月"
+                value-format="YYYY-MM"
+                :clearable="false"
+                class="performance-month-picker"
+                :style="{ '--el-date-editor-width': '150px', width: '150px' }"
+              />
+              <div class="settings-icon" @mouseenter="showSettingsTooltip = true" @mouseleave="showSettingsTooltip = false" @click="openDrawer">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.39-1.08-.7-1.66-.94l-.38-2.65c-.03-.24-.24-.42-.48-.42h-4c-.24 0-.45.18-.48.42l-.38 2.65c-.58.24-1.14.55-1.66.94l-2.49-1c-.22-.08-.49 0-.61.22l-2 3.46c-.12.22-.07.49.12.64l2.11 1.65c-.04.32-.07.64-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.39 1.08.7 1.66.94l.38 2.65c.03.24.24.42.48.42h4c.24 0 .45-.18.48-.42l.38-2.65c.58-.24 1.14-.55 1.66-.94l2.49 1c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zm-7.43 2.52c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+                </svg>
+                <span v-if="showSettingsTooltip" class="settings-tooltip">绩效管理</span>
               </div>
             </div>
           </div>
@@ -197,12 +162,6 @@
                 <span class="stat-value">5/<span class="stat-gray">20</span>（<span class="stat-percent">25%</span>）</span>
               </div>
             </div>
-          </div>
-          <div class="expand-btn">
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-              <path d="M7 10l5 5 5-5z"/>
-            </svg>
-            <span>展开全部</span>
           </div>
         </div>
       </div>
@@ -353,12 +312,15 @@
       </div>
     </div>
   </div>
+
+  <PerformanceTargetDrawer v-model="showDrawer" />
 </template>
 
 <script setup>
 import { ref, reactive, computed, h, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElAvatar } from 'element-plus'
+import PerformanceTargetDrawer from '@/components/PerformanceTargetDrawer.vue'
 
 const router = useRouter()
 
@@ -402,13 +364,32 @@ const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
 const userInfo = reactive({
   name: '张三',
   tenure: diffDays,
-  department: '部门名称XXX',
-  role: '角色名称XXX'
+  department: '',
+  role: ''
 })
 
+const fetchUserInfo = () => {
+  userInfo.department = '市场部'
+  userInfo.role = '运营专员'
+}
+
+fetchUserInfo()
+
 const today = new Date()
-const currentMonthStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}`
+const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
 const performanceMonth = ref(currentMonthStr)
+const showSettingsTooltip = ref(false)
+const showDrawer = ref(false)
+
+const openDrawer = () => {
+  console.log('openDrawer called')
+  showDrawer.value = true
+  console.log('showDrawer value:', showDrawer.value)
+}
+
+const closeDrawer = () => {
+  showDrawer.value = false
+}
 
 const todoItems = reactive([
   { id: 1, label: '待建联', value: 3, warning: 0, warningText: '待触达 1  待邀约 2' },
@@ -750,6 +731,73 @@ $transition-fast: 150ms ease;
   margin-bottom: 16px;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: $white;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #D7D7D7;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+  color: $secondary-text;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $meta-blue;
+    border-color: $meta-blue;
+  }
+
+  .settings-tooltip {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    background: $primary-text;
+    color: $white;
+    font-size: 12px;
+    border-radius: $border-radius-sm;
+    white-space: nowrap;
+    z-index: 100;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      right: 6px;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid $primary-text;
+    }
+  }
+}
+
+.performance-month-picker {
+  :deep(.el-date-editor) {
+    --el-date-editor-width: 150px !important;
+  }
+  
+  :deep(.el-input__wrapper) {
+    width: 150px !important;
+    border-radius: $border-radius-sm;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #D7D7D7;
+  }
+}
+
 .section-title-group {
   display: flex;
   align-items: center;
@@ -871,154 +919,6 @@ $transition-fast: 150ms ease;
   }
 }
 
-.performance-chart {
-  margin-bottom: 16px;
-}
-
-.chart-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.completion-rate {
-  display: flex;
-  flex-direction: column;
-
-  .rate-value {
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1;
-  }
-
-  .rate-label {
-    font-size: 12px;
-    color: $secondary-text;
-    margin-top: 4px;
-  }
-
-  &.success .rate-value {
-    color: $success-green;
-  }
-}
-
-.performance-month-picker {
-  :deep(.el-input__wrapper) {
-    border-radius: $border-radius-sm;
-    width: 180px;
-  }
-}
-
-.chart-area {
-  position: relative;
-  height: 120px;
-  padding: 0 8px;
-}
-
-.chart-lines {
-  position: absolute;
-  top: 20px;
-  left: 0;
-  right: 0;
-  height: 60px;
-}
-
-.chart-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-
-  &.target {
-    top: 0;
-    background: repeating-linear-gradient(
-      90deg,
-      $divider 0px,
-      $divider 4px,
-      transparent 4px,
-      transparent 8px
-    );
-  }
-
-  &.actual {
-    top: 30px;
-    background: linear-gradient(90deg, $success-green 0%, $success-green 70%, transparent 70%);
-  }
-}
-
-.chart-dots {
-  position: absolute;
-  top: 12px;
-  left: 8px;
-  right: 8px;
-  display: flex;
-  justify-content: space-between;
-
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: $divider;
-
-    &.success {
-      background: $success-green;
-    }
-
-    &.current {
-      background: $meta-blue;
-      box-shadow: 0 0 0 3px rgba($meta-blue, 0.2);
-    }
-  }
-}
-
-.chart-labels {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: $disabled-text;
-}
-
-.chart-values {
-  position: absolute;
-  top: 45px;
-  left: 8px;
-  right: 8px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.value-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-
-  .value-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
-
-  &.current {
-    color: $meta-blue;
-    .value-dot {
-      background: $meta-blue;
-    }
-  }
-
-  &.target {
-    color: $secondary-text;
-    .value-dot {
-      background: $divider;
-    }
-  }
-}
-
 .performance-stats {
   display: flex;
   flex-direction: column;
@@ -1082,25 +982,6 @@ $transition-fast: 150ms ease;
 
   .stat-percent {
     color: $success-green;
-  }
-}
-
-.expand-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px;
-  margin-top: 12px;
-  color: $secondary-text;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: $border-radius-sm;
-  transition: all $transition-fast;
-
-  &:hover {
-    background: $web-wash;
-    color: $meta-blue;
   }
 }
 

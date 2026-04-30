@@ -1065,16 +1065,18 @@ $transition-fast: 150ms ease;
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  border: none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #1677ff;
   color: #1677ff;
   border-radius: 20px;
   font-size: 13px;
   cursor: pointer;
-  background: white;
+  background: transparent;
   transition: all $transition-fast;
 
   &:hover {
-    background: #f0f5ff;
+    background: #F6F6F6;
   }
 }
 
@@ -1086,7 +1088,9 @@ $transition-fast: 150ms ease;
   height: 32px;
   padding: 0 10px;
   border-radius: 16px;
-  border: none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d7d7d7;
   cursor: pointer;
   color: $secondary-text;
   background: $white;
@@ -1095,6 +1099,7 @@ $transition-fast: 150ms ease;
   &:hover {
     border-color: #bfbfbf;
     color: $primary-text;
+    background: #F6F6F6;
   }
 
   .lang-text {
@@ -1112,7 +1117,9 @@ $transition-fast: 150ms ease;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d7d7d7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1125,6 +1132,11 @@ $transition-fast: 150ms ease;
   &:hover {
     border-color: #bfbfbf;
     color: $primary-text;
+    background: #F6F6F6;
+  }
+
+  &:nth-child(3) {
+    background: transparent;
   }
 
   &.has-badge {

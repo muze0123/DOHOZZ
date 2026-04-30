@@ -194,14 +194,10 @@
 
     <!-- 分页 -->
     <div class="pagination-area" v-if="contentList.length > 0">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="currentPageSize"
-        :page-sizes="[10, 20, 50, 100]"
+      <Pagination
+        v-model="paginationState"
         :total="pagination.total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="$emit('page-size-change', currentPageSize)"
-        @current-change="$emit('page-change', currentPage)"
+        :page-sizes="[10, 20, 50, 100]"
       />
     </div>
   </div>
@@ -211,6 +207,7 @@
 import { ref, computed, watch } from 'vue'
 import { Search, Loading, Picture, User, TopRight, ArrowRight, ArrowDown, Delete, FolderOpened, Download, CopyDocument } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 const props = defineProps({
   contentList: {
@@ -247,14 +244,16 @@ const emit = defineEmits([
   'selection-change'
 ])
 
-const currentPage = computed({
-  get: () => props.pagination.page,
-  set: (val) => emit('page-change', val)
-})
-
-const currentPageSize = computed({
-  get: () => props.pagination.pageSize,
-  set: (val) => emit('page-size-change', val)
+const paginationState = computed({
+  get: () => props.pagination,
+  set: (val) => {
+    if (val.page !== props.pagination.page) {
+      emit('page-change', val.page)
+    }
+    if (val.pageSize !== props.pagination.pageSize) {
+      emit('page-size-change', val.pageSize)
+    }
+  }
 })
 
 function handleSelectionChange(selection) {
