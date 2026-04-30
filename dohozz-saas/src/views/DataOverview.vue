@@ -220,10 +220,11 @@
         </table>
       </div>
       <div class="pagination-bar">
-        <div class="page-btns">
-          <span v-for="p in saleTotalPages" :key="p" class="page-btn" :class="{ active: salePage === p }" @click="salePage = p">{{ p }}</span>
-        </div>
-        <span class="page-info">{{ saleTableData.length }}条 · 5条/页 · 第{{ salePage }}/{{ saleTotalPages }}页</span>
+        <SimplePagination
+          v-model="salePagination"
+          :total="saleTableData.length"
+          @change="handleSalePageChange"
+        />
       </div>
     </div>
 
@@ -362,10 +363,11 @@
         </table>
       </div>
       <div class="pagination-bar">
-        <div class="page-btns">
-          <span v-for="p in rankTotalPages" :key="p" class="page-btn" :class="{ active: rankPage === p }" @click="rankPage = p">{{ p }}</span>
-        </div>
-        <span class="page-info">10条/页 · 第{{ rankPage }}/{{ rankTotalPages }}页</span>
+        <SimplePagination
+          v-model="rankPagination"
+          :total="currentRankData.length"
+          @change="handleRankPageChange"
+        />
       </div>
     </div>
 
@@ -442,6 +444,7 @@ import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElAvatar, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
 import IconAllPlatform from '@/components/icons/IconAllPlatform.vue'
+import SimplePagination from '@/components/SimplePagination.vue'
 
 // ===== 区域A：筛选 =====
 const filters = reactive({
@@ -658,6 +661,7 @@ onUnmounted(() => {
 // ===== 区域E：动销数据 =====
 const saleTab = ref('talent')
 const salePage = ref(1)
+const salePagination = ref({ page: 1, pageSize: 5 })
 const saleSort = reactive({ field: 'amount', dir: 'desc' })
 const saleTableData = reactive([
   { platform:'TikTok', username:'talent_001', name:'达人名称A', productName:'热销商品A', productId:'71200120132', amount:'¥12,560', sales:'900', skuOrTalent:'68', ratio:'0% / 98% / 2%' },
@@ -675,6 +679,10 @@ const saleTotalPages = computed(() => Math.ceil(saleTableData.length / 5))
 const saleTablePage = computed(() => saleTableData.slice((salePage.value - 1) * 5, salePage.value * 5))
 const toggleSort = (field) => { saleSort.dir = saleSort.field === field && saleSort.dir === 'desc' ? 'asc' : 'desc'; saleSort.field = field }
 const sortIcon = (field) => saleSort.field === field ? (saleSort.dir === 'desc' ? '↓' : '↑') : '↕'
+const handleSalePageChange = (pageInfo) => {
+  salePage.value = pageInfo.page
+  salePagination.value = pageInfo
+}
 
 // ===== 区域F：寄样概况 =====
 const sampleKpis = reactive([
@@ -727,6 +735,7 @@ const sampleFunnel = reactive([
 // ===== 区域I：排行榜 =====
 const rankTab = ref('bd')
 const rankPage = ref(1)
+const rankPagination = ref({ page: 1, pageSize: 10 })
 const rankSort = reactive({ field: 'amount', dir: 'desc' })
 const bdRankData = reactive([
   { name:'张三', pct:'20%', amount:'¥12,230', talentCount:18 },
@@ -752,6 +761,10 @@ const rankTotalPages = computed(() => Math.max(1, Math.ceil(currentRankData.valu
 const rankTablePage = computed(() => currentRankData.value.slice((rankPage.value - 1) * 10, rankPage.value * 10))
 const toggleRankSort = (f) => { rankSort.dir = rankSort.field === f && rankSort.dir === 'desc' ? 'asc' : 'desc'; rankSort.field = f }
 const rankSortIcon = (f) => rankSort.field === f ? (rankSort.dir === 'desc' ? '↓' : '↑') : '↕'
+const handleRankPageChange = (pageInfo) => {
+  rankPage.value = pageInfo.page
+  rankPagination.value = pageInfo
+}
 
 // ===== 弹窗 =====
 const showConfigDialog = ref(false)

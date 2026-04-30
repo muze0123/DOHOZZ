@@ -249,34 +249,11 @@
         </div>
 
         <!-- 分页 -->
-        <div class="pagination">
-          <span class="pagination-info">共40条记录 第1/8页</span>
-          <div class="pagination-controls">
-            <div class="page-btn">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-              </svg>
-            </div>
-            <div class="page-btn active">1</div>
-            <div class="page-btn">2</div>
-            <div class="page-btn">3</div>
-            <div class="page-btn">4</div>
-            <div class="page-btn">5</div>
-            <div class="page-btn">…</div>
-            <div class="page-btn">43</div>
-            <div class="page-btn">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-              </svg>
-            </div>
-          </div>
-          <div class="page-jump">
-            <span>跳至</span>
-            <input type="number" class="page-input" value="5" min="1" max="8" />
-            <span>页</span>
-            <span class="page-size">10条/页</span>
-          </div>
-        </div>
+        <SimplePagination
+          v-model="pagination"
+          :total="40"
+          @change="handlePageChange"
+        />
       </div>
     </div>
 
@@ -321,6 +298,7 @@ import { ref, reactive, computed, h, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElAvatar } from 'element-plus'
 import PerformanceTargetDrawer from '@/components/PerformanceTargetDrawer.vue'
+import SimplePagination from '@/components/SimplePagination.vue'
 
 const router = useRouter()
 
@@ -380,11 +358,16 @@ const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).p
 const performanceMonth = ref(currentMonthStr)
 const showSettingsTooltip = ref(false)
 const showDrawer = ref(false)
+const pagination = ref({ page: 1, pageSize: 10 })
 
 const openDrawer = () => {
   console.log('openDrawer called')
   showDrawer.value = true
   console.log('showDrawer value:', showDrawer.value)
+}
+
+const handlePageChange = (pageInfo) => {
+  pagination.value = pageInfo
 }
 
 const closeDrawer = () => {
@@ -1164,77 +1147,6 @@ $transition-fast: 150ms ease;
   &:hover {
     text-decoration: underline;
   }
-}
-
-// 分页
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 16px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.pagination-info {
-  font-size: 12px;
-  color: $secondary-text;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.page-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: $border-radius-sm;
-  font-size: 13px;
-  color: $secondary-text;
-  cursor: pointer;
-  transition: all $transition-fast;
-
-  &:hover {
-    border-color: $meta-blue;
-    color: $meta-blue;
-  }
-
-  &.active {
-    background: $meta-blue;
-    border-color: $meta-blue;
-    color: $white;
-  }
-}
-
-.page-jump {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: $secondary-text;
-}
-
-.page-input {
-  width: 48px;
-  height: 28px;
-  border: none;
-  border-radius: $border-radius-sm;
-  text-align: center;
-  outline: none;
-
-  &:focus {
-    border-color: $meta-blue;
-  }
-}
-
-.page-size {
-  color: $disabled-text;
 }
 
 // 动态提醒区

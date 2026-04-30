@@ -329,37 +329,12 @@
 
       <!-- 分页 -->
       <div class="pagination-bar">
-        <span class="page-info">共 {{ totalRecords }} 条记录 第 {{ currentPage }}/{{ totalPages }} 页</span>
-        <div class="page-controls">
-          <el-select v-model="pageSize" size="small" class="page-size-select">
-            <el-option :label="'10条/页'" :value="10" />
-            <el-option :label="'20条/页'" :value="20" />
-            <el-option :label="'50条/页'" :value="50" />
-          </el-select>
-          <div class="page-btns">
-            <span class="page-btn" @click="prevPage">上一页</span>
-            <span
-              v-for="p in visiblePages"
-              :key="p"
-              class="page-btn"
-              :class="{ active: currentPage === p }"
-              @click="goToPage(p)"
-            >{{ p }}</span>
-            <span class="page-btn" @click="nextPage">下一页</span>
-          </div>
-          <div class="page-jump">
-            <span>跳至</span>
-            <input
-              type="number"
-              class="page-input"
-              v-model="jumpPage"
-              min="1"
-              :max="totalPages"
-              @keyup.enter="handlePageJump"
-            />
-            <span>页</span>
-          </div>
-        </div>
+        <Pagination
+          v-model="pagination"
+          :total="totalRecords"
+          :page-sizes="[10, 20, 50]"
+          @change="handlePageChange"
+        />
       </div>
     </div>
 
@@ -541,6 +516,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import Pagination from '@/components/Pagination.vue'
 
 // 当前时间
 const now = new Date()
@@ -920,8 +896,9 @@ const statTableData = reactive([
 
 const totalRecords = ref(10)
 const currentPage = ref(1)
-const totalPages = computed(() => Math.ceil(totalRecords.value / pageSize.value))
 const pageSize = ref(10)
+const pagination = ref({ page: 1, pageSize: 10 })
+const totalPages = computed(() => Math.ceil(totalRecords.value / pageSize.value))
 const jumpPage = ref(1)
 const sortField = ref('amount')
 const sortDir = ref('desc')
@@ -976,6 +953,12 @@ const nextPage = () => {
 
 const goToPage = (page) => {
   currentPage.value = page
+}
+
+const handlePageChange = (pageInfo) => {
+  currentPage.value = pageInfo.page
+  pageSize.value = pageInfo.pageSize
+  pagination.value = pageInfo
 }
 
 const handlePageJump = () => {
