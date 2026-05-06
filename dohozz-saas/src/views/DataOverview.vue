@@ -32,7 +32,7 @@
         </div>
       </div>
       <!-- 筛选条件区块 -->
-      <div class="filter-toolbar">
+      <div class="filter-toolbar" ref="filterToolbarRef">
         <div class="filter-row">
           <div class="filter-item">
             <span class="filter-label">店铺筛选</span>
@@ -66,7 +66,7 @@
             <div class="date-quick-btns">
               <span v-for="t in dateQuickTabs" :key="t.key" class="quick-btn" :class="{ active: filters.dateType === t.key }" @click="filters.dateType = t.key">{{ t.label }}</span>
             </div>
-            <el-date-picker v-model="filters.dateRange" type="daterange" range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY/MM/DD" value-format="YYYY-MM-DD" size="small" class="date-range-picker" :clearable="false" />
+            <el-date-picker v-model="filters.dateRange" type="daterange" range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY/MM/DD" value-format="YYYY-MM-DD" class="date-range-picker" :clearable="false" />
           </div>
         </div>
       </div>
@@ -447,6 +447,7 @@ import IconAllPlatform from '@/components/icons/IconAllPlatform.vue'
 import SimplePagination from '@/components/SimplePagination.vue'
 
 // ===== 区域A：筛选 =====
+const filterToolbarRef = ref(null)
 const filters = reactive({
   store: '', department: '', bd: '',
   dateType: '7d',
@@ -766,6 +767,23 @@ const handleRankPageChange = (pageInfo) => {
   rankPagination.value = pageInfo
 }
 
+const checkFilterToolbarSticky = () => {
+  const el = filterToolbarRef.value
+  if (el) {
+    const rect = el.getBoundingClientRect()
+    if (rect.top <= 60) {
+      el.classList.add('is-stuck')
+    } else {
+      el.classList.remove('is-stuck')
+    }
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('scroll', checkFilterToolbarSticky)
+  checkFilterToolbarSticky()
+}
+
 // ===== 弹窗 =====
 const showConfigDialog = ref(false)
 const showExportDialog = ref(false)
@@ -925,19 +943,46 @@ $fast: 150ms ease;
   position: sticky;
   top: 60px;
   z-index: 89;
+  transition: box-shadow 0.3s ease;
+}
+
+.filter-toolbar.is-stuck {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-.filter-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.filter-item { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.filter-label { font-size: 13px; color: $text-1; font-weight: 500; white-space: nowrap; }
-.filter-select { width: 200px; }
-.filter-item.date-filter { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-.date-quick-btns { display: flex; gap: 4px; }
-.quick-btn { padding: 4px 12px; font-size: 13px; border-radius: 4px; cursor: pointer; color: $text-2; background: $bg; border: 1px solid transparent; transition: all $fast;
+.filter-row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+.filter-item { display: flex; align-items: center; flex-shrink: 0; }
+.filter-label { margin-right: 10px; color: #4e5969; font-family: PingFang SC; font-size: 13px; font-style: normal; font-weight: 400; white-space: nowrap; text-align: right; }
+.filter-select {
+  width: 200px;
+  :deep(.el-select__wrapper) {
+    height: 32px !important;
+  }
+}
+.filter-item.date-filter { display: flex; align-items: center; gap: 0; margin-left: auto; }
+.date-quick-btns { display: flex; gap: 0; margin-right: 8px; }
+.quick-btn { padding: 4px 12px; font-size: 13px; cursor: pointer; color: $text-2; background: transparent; border: 1px solid #d9d9d9; transition: all $fast; border-radius: 0;
   &:hover { color: $primary; }
   &.active { background: #e6f4ff; color: $primary; border-color: #91caff; }
+  &:first-child { border-radius: 4px 0 0 4px; }
+  &:last-child { border-radius: 0 4px 4px 0; }
 }
-.date-range-picker { :deep(.el-input__wrapper) { height: 28px; } }
+.date-range-picker {
+  :deep(.el-date-editor) {
+    height: 32px !important;
+  }
+  :deep(.el-date-editor--daterange) {
+    height: 32px !important;
+  }
+  :deep(.el-input__wrapper) {
+    height: 32px !important;
+  }
+  :deep(.el-range-editor) {
+    height: 32px !important;
+  }
+  :deep(.el-range-editor--small) {
+    height: 32px !important;
+  }
+}
 
 // ===== 通用 Section =====
 .section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: none;

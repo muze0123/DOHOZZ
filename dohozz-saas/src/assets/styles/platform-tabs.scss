@@ -1,0 +1,101 @@
+// Platform Tabs Styles平台tab样式
+.platform-tabs-bar {
+  background: $background-white;
+  border: none;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
+  padding: 0 16px;
+  margin-top: 16px;
+}
+
+.platform-tabs {
+  display: flex;
+  gap: 32px;
+}
+
+.platform-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  color: $text-secondary;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all $transition-fast;
+  position: relative;
+  top: 1px;
+
+  &:hover {
+    color: $text-primary;
+  }
+
+  &.active {
+    color: $primary-color;
+    font-weight: 500;
+    border-bottom-color: $primary-color;
+  }
+
+  .platform-icon {
+    width: 20px;
+    height: 20px;
+
+    &.tiktok-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 6px;
+      }
+    }
+
+    &.instagram-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+    }
+
+    &.shopee-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+    }
+
+    &.lazada-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+    }
+
+    &.all-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
+      color: #1677FF;
+    }
+  }
+}

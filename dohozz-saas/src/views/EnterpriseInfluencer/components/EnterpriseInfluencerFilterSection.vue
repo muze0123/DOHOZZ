@@ -302,7 +302,7 @@ defineExpose({ reset })
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 32px;
   padding: 12px 20px;
   border-bottom: 1px solid #f0f0f0;
 
@@ -314,12 +314,16 @@ defineExpose({ reset })
 .filter-item {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
 .filter-label {
-  font-size: 14px;
-  color: #666;
+  margin-right: 10px;
+  text-align: right;
+  color: #4e5969;
+  font-family: PingFang SC;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -340,5 +344,10 @@ defineExpose({ reset })
   padding: 12px 20px;
   border-top: 1px solid #f0f0f0;
   background: #fafafa;
+}
+
+:deep(.el-select__wrapper),
+:deep(.el-input__wrapper) {
+  height: 32px;
 }
 </style>

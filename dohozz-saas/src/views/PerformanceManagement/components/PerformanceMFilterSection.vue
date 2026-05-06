@@ -17,7 +17,7 @@
     </div>
 
     <!-- 筛选条件区块 -->
-    <div class="filter-toolbar">
+    <div class="filter-toolbar" ref="filterToolbarRef">
       <div class="filter-row">
         <div class="filter-item">
           <span class="filter-label">全部部门</span>
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -88,6 +88,33 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
+
+const filterToolbarRef = ref(null)
+
+const checkFilterToolbarSticky = () => {
+  const el = filterToolbarRef.value
+  if (el) {
+    const rect = el.getBoundingClientRect()
+    if (rect.top <= 60) {
+      el.classList.add('is-stuck')
+    } else {
+      el.classList.remove('is-stuck')
+    }
+  }
+}
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('scroll', checkFilterToolbarSticky)
+    checkFilterToolbarSticky()
+  }
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('scroll', checkFilterToolbarSticky)
+  }
+})
 
 const localDepartment = ref(props.modelValue.department)
 const localMedium = ref(props.modelValue.medium)
@@ -132,90 +159,58 @@ const handleFilterChange = () => {
 
 <style lang="scss" scoped>
 $primary: #1677ff;
-$primary-text: #333333;
-$secondary-text: #666666;
-$border: #e8e8e8;
+$primary-text: #050505;
+$secondary-text: #65676B;
+$text-2: #65676B;
 $white: #ffffff;
-$bg: #f5f5f5;
-$radius: 8px;
-
-.filter-section {
-  margin-bottom: 16px;
-}
+$fast: 150ms ease;
+$border-radius-lg: 12px;
 
 .platform-tabs-bar {
   background: $white;
-  border: 1px solid $border;
-  border-bottom: none;
-  border-radius: $radius $radius 0 0;
+  border: none;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
+  margin-top: 16px;
 }
-
-.platform-tabs {
-  display: flex;
-  gap: 24px;
-}
-
+.platform-tabs { display: flex; gap: 32px; }
 .platform-tab {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 0;
-  color: $secondary-text;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 150ms ease;
-  position: relative;
-  top: 1px;
-
+  display: flex; align-items: center; gap: 8px; padding: 12px 0;
+  color: $secondary-text; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all $fast; position: relative; top: 1px;
+  &:hover { color: $primary-text; }
+  &.active { color: $primary; font-weight: 500; border-bottom-color: $primary; }
   .platform-icon {
-    display: flex;
-    align-items: center;
-  }
-
-  &:hover {
-    color: $primary-text;
-  }
-
-  &.active {
-    color: $primary;
-    font-weight: 500;
-    border-bottom-color: $primary;
+    width: 20px; height: 20px;
   }
 }
-
 .filter-toolbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 16px;
-  border: 1px solid $border;
-  border-top: none;
-  border-radius: 0 0 $radius $radius;
   background: $white;
+  border-top: 1px solid #E8E8E8;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  position: sticky;
+  top: 60px;
+  z-index: 89;
+  transition: box-shadow 0.3s ease;
 }
-
-.filter-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+.filter-toolbar.is-stuck {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.filter-label {
-  font-size: 13px;
-  color: $primary-text;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
+.filter-row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+.filter-item { display: flex; align-items: center; flex-shrink: 0; }
+.filter-label { margin-right: 10px; color: #4e5969; font-family: PingFang SC; font-size: 13px; font-style: normal; font-weight: 400; white-space: nowrap; text-align: right; }
 .filter-select {
-  width: 160px;
+  width: 200px;
+  :deep(.el-select__wrapper) {
+    height: 32px !important;
+  }
+}
+:deep(.el-input__wrapper) {
+  height: 32px !important;
 }
 </style>

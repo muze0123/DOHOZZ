@@ -235,23 +235,32 @@ defineExpose({ reset })
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 32px;
   }
 
   .filter-item {
     display: flex;
     align-items: center;
-    gap: 8px;
   }
 
   .filter-label {
-    font-size: 14px;
-    color: #666;
+    margin-right: 10px;
+    text-align: right;
+    color: #4e5969;
+    font-family: PingFang SC;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
     min-width: 70px;
   }
 
   .filter-actions {
     margin-left: auto;
+  }
+
+  :deep(.el-select__wrapper),
+  :deep(.el-input__wrapper) {
+    height: 32px;
   }
 }
 </style>

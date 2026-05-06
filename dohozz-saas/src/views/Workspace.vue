@@ -28,7 +28,7 @@
     </div>
 
     <!-- 用户信息栏 -->
-    <div class="user-info-bar sticky-user-bar">
+    <div class="user-info-bar sticky-user-bar" ref="userInfoBarRef">
       <div class="user-info-left">
         <el-avatar :size="48" :icon="UserIcon" class="user-avatar" />
         <div class="user-details">
@@ -315,6 +315,7 @@ const selectedBD = ref('')
 const selectedDate = ref('近N天')
 const selectedStatus = ref('all')
 const notifTab = ref('reminder')
+const userInfoBarRef = ref(null)
 
 const platforms = [
   {
@@ -352,6 +353,23 @@ const fetchUserInfo = () => {
 }
 
 fetchUserInfo()
+
+const checkStickyState = () => {
+  const el = userInfoBarRef.value
+  if (el) {
+    const rect = el.getBoundingClientRect()
+    if (rect.top <= 48) {
+      el.classList.add('is-stuck')
+    } else {
+      el.classList.remove('is-stuck')
+    }
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('scroll', checkStickyState)
+  checkStickyState()
+}
 
 const today = new Date()
 const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
@@ -610,7 +628,9 @@ $transition-fast: 150ms ease;
   position: sticky;
   top: 48px;
   z-index: 90;
+}
 
+.user-info-bar.sticky-user-bar.is-stuck {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 

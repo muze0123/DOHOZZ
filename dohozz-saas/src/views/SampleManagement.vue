@@ -1,57 +1,79 @@
 <template>
   <div class="sample-management">
-    <!-- ==================== 平台切换栏 ==================== -->
+    <!-- ==================== 平台切换栏（单独区块）==================== -->
     <div class="platform-section">
-      <div class="platform-tabs">
-        <div
-          v-for="tab in platformTabs"
-          :key="tab.key"
-          class="platform-tab"
-          :class="{ active: activePlatform === tab.key }"
-          @click="handlePlatformChange(tab.key)"
-        >
-          <span>{{ tab.label }}</span>
+      <div class="platform-tabs-bar">
+        <div class="platform-tabs">
+          <div
+            v-for="tab in platformTabs"
+            :key="tab.id"
+            class="platform-tab"
+            :class="{ active: activePlatform === tab.id }"
+            @click="handlePlatformChange(tab.id)"
+          >
+            <div class="platform-icon tiktok-icon" v-if="tab.id === 'tiktok'">
+              <img src="@/assets/images/TikTok.png" alt="TikTok" />
+            </div>
+            <div class="platform-icon instagram-icon" v-else-if="tab.id === 'instagram'">
+              <img src="@/assets/images/Instagram.png" alt="Instagram" />
+            </div>
+            <div class="platform-icon shopee-icon" v-else-if="tab.id === 'shopee'">
+              <img src="@/assets/images/Shopee.png" alt="Shopee" />
+            </div>
+            <div class="platform-icon lazada-icon" v-else-if="tab.id === 'lazada'">
+              <img src="@/assets/images/Lazada.png" alt="Lazada" />
+            </div>
+            <div class="platform-icon all-icon" v-else>
+              <IconAllPlatform />
+            </div>
+            <span>{{ tab.name }}</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ==================== 高级筛选区 ==================== -->
-    <SampleFilterSection
-      ref="filterSectionRef"
-      :filter-params="filterParams"
-      :department-options="departmentOptions"
-      :bd-options="bdOptions"
-      :shop-options="shopOptions"
-      :source-options="sourceOptions"
-      :repeat-options="repeatOptions"
-      @query="handleQuery"
-      @reset="handleReset"
-    />
+    <!-- ==================== 高级筛选区（单独区块）==================== -->
+    <div class="filter-section">
+      <SampleFilterSection
+        ref="filterSectionRef"
+        :filter-params="filterParams"
+        :department-options="departmentOptions"
+        :bd-options="bdOptions"
+        :shop-options="shopOptions"
+        :source-options="sourceOptions"
+        :repeat-options="repeatOptions"
+        @query="handleQuery"
+        @reset="handleReset"
+      />
+    </div>
 
-    <!-- ==================== 状态统计与快捷筛选区 ==================== -->
-    <SampleStatsSection
-      :active-status="activeStatus"
-      :active-delivery-status="activeDeliveryStatus"
-      :status-tabs="statusTabs"
-      :delivery-tabs="deliveryTabs"
-      :stats-data="statsData"
-      @status-change="handleStatusChange"
-      @delivery-status-change="handleDeliveryStatusChange"
-      @stat-click="handleStatClick"
-    />
+    <!-- ==================== 主内容区（状态tab、统计卡片、样品列表在一个区块）==================== -->
+    <div class="main-content-section">
+      <!-- 状态统计与快捷筛选区 -->
+      <SampleStatsSection
+        :active-status="activeStatus"
+        :active-delivery-status="activeDeliveryStatus"
+        :status-tabs="statusTabs"
+        :delivery-tabs="deliveryTabs"
+        :stats-data="statsData"
+        @status-change="handleStatusChange"
+        @delivery-status-change="handleDeliveryStatusChange"
+        @stat-click="handleStatClick"
+      />
 
-    <!-- ==================== 样品列表区 ==================== -->
-    <SampleListSection
-      :samples="paginatedSamples"
-      :loading="loading"
-      @view-detail="handleViewDetail"
-      @approve="handleApprove"
-      @reject="handleReject"
-      @ship="handleShip"
-      @delete="handleDelete"
-      @edit-note="handleEditNote"
-      @edit-sample="handleEditSample"
-    />
+      <!-- 样品列表区 -->
+      <SampleListSection
+        :samples="paginatedSamples"
+        :loading="loading"
+        @view-detail="handleViewDetail"
+        @approve="handleApprove"
+        @reject="handleReject"
+        @ship="handleShip"
+        @delete="handleDelete"
+        @edit-note="handleEditNote"
+        @edit-sample="handleEditSample"
+      />
+    </div>
 
     <!-- ==================== 分页控制区 ==================== -->
     <div class="pagination-section">
@@ -123,14 +145,15 @@ import EditNoteDialog from './SampleManagement/dialogs/EditNoteDialog.vue'
 import EditSampleDialog from './SampleManagement/dialogs/EditSampleDialog.vue'
 import DeleteDialog from './SampleManagement/dialogs/DeleteDialog.vue'
 import Pagination from '@/components/Pagination.vue'
+import IconAllPlatform from '@/components/icons/IconAllPlatform.vue'
 
 // ==================== 平台Tab ====================
 const platformTabs = [
-  { key: 'all', label: '全部' },
-  { key: 'tiktok', label: 'TikTok' },
-  { key: 'instagram', label: 'Instagram' },
-  { key: 'shopee', label: 'Shopee' },
-  { key: 'lazada', label: 'Lazada' }
+  { id: 'all', name: '全部' },
+  { id: 'tiktok', name: 'TikTok' },
+  { id: 'instagram', name: 'Instagram' },
+  { id: 'shopee', name: 'Shopee' },
+  { id: 'lazada', name: 'Lazada' }
 ]
 const activePlatform = ref('all')
 
@@ -620,22 +643,65 @@ function handleEditSampleSuccess() {
 
 .sample-management {
   @extend .page-container;
-  padding: 16px 0 24px;
+  padding: 0 0 24px;
   background: #f5f5f5;
 }
 
-// ==================== 平台切换栏 ====================
+// ==================== 平台区块 ====================
 .platform-section {
-  @extend .platform-section;
-  margin-bottom: 0;
+  background: $page-container-bg;
+  border-radius: $border-radius-lg;
+  margin-top: 16px;
+  overflow: hidden;
 }
-
-.platform-tabs {
-  @extend .platform-tabs;
+.platform-tabs-bar {
+  padding: 0 16px;
 }
-
+.platform-tabs { display: flex; gap: 32px; }
 .platform-tab {
-  @extend .platform-tab;
+  display: flex; align-items: center; gap: 8px; padding: 12px 0;
+  color: $text-secondary; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all $transition-fast; position: relative; top: 1px;
+  &:hover { color: $text-primary; }
+  &.active { color: $meta-blue; font-weight: 500; border-bottom-color: $meta-blue; }
+  .platform-icon {
+    width: 20px; height: 20px;
+    &.tiktok-icon {
+      width: 20px; height: 20px; border-radius: 6px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 6px; }
+    }
+    &.instagram-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.shopee-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.lazada-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.all-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      color: $meta-blue;
+    }
+  }
+}
+
+// ==================== 筛选区块 ====================
+.filter-section {
+  background: $page-container-bg;
+  border-radius: $border-radius-lg;
+  margin-top: 16px;
+}
+
+// ==================== 主内容区块 ====================
+.main-content-section {
+  background: $page-container-bg;
+  border-radius: $border-radius-lg;
+  margin-top: 16px;
+  overflow: hidden;
 }
 
 // ==================== 分页区 ====================
