@@ -111,9 +111,8 @@
             </div>
             <div class="kpi-value">{{ kpi.value }}</div>
             <div class="kpi-trend">
-              <span v-if="kpi.trendDir === 'up'" class="trend-up">↑ {{ kpi.trend }}</span>
-              <span v-else-if="kpi.trendDir === 'down'" class="trend-down">↓ {{ kpi.trend }}</span>
-              <span v-else class="trend-flat">— {{ kpi.trend }}</span>
+              <span class="trend-label">环比</span>
+              <span :class="getTrendDisplay(kpi).isUp ? 'trend-up' : 'trend-down'">{{ getTrendDisplay(kpi).arrow }} {{ getTrendDisplay(kpi).value }}</span>
             </div>
           </div>
         </div>
@@ -551,7 +550,7 @@ const allOverviewKpiDataMap = {
   '5': { id: '5', label: '结算金额', value: '¥98.56w', trend: '8.5%', trendDir: 'up', tooltip: '按结算成功时间，TikTok精选联盟规则：确认收货后15天完成结算', platform: 'tiktok' },
   '6': { id: '6', label: '计佣金额', value: '¥85.20w', trend: '10%', trendDir: 'up', tooltip: '按支付成功时间，买家实付金额+平台/达人补贴-运费，用于达人佣金/团长服务费计算的金额汇总（含退款）', platform: 'tiktok' },
   '7': { id: '7', label: '预估达人佣金', value: '¥12.50w', trend: '15%', trendDir: 'up', tooltip: '按支付成功时间，所选周期内支付成功订单产生的达人佣金汇总（含退款订单）' },
-  '8': { id: '8', label: '退款金额', value: '¥8.21w', trend: '3.2%', trendDir: 'down', tooltip: '按退款成功时间，退款按退款发生时间归计（非支付时间）', platform: 'tiktok' },
+  '8': { id: '8', label: '退款金额', value: '¥8.21w', trend: '-3.2%', trendDir: 'down', tooltip: '按退款成功时间，退款按退款发生时间归计（非支付时间）', platform: 'tiktok' },
   // 以下为可配置的额外指标
   '35': { id: '35', label: '跟进达人数', value: '1,280', trend: '3.1%', trendDir: 'up', tooltip: '按跟进时间，所选周期内新跟进的达人数' },
   '43': { id: '43', label: '出单达人数', value: '356', trend: '5.4%', trendDir: 'up', tooltip: '按支付成功时间，所选周期内有出单的达人数' },
@@ -639,11 +638,23 @@ const toggleOverviewKpiSelect = (id) => {
   const arr = selectedOverviewKpiIds.value
   const pos = arr.indexOf(id)
   if (pos !== -1) {
-    if (arr.length <= 1) { ElMessage.warning('至少保留 1 个数据指标'); return }
+    if (arr.length <= 1) { return }
     arr.splice(pos, 1)
   } else {
-    if (arr.length >= 2) { ElMessage.warning('最多选择 2 个数据指标'); return }
+    if (arr.length >= 2) {
+      arr.shift()
+    }
     arr.push(id)
+  }
+}
+
+// 计算趋势显示（箭头和数值）
+const getTrendDisplay = (kpi) => {
+  const num = parseFloat(kpi.trend)
+  if (num >= 0) {
+    return { arrow: '↑', value: kpi.trend, isUp: true }
+  } else {
+    return { arrow: '↓', value: kpi.trend, isUp: false }
   }
 }
 
@@ -1231,24 +1242,22 @@ $warning-amber: #F7B928;
 .update-time { font-size: 12px; color: $secondary-text; }
 .help-icon {
   display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px;
-  border-radius: 50%; background: #f0f0f0; color: $text-3; font-size: 10px; cursor: help; margin-left: 4px; font-weight: 600;
+  border-radius: 50%; background: transparent; border: 1px solid #d9d9d9; color: $text-3; font-size: 10px; cursor: help; margin-left: 4px; font-weight: 600;
 }
 
 // ===== 区域B：KPI =====
-.kpi-cards-scroll { overflow-x: auto; margin: 0 -4px; padding-bottom: 4px; }
-.kpi-cards { display: flex; gap: 12px; min-width: max-content; }
-.kpi-card {
-  min-width: 155px; padding: 14px 16px; background: $bg; border-radius: 8px;
-  border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+.kpi-cards-scroll { margin: 0 -4px; padding-bottom: 4px; }
+.kpi-cards { display: flex; gap: 12px; flex-wrap: wrap; }
+.kpi-card { width: 369.156px; height: 114px; padding: 16px; background: $bg; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
   &:hover { border-color: #d6e4ff; }
   &.selected { border-color: $primary; background: #f0f7ff; }
 }
-.kpi-label { font-size: 12px; color: $text-2; margin-bottom: 6px; display: flex; align-items: center; }
+.kpi-label { font-size: 14px; color: #666666; margin-bottom: 6px; display: flex; align-items: center; }
 .kpi-value { font-size: 22px; font-weight: 700; color: $text-1; margin-bottom: 4px; }
-.kpi-trend { font-size: 12px; }
-.trend-up { color: $success-green; }
-.trend-down { color: $error-red; }
-.trend-flat { color: $text-3; }
+.kpi-trend { font-size: 12px; display: flex; align-items: center; gap: 2px; }
+.trend-label { color: #999999; }
+.trend-up { color: #f5222d; }
+.trend-down { color: #52c41a; }
 
 // ===== 区域C：绩效分析 =====
 .performance-analysis-content { display: flex; gap: 16px; }

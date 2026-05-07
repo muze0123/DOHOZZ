@@ -93,9 +93,8 @@
             <div class="kpi-label">{{ kpi.label }}<el-tooltip :content="kpi.tooltip" placement="top"><span class="help-icon">?</span></el-tooltip></div>
             <div class="kpi-value">{{ kpi.value }}</div>
             <div class="kpi-trend">
-              <span v-if="kpi.trendDir === 'up'" class="trend-up">↑ {{ kpi.trend }}</span>
-              <span v-else-if="kpi.trendDir === 'down'" class="trend-down">↓ {{ kpi.trend }}</span>
-              <span v-else class="trend-flat">— {{ kpi.trend }}</span>
+              <span class="trend-label">环比</span>
+              <span :class="getTrendDisplay(kpi).isUp ? 'trend-up' : 'trend-down'">{{ getTrendDisplay(kpi).arrow }} {{ getTrendDisplay(kpi).value }}</span>
             </div>
           </div>
         </div>
@@ -470,11 +469,6 @@ const platformTabs = [
 // ===== 区域B：数据大盘 =====
 const allKpiDataMap = {
   '1': { id: '1', label: '店铺总成交金额', value: '¥132.32w', trend: '16%', trendDir: 'up', tooltip: '按支付成功时间，所选周期内支付成功的买家实付金额汇总（含退款）' },
-  '2': { id: '2', label: '店铺总退款金额', value: '¥8.21w', trend: '3.2%', trendDir: 'down', tooltip: '按支付成功时间，所选周期内支付后已退款成功的订单金额汇总' },
-  '3': { id: '3', label: '达播成交金额', value: '¥98.56w', trend: '12%', trendDir: 'up', tooltip: '按支付成功时间，含退款金额，包含达人订单和团长订单' },
-  '4': { id: '4', label: '达播实际成交金额', value: '¥90.35w', trend: '8.5%', trendDir: 'up', tooltip: '按支付成功时间，剔除退款，包含达人订单和团长订单' },
-  '5': { id: '5', label: '达播成交订单量', value: '1,200', trend: '5%', trendDir: 'up', tooltip: '按支付成功时间，含退款订单，包含达人订单和团长订单' },
-  '6': { id: '6', label: '达播退款金额', value: '¥5.10w', trend: '2%', trendDir: 'down', tooltip: '按支付成功时间，支付后已退款成功的金额，包含达人和团长订单' },
   '7': { id: '7', label: '达人成交金额', value: '¥78.12w', trend: '22%', trendDir: 'up', tooltip: '按支付成功时间，含退款金额，只含达人订单' },
   '8': { id: '8', label: '达人实际成交金额', value: '¥72.08w', trend: '18%', trendDir: 'up', tooltip: '按支付成功时间，剔除退款，不含团长订单' },
   '9': { id: '9', label: '达人合作销量', value: '880', trend: '10%', trendDir: 'up', tooltip: '按支付成功时间，含退款订单，所有支付成功的订单销量' },
@@ -482,24 +476,24 @@ const allKpiDataMap = {
   '11': { id: '11', label: '团长成交金额', value: '¥20.44w', trend: '5%', trendDir: 'up', tooltip: '按支付成功时间，含退款金额，只含团长订单' },
   '12': { id: '12', label: '团长实际成交金额', value: '¥18.27w', trend: '4%', trendDir: 'up', tooltip: '按支付成功时间，剔除退款，只含团长订单' },
   '13': { id: '13', label: '团长成交金额（未归属）', value: '¥5.00w', trend: '1%', trendDir: 'up', tooltip: '团长总成交金额，含未归属数据' },
-  '14': { id: '14', label: '团长退款金额', value: '¥1.60w', trend: '0.5%', trendDir: 'down', tooltip: '按支付成功时间，退款成功金额，需员工跟进后统计' },
+  '14': { id: '14', label: '团长退款金额', value: '¥1.60w', trend: '-0.5%', trendDir: 'down', tooltip: '按支付成功时间，退款成功金额，需员工跟进后统计' },
   '15': { id: '15', label: '团长合作销量', value: '320', trend: '3%', trendDir: 'up', tooltip: '按支付成功时间，团长订单支付成功销量（含退款），需员工跟进后统计' },
   '16': { id: '16', label: '寄样数', value: '456', trend: '7.2%', trendDir: 'up', tooltip: '按样品发货时间，所选周期内发货成功的样品单数量' },
   '17': { id: '17', label: '跟进达人数', value: '1,280', trend: '3.1%', trendDir: 'up', tooltip: '按跟进时间，所选周期内新跟进的达人数' },
-  '18': { id: '18', label: '寄样达人数', value: '198', trend: '2.8%', trendDir: 'down', tooltip: '按发货时间，所选周期内发货成功的达人数' },
-  '19': { id: '19', label: '出单达人数', value: '356', trend: '5.4%', trendDir: 'up', tooltip: '按支付成功时间，所选周期内有成交订单的达人数' }
+  '18': { id: '18', label: '寄样达人数', value: '198', trend: '-2.8%', trendDir: 'down', tooltip: '按发货时间，所选周期内发货成功的达人数' }
 }
 
 const metricGroups = [
-  { name: '总成交数据', options: [ allKpiDataMap['1'], allKpiDataMap['2'] ] },
-  { name: '达播成交数据', options: [ allKpiDataMap['3'], allKpiDataMap['4'], allKpiDataMap['5'], allKpiDataMap['6'] ] },
+  { name: '总成交数据', options: [ allKpiDataMap['1'] ] },
   { name: '达人成交数据', options: [ allKpiDataMap['7'], allKpiDataMap['8'], allKpiDataMap['9'], allKpiDataMap['10'] ] },
   { name: '团长成交数据', options: [ allKpiDataMap['11'], allKpiDataMap['12'], allKpiDataMap['13'], allKpiDataMap['14'], allKpiDataMap['15'] ] },
-  { name: '达人跟进数据', options: [ allKpiDataMap['17'], allKpiDataMap['18'], allKpiDataMap['19'], allKpiDataMap['16'] ] }
+  { name: '达人跟进数据', options: [ allKpiDataMap['17'], allKpiDataMap['18'], allKpiDataMap['16'] ] }
 ]
 
-const defaultKpiIds = ['1', '2', '3', '4', '7', '8', '19', '16']
-const userSavedConfigIds = ref(JSON.parse(localStorage.getItem('DOHOZZ_KPI_CONFIG_v1')) || [...defaultKpiIds])
+const defaultKpiIds = ['1', '7', '8', '16']
+const savedConfig = JSON.parse(localStorage.getItem('DOHOZZ_KPI_CONFIG_v1')) || []
+const validConfigIds = savedConfig.filter(id => allKpiDataMap[id])
+const userSavedConfigIds = ref(validConfigIds.length > 0 ? validConfigIds : [...defaultKpiIds])
 const visibleKpis = computed(() => userSavedConfigIds.value.map(id => allKpiDataMap[id]))
 
 // 默认选中 店铺总成交金额 和 达人成交金额
@@ -509,11 +503,23 @@ const toggleKpiSelect = (id) => {
   const arr = selectedChartKpiIds.value
   const pos = arr.indexOf(id)
   if (pos !== -1) {
-    if (arr.length <= 1) { ElMessage.warning('至少保留 1 个数据指标'); return }
+    if (arr.length <= 1) { return }
     arr.splice(pos, 1)
   } else {
-    if (arr.length >= 2) { ElMessage.warning('最多选择 2 个数据指标'); return }
+    if (arr.length >= 2) {
+      arr.shift()
+    }
     arr.push(id)
+  }
+}
+
+// 计算趋势显示（箭头和数值）
+const getTrendDisplay = (kpi) => {
+  const num = parseFloat(kpi.trend)
+  if (num >= 0) {
+    return { arrow: '↑', value: kpi.trend, isUp: true }
+  } else {
+    return { arrow: '↓', value: kpi.trend, isUp: false }
   }
 }
 
@@ -1001,21 +1007,21 @@ $fast: 150ms ease;
 .head-left { display: flex; align-items: center; gap: 12px; }
 .section-title { font-size: 14px; font-weight: 600; color: $primary-text; }
 .update-time { font-size: 12px; color: $secondary-text; }
-.help-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: #f0f0f0; color: $text-3; font-size: 10px; cursor: help; margin-left: 4px; font-weight: 600; }
+.help-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: transparent; border: 1px solid #d9d9d9; color: $text-3; font-size: 10px; cursor: help; margin-left: 4px; font-weight: 600; }
 
 // ===== 区域B：KPI =====
-.kpi-cards-scroll { overflow-x: auto; margin: 0 -4px; padding-bottom: 4px; }
-.kpi-cards { display: flex; gap: 12px; min-width: max-content; }
-.kpi-card { min-width: 155px; padding: 14px 16px; background: $bg; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+.kpi-cards-scroll { margin: 0 -4px; padding-bottom: 4px; }
+.kpi-cards { display: flex; gap: 12px; flex-wrap: wrap; }
+.kpi-card { width: 369.156px; height: 114px; padding: 16px; background: $bg; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
   &:hover { border-color: #d6e4ff; }
   &.selected { border-color: $primary; background: #f0f7ff; }
 }
-.kpi-label { font-size: 12px; color: $text-2; margin-bottom: 6px; display: flex; align-items: center; }
+.kpi-label { font-size: 14px; color: #666666; margin-bottom: 6px; display: flex; align-items: center; }
 .kpi-value { font-size: 22px; font-weight: 700; color: $text-1; margin-bottom: 4px; }
-.kpi-trend { font-size: 12px; }
-.trend-up { color: #52c41a; }
-.trend-down { color: #f5222d; }
-.trend-flat { color: $text-3; }
+.kpi-trend { font-size: 12px; display: flex; align-items: center; gap: 2px; }
+.trend-label { color: #999999; }
+.trend-up { color: #f5222d; }
+.trend-down { color: #52c41a; }
 
 // 趋势图
 .trend-chart-area { margin-top: 12px; }
@@ -1161,7 +1167,6 @@ $fast: 150ms ease;
 }
 @media (max-width: 900px) {
   .dual-section { flex-direction: column; }
-  .kpi-cards { flex-wrap: nowrap; }
   .sample-kpi-row { grid-template-columns: repeat(2, 1fr); }
 }
 </style>

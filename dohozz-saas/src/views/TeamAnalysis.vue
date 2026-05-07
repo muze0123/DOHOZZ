@@ -624,7 +624,8 @@ const handlePageSizeChange = (size) => {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #E8E8E8;
+  background: transparent;
+  border: 1px solid #d9d9d9;
   color: #8C8C8C;
   font-size: 11px;
   cursor: pointer;

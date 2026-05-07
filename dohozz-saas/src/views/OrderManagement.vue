@@ -959,8 +959,9 @@ function handleCopyProductId(row) {
     justify-content: center;
     width: 14px;
     height: 14px;
-    background: #e6f0ff;
-    color: #0064E0;
+    background: transparent;
+    border: 1px solid #d9d9d9;
+    color: #8C8C8C;
     border-radius: 50%;
     font-size: 10px;
     cursor: help;

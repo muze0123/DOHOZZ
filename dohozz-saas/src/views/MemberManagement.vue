@@ -494,7 +494,7 @@ function handleDeptDialogConfirm() {
 
 // 删除部门
 const deleteDeptDialogVisible = ref(false)
-const currentDeleteDept = ref(null)
+let currentDeleteDept = ref(null)
 
 function handleConfirmDeleteDept() {
   // 实际应递归删除所有子部门

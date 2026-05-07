@@ -13,7 +13,7 @@
       <div class="rule-info">
         <div class="rule-item">
           <span class="rule-label">提成方式</span>
-          <el-tooltip content="「提成方式」决定是按照「商品」还是「员工」来给定提成比例" placement="top" effect="light">
+          <el-tooltip content="「提成方式」决定是按照「商品」还是「员工」来给定提成比例" placement="top" effect="dark">
             <span class="help-icon">?</span>
           </el-tooltip>
           <span class="rule-value">{{ getCommissionTypeName(currentRule.commissionType) }}</span>
@@ -23,14 +23,14 @@
         </div>
         <div class="rule-item">
           <span class="rule-label">提成基数</span>
-          <el-tooltip :content="getBaseTooltip()" placement="top" effect="light">
+          <el-tooltip :content="getBaseTooltip()" placement="top" effect="dark">
             <span class="help-icon">?</span>
           </el-tooltip>
           <span class="rule-value">{{ currentRule.commissionBase }}</span>
         </div>
         <div class="rule-item">
           <span class="rule-label">生效日期</span>
-          <el-tooltip content="生效日期 0 点后的订单，将按照以下设置的提成方案计算提成" placement="top" effect="light">
+          <el-tooltip content="生效日期 0 点后的订单，将按照以下设置的提成方案计算提成" placement="top" effect="dark">
             <span class="help-icon">?</span>
           </el-tooltip>
           <span class="rule-value">{{ currentRule.effectiveDate }}</span>
@@ -262,7 +262,7 @@
                 <el-radio v-model="ruleForm.commissionType" :label="type.value">
                   {{ type.label }}
                 </el-radio>
-                <el-tooltip placement="top" effect="light" trigger="hover">
+                <el-tooltip placement="top" effect="dark" trigger="hover">
                   <template #content>
                     <div v-html="type.example"></div>
                   </template>
@@ -1146,7 +1146,8 @@ $warning-orange: #FF7A00;
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #e5e7eb;
+  background: transparent;
+  border: 1px solid #d9d9d9;
   color: $text-3;
   font-size: 10px;
   cursor: help;

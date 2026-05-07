@@ -138,8 +138,9 @@ function handleShopChange(val) {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #d9d9d9;
-  color: #fff;
+  background: transparent;
+  border: 1px solid #d9d9d9;
+  color: #8C8C8C;
   font-size: 11px;
   cursor: pointer;
 }
