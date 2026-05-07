@@ -1,4 +1,4 @@
-# Workspace Index - your-name
+# Workspace Index - muze
 
 > Journal tracking for AI development sessions.
 
