@@ -155,41 +155,7 @@
           </div>
 
           <!-- 气泡图表 -->
-          <div class="bubble-chart-container" ref="bubbleChartRef">
-            <div class="bubble-chart">
-              <!-- Y轴 -->
-              <div class="bubble-y-axis">
-                <span class="axis-label">{{ getBubbleYLabel() }}</span>
-              </div>
-              <!-- X轴 -->
-              <div class="bubble-x-axis">
-                <span class="axis-label">{{ getBubbleXLabel() }}</span>
-              </div>
-              <!-- 气泡 -->
-              <div
-                v-for="(bubble, index) in bubbleData"
-                :key="index"
-                class="bubble"
-                :style="getBubbleStyle(bubble)"
-                @mouseenter="showBubbleTooltip(bubble, $event)"
-                @mouseleave="hideBubbleTooltip(bubble)"
-              >
-                <div class="bubble-inner"></div>
-                <el-tooltip placement="top" :visible="bubble.tooltipVisible">
-                  <template #content>
-                    <div class="bubble-tooltip">
-                      <div class="tooltip-name">{{ bubble.name }}</div>
-                      <div class="tooltip-dept">{{ bubble.dept }}</div>
-                      <div class="tooltip-value">{{ bubble.metricValue }}</div>
-                      <div class="tooltip-trend" :class="bubble.trendClass">
-                        环比：{{ bubble.trend }}
-                      </div>
-                    </div>
-                  </template>
-                </el-tooltip>
-              </div>
-            </div>
-          </div>
+          <div class="bubble-chart-container" ref="bubbleChartRef"></div>
         </div>
 
         <!-- 右侧：BD成交金额TOP10 -->
@@ -485,8 +451,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import * as echarts from 'echarts'
 import Pagination from '@/components/Pagination.vue'
 import IconAllPlatform from '@/components/icons/IconAllPlatform.vue'
 
@@ -532,6 +499,13 @@ onMounted(() => {
     `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`,
     `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
   ]
+  initBubbleChart()
+  window.addEventListener('resize', handleBubbleChartResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleBubbleChartResize)
+  bubbleChart?.dispose()
 })
 
 // 当前时间
@@ -732,6 +706,7 @@ const saveOverviewConfig = () => {
 const bubbleIndicator = ref('gmv')
 const isZoomed = ref(false)
 const bubbleChartRef = ref(null)
+let bubbleChart = null
 
 const bubbleData = reactive([
   { name: '张三', dept: '销售一部', value: 66.66, growth: 25, trend: '+25%', trendClass: 'trend-up', tooltipVisible: false },
@@ -775,30 +750,6 @@ const getBubbleXLabel = () => {
   return '增长率（%）'
 }
 
-const getBubbleStyle = (bubble) => {
-  const maxValue = Math.max(...bubbleData.map(b => b.value))
-  const maxGrowth = Math.max(...bubbleData.map(b => Math.abs(b.growth)))
-
-  const x = 50 + (bubble.growth / maxGrowth) * 40
-  const y = 80 - (bubble.value / maxValue) * 60
-  const size = 40
-
-  return {
-    left: `${x}%`,
-    top: `${y}%`,
-    width: `${size}px`,
-    height: `${size}px`
-  }
-}
-
-const showBubbleTooltip = (bubble, event) => {
-  bubble.tooltipVisible = true
-}
-
-const hideBubbleTooltip = (bubble) => {
-  bubble.tooltipVisible = false
-}
-
 const handleZoomSelect = () => {
   ElMessage.info('请点击并拖拽框选区域进行放大')
 }
@@ -807,6 +758,102 @@ const handleZoomBack = () => {
   isZoomed.value = false
   ElMessage.info('已返回全量视图')
 }
+
+// 初始化气泡图
+const initBubbleChart = () => {
+  if (bubbleChartRef.value) {
+    bubbleChart = echarts.init(bubbleChartRef.value)
+    updateBubbleChart()
+  }
+}
+
+// 更新气泡图
+const updateBubbleChart = () => {
+  if (!bubbleChart) return
+
+  const scatterData = bubbleData.map(b => ({
+    name: b.name,
+    value: [b.growth, b.value, Math.abs(b.growth) * 2],
+    dept: b.dept,
+    trend: b.trend,
+    trendClass: b.trendClass
+  }))
+
+  const option = {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: 'rgba(0,0,0,0.75)',
+      borderColor: 'transparent',
+      textStyle: { color: '#fff', fontSize: 12 },
+      formatter: (params) => {
+        const d = params.data
+        return `<div style="padding:4px 0">
+          <div style="font-weight:600;margin-bottom:4px">${d.name}</div>
+          <div style="color:#999;margin-bottom:2px">${d.dept}</div>
+          <div style="margin-bottom:2px">成交金额：<strong>¥${d.value[1].toFixed(2)}w</strong></div>
+          <div class="${d.trendClass}">环比：${d.trend}</div>
+        </div>`
+      }
+    },
+    grid: { left: 60, right: 40, top: 20, bottom: 40 },
+    xAxis: {
+      type: 'value',
+      name: '增长率（%）',
+      nameLocation: 'middle',
+      nameGap: 25,
+      nameTextStyle: { color: '#666', fontSize: 12 },
+      axisLine: { lineStyle: { color: '#e8e8e8' } },
+      axisLabel: { color: '#999', fontSize: 10, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: '#f5f5f5', type: 'dashed' } }
+    },
+    yAxis: {
+      type: 'value',
+      name: getBubbleYLabel(),
+      nameLocation: 'middle',
+      nameGap: 45,
+      nameTextStyle: { color: '#666', fontSize: 12 },
+      axisLine: { lineStyle: { color: '#1677ff' } },
+      axisLabel: { color: '#999', fontSize: 10, formatter: (v) => v >= 10000 ? (v / 10000).toFixed(1) + 'w' : v },
+      splitLine: { lineStyle: { color: '#f5f5f5', type: 'dashed' } }
+    },
+    series: [{
+      type: 'scatter',
+      symbolSize: (val) => Math.sqrt(val[2]) * 1.5,
+      data: scatterData,
+      itemStyle: {
+        color: (params) => params.data.trendClass === 'trend-up' ? '#1677ff' : '#52c41a'
+      },
+      emphasis: {
+        scale: 1.5,
+        focus: 'self',
+        itemStyle: {
+          shadowBlur: 10,
+          shadowColor: 'rgba(0,0,0,0.3)'
+        }
+      },
+      label: {
+        show: true,
+        position: 'top',
+        formatter: '{b}',
+        color: '#666',
+        fontSize: 10
+      }
+    }]
+  }
+
+  bubbleChart.setOption(option)
+}
+
+// 气泡图响应式
+const handleBubbleChartResize = () => {
+  bubbleChart?.resize()
+}
+
+// 监听指标切换
+watch(bubbleIndicator, () => {
+  updateBubbleChart()
+})
 
 // ==================== 区域D：绩效统计 ====================
 const currentStatTab = ref('custom')
@@ -1269,36 +1316,8 @@ $warning-amber: #F7B928;
 .bubble-tools { display: flex; gap: 8px; }
 
 .bubble-chart-container {
-  height: 320px; background: $bg; border-radius: 8px; position: relative; overflow: hidden;
+  height: 320px; background: $bg; border-radius: 8px; position: relative;
 }
-.bubble-chart { position: relative; width: 100%; height: 100%; }
-.bubble-y-axis {
-  position: absolute; left: 50px; top: 0; bottom: 30px; width: 1px;
-  background: linear-gradient(to top, transparent, $border);
-  &::before { content: ''; position: absolute; left: -4px; top: 0; width: 8px; height: 8px; border-left: 1px solid $text-3; border-top: 1px solid $text-3; }
-}
-.bubble-y-axis .axis-label, .bubble-x-axis .axis-label {
-  position: absolute; font-size: 11px; color: $text-3;
-}
-.bubble-y-axis .axis-label { top: 50%; left: -30px; transform: rotate(-90deg) translateX(-50%); transform-origin: left center; }
-.bubble-x-axis {
-  position: absolute; left: 50px; right: 10px; bottom: 30px; height: 1px;
-  background: linear-gradient(to right, $border, transparent);
-  .axis-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); }
-}
-
-.bubble {
-  position: absolute; border-radius: 50%; background: rgba($primary, 0.6);
-  transform: translate(-50%, -50%); cursor: pointer; transition: all 0.3s;
-  &:hover { background: rgba($primary, 0.8); transform: translate(-50%, -50%) scale(1.1); }
-  .bubble-inner { width: 100%; height: 100%; border-radius: 50%; }
-}
-
-.bubble-tooltip { padding: 8px; }
-.tooltip-name { font-weight: 600; color: $text-1; margin-bottom: 4px; }
-.tooltip-dept { font-size: 12px; color: $text-3; margin-bottom: 8px; }
-.tooltip-value { font-size: 16px; font-weight: 700; color: $primary; margin-bottom: 4px; }
-.tooltip-trend { font-size: 12px; &.trend-up { color: $success-green; } &.trend-down { color: $error-red; } }
 
 .top10-section { width: 280px; flex-shrink: 0; }
 .top10-title { font-size: 13px; font-weight: 600; color: $text-1; margin-bottom: 12px; }

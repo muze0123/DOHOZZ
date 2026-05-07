@@ -102,20 +102,7 @@
 
       <!-- 折线趋势图 -->
       <div class="trend-chart-area">
-        <svg class="trend-chart" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet">
-          <line x1="50" y1="190" x2="870" y2="190" stroke="#e8e8e8" stroke-width="1"/>
-          <line v-for="n in 4" :key="n" x1="50" :y1="190 - n * 40" x2="870" :y2="190 - n * 40" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="4"/>
-          <text v-for="(lbl, i) in yLabels" :key="'y'+i" x="42" :y="194 - i * 40" text-anchor="end" fill="#999" font-size="11">{{ lbl }}</text>
-          <polyline fill="none" stroke="#1677ff" stroke-width="2.5" points="80,150 180,130 280,100 380,115 480,70 580,90 680,55 780,75 850,68"/>
-          <polyline fill="none" stroke="#fa8c16" stroke-width="2" stroke-dasharray="6 3" points="80,165 180,155 280,135 380,148 480,118 580,130 680,108 780,120 850,114"/>
-          <text v-for="(d, i) in xDates" :key="'x'+i" :x="80 + i * 96.25" y="208" fill="#999" font-size="10" text-anchor="middle">{{ d }}</text>
-        </svg>
-        <div class="chart-legend">
-          <span v-for="(lineId, index) in selectedChartKpiIds" :key="lineId" class="legend-item">
-            <span class="legend-line" :class="{ dashed: index === 1 }" :style="index === 0 ? { background: '#1677ff' } : { borderColor: '#fa8c16' }"></span>
-            {{ allKpiDataMap[lineId]?.label }}
-          </span>
-        </div>
+        <div ref="trendChartRef" class="trend-chart-echarts"></div>
       </div>
     </div>
 
@@ -241,22 +228,7 @@
         <!-- 样品数据趋势图 -->
         <div class="chart-box">
           <div class="chart-box-title">样品数据趋势</div>
-          <svg class="bar-line-chart" viewBox="0 0 440 200" preserveAspectRatio="xMidYMid meet">
-            <line x1="40" y1="175" x2="420" y2="175" stroke="#e8e8e8" stroke-width="1"/>
-            <line v-for="n in 4" :key="n" x1="40" :y1="175 - n*35" x2="420" :y2="175 - n*35" stroke="#f5f5f5" stroke-width="1" stroke-dasharray="3"/>
-            <text x="35" y="178" text-anchor="end" fill="#999" font-size="9">0</text>
-            <text x="35" y="143" text-anchor="end" fill="#999" font-size="9">300</text>
-            <text x="35" y="108" text-anchor="end" fill="#999" font-size="9">600</text>
-            <text x="35" y="73" text-anchor="end" fill="#999" font-size="9">900</text>
-            <text x="35" y="38" text-anchor="end" fill="#999" font-size="9">1200</text>
-            <rect v-for="(b, i) in sampleBars" :key="'bar'+i" :x="60 + i*48" :y="175 - b.h" width="24" :height="b.h" fill="#91caff" rx="2"/>
-            <polyline fill="none" stroke="#fa8c16" stroke-width="2" :points="sampleLinePoints"/>
-            <text v-for="(d, i) in sampleDates" :key="'sd'+i" :x="72 + i*48" y="190" fill="#999" font-size="8" text-anchor="middle">{{ d }}</text>
-          </svg>
-          <div class="chart-legend small">
-            <span class="legend-item"><span class="legend-box" style="background:#91caff"></span>样品单数</span>
-            <span class="legend-item"><span class="legend-line dashed" style="border-color:#fa8c16"></span>签收出单率</span>
-          </div>
+          <div ref="sampleChartRef" class="bar-line-chart"></div>
         </div>
         <!-- 寄样TOP10 -->
         <div class="chart-box">
@@ -511,6 +483,7 @@ const toggleKpiSelect = (id) => {
     }
     arr.push(id)
   }
+  updateTrendChart()
 }
 
 // 计算趋势显示（箭头和数值）
@@ -522,9 +495,6 @@ const getTrendDisplay = (kpi) => {
     return { arrow: '↓', value: kpi.trend, isUp: false }
   }
 }
-
-const yLabels = ['0', '10w', '20w', '30w', '40w']
-const xDates = ['04/13', '04/14', '04/15', '04/16', '04/17', '04/18', '04/19', '04/20']
 
 // ===== 区域C：店铺GMV =====
 const circ = 2 * Math.PI * 65
@@ -553,8 +523,12 @@ const carrierGmvData = reactive([
 // ===== ECharts 图表 =====
 const storeGmvChartRef = ref(null)
 const carrierGmvChartRef = ref(null)
+const trendChartRef = ref(null)
+const sampleChartRef = ref(null)
 let storeGmvChart = null
 let carrierGmvChart = null
+let trendChart = null
+let sampleChart = null
 
 // 初始化店铺GMV图表
 const initStoreGmvChart = () => {
@@ -646,16 +620,194 @@ const initCarrierGmvChart = () => {
   }
 }
 
+// 初始化趋势图
+const initTrendChart = () => {
+  if (trendChartRef.value) {
+    trendChart = echarts.init(trendChartRef.value)
+    updateTrendChart()
+  }
+}
+
+// 更新趋势图数据
+const updateTrendChart = () => {
+  if (!trendChart) return
+  const ids = selectedChartKpiIds.value
+  const xData = ['04/13', '04/14', '04/15', '04/16', '04/17', '04/18', '04/19', '04/20']
+
+  // 根据数值生成Y轴刻度
+  const generateYAxis = (data) => {
+    const max = Math.max(...data.map(d => Math.abs(d)))
+    const step = Math.ceil(max / 4)
+    return {
+      max: Math.ceil(max / step) * step,
+      splitNumber: 4,
+      axisLabel: { formatter: (v) => v >= 10000 ? (v / 10000).toFixed(1) + 'w' : v }
+    }
+  }
+
+  const series = ids.map((id, index) => {
+    const kpi = allKpiDataMap[id]
+    // 根据数值范围生成模拟数据
+    const baseValue = parseFloat(kpi.value.replace(/[^0-9.]/g, '')) * (kpi.value.includes('¥') ? 10000 : 1)
+    const data = xData.map((_, i) => baseValue * (0.6 + Math.random() * 0.4 + (i * 0.05)))
+    const yAxis = generateYAxis(data)
+
+    return {
+      name: kpi.label,
+      type: 'line',
+      yAxisIndex: index,
+      xAxisIndex: 0,
+      data,
+      smooth: false,
+      symbol: 'circle',
+      symbolSize: 4,
+      lineStyle: { width: 1, color: index === 0 ? '#1677ff' : '#36cfc9' },
+      itemStyle: { color: index === 0 ? '#1677ff' : '#36cfc9' },
+      emphasis: { focus: 'series' }
+    }
+  })
+
+  const option = {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'cross' },
+      backgroundColor: 'rgba(0,0,0,0.75)',
+      borderColor: 'transparent',
+      textStyle: { color: '#fff', fontSize: 12 }
+    },
+    legend: {
+      show: true,
+      bottom: 0,
+      icon: 'rect',
+      itemWidth: 20,
+      itemHeight: 2,
+      textStyle: { color: '#666', fontSize: 12 }
+    },
+    grid: { left: 60, right: 60, top: 20, bottom: 40 },
+    xAxis: {
+      type: 'category',
+      data: xData,
+      boundaryGap: false,
+      axisLine: { lineStyle: { color: '#e8e8e8' } },
+      axisLabel: { color: '#999', fontSize: 10 },
+      axisTick: { show: false }
+    },
+    yAxis: ids.map((id, index) => {
+      const kpi = allKpiDataMap[id]
+      const baseValue = parseFloat(kpi.value.replace(/[^0-9.]/g, '')) * (kpi.value.includes('¥') ? 10000 : 1)
+      const data = xData.map((_, i) => baseValue * (0.6 + Math.random() * 0.4 + (i * 0.05)))
+      const yAxis = generateYAxis(data)
+      return {
+        type: 'value',
+        position: index === 0 ? 'left' : 'right',
+        show: true,
+        ...yAxis,
+        axisLine: { show: true, lineStyle: { color: index === 0 ? '#1677ff' : '#36cfc9' } },
+        axisLabel: { color: '#999', fontSize: 10 },
+        splitLine: { lineStyle: { color: '#f5f5f5', type: 'dashed' } }
+      }
+    }),
+    series
+  }
+
+  trendChart.setOption(option)
+}
+
+// 初始化样品趋势图
+const initSampleChart = () => {
+  if (sampleChartRef.value) {
+    sampleChart = echarts.init(sampleChartRef.value)
+    const xData = ['04/13', '04/14', '04/15', '04/16', '04/17', '04/18', '04/19']
+    const barData = [80, 120, 60, 140, 95, 110, 70]
+    const lineData = [65, 80, 55, 95, 75, 85, 70]
+
+    const option = {
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'cross' },
+        backgroundColor: 'rgba(0,0,0,0.75)',
+        borderColor: 'transparent',
+        textStyle: { color: '#fff', fontSize: 12 }
+      },
+      legend: {
+        show: true,
+        bottom: 0,
+        icon: 'rect',
+        itemWidth: 12,
+        itemHeight: 2,
+        textStyle: { color: '#666', fontSize: 11 }
+      },
+      grid: { left: 50, right: 20, top: 10, bottom: 40 },
+      xAxis: {
+        type: 'category',
+        data: xData,
+        boundaryGap: true,
+        axisLine: { lineStyle: { color: '#e8e8e8' } },
+        axisLabel: { color: '#999', fontSize: 9 },
+        axisTick: { show: false }
+      },
+      yAxis: [
+        {
+          type: 'value',
+          position: 'left',
+          max: 150,
+          axisLine: { show: true, lineStyle: { color: '#91caff' } },
+          axisLabel: { color: '#999', fontSize: 9 },
+          splitLine: { lineStyle: { color: '#f5f5f5', type: 'dashed' } }
+        },
+        {
+          type: 'value',
+          position: 'right',
+          max: 100,
+          axisLine: { show: true, lineStyle: { color: '#fa8c16' } },
+          axisLabel: { color: '#999', fontSize: 9 },
+          splitLine: { show: false }
+        }
+      ],
+      series: [
+        {
+          name: '样品单数',
+          type: 'bar',
+          yAxisIndex: 0,
+          data: barData,
+          barWidth: '35%',
+          itemStyle: { color: '#91caff', borderRadius: [2, 2, 0, 0] },
+          emphasis: { focus: 'series' }
+        },
+        {
+          name: '签收出单率',
+          type: 'line',
+          yAxisIndex: 1,
+          data: lineData,
+          smooth: false,
+          symbol: 'circle',
+          symbolSize: 4,
+          lineStyle: { width: 1, color: '#fa8c16' },
+          itemStyle: { color: '#fa8c16' },
+          emphasis: { focus: 'series' }
+        }
+      ]
+    }
+    sampleChart.setOption(option)
+  }
+}
+
 // 响应式调整图表大小
 const handleResize = () => {
   storeGmvChart?.resize()
   carrierGmvChart?.resize()
+  trendChart?.resize()
+  sampleChart?.resize()
 }
 
 // 生命周期钩子
 onMounted(() => {
   initStoreGmvChart()
   initCarrierGmvChart()
+  initTrendChart()
+  initSampleChart()
   window.addEventListener('resize', handleResize)
 })
 
@@ -663,6 +815,8 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   storeGmvChart?.dispose()
   carrierGmvChart?.dispose()
+  trendChart?.dispose()
+  sampleChart?.dispose()
 })
 
 // ===== 区域E：动销数据 =====
@@ -700,9 +854,6 @@ const sampleKpis = reactive([
   { label: '签收交付率', value: '12%', trend: '', trendClass: '', tooltip: '已签收样品中完成出单的数量÷已签收样品总数' },
   { label: '签收出单率', value: '8.5%', trend: '', trendClass: '', tooltip: '已签收样品中有同商品出单的数量÷已签收样品总数' }
 ])
-const sampleBars = [{ h: 80 }, { h: 120 }, { h: 60 }, { h: 140 }, { h: 95 }, { h: 110 }, { h: 70 }]
-const sampleLinePoints = '72,130 120,110 168,140 216,90 264,115 312,100 360,125'
-const sampleDates = ['04/13','04/14','04/15','04/16','04/17','04/18','04/19']
 const sampleTop10 = reactive([
   { name: '张三', value: 32, pct: 100 }, { name: '李四', value: 28, pct: 87 },
   { name: '王五', value: 24, pct: 75 }, { name: '赵六', value: 20, pct: 62 },
@@ -1024,16 +1175,8 @@ $fast: 150ms ease;
 .trend-down { color: #52c41a; }
 
 // 趋势图
-.trend-chart-area { margin-top: 12px; }
-.trend-chart { width: 100%; height: 220px; }
-.chart-legend { display: flex; justify-content: center; gap: 24px; margin-top: 8px;
-  &.small { margin-top: 4px; gap: 16px; font-size: 11px; }
-}
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: $text-2; }
-.legend-line { display: inline-block; width: 20px; height: 3px; border-radius: 2px;
-  &.dashed { background: none !important; height: 0; border-top: 2px dashed; }
-}
-.legend-box { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+.trend-chart-area { margin-top: 12px; width: 100%; overflow-x: auto; }
+.trend-chart-echarts { width: 100%; min-width: 800px; height: 350px; }
 
 // ===== GMV 分布 =====
 .dual-section { display: flex; gap: 16px; margin: 16px 0 0;
