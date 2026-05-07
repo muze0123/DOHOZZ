@@ -6,95 +6,67 @@
       <div class="platform-tabs-bar">
         <div class="platform-tabs">
           <div
-            v-for="p in platformTabs"
-            :key="p.id"
+            v-for="platform in platformTabs"
+            :key="platform.id"
             class="platform-tab"
-            :class="{ active: filters.platform === p.id }"
-            @click="filters.platform = p.id"
+            :class="{ active: filters.platform === platform.id }"
+            @click="filters.platform = platform.id"
           >
-            <div class="platform-icon" v-html="p.icon"></div>
-            <span>{{ p.name }}</span>
+            <div class="platform-icon tiktok-icon" v-if="platform.id === 'tiktok'">
+              <img src="@/assets/images/TikTok.png" alt="TikTok" />
+            </div>
+            <div class="platform-icon instagram-icon" v-else-if="platform.id === 'instagram'">
+              <img src="@/assets/images/Instagram.png" alt="Instagram" />
+            </div>
+            <div class="platform-icon shopee-icon" v-else-if="platform.id === 'shopee'">
+              <img src="@/assets/images/Shopee.png" alt="Shopee" />
+            </div>
+            <div class="platform-icon lazada-icon" v-else-if="platform.id === 'lazada'">
+              <img src="@/assets/images/Lazada.png" alt="Lazada" />
+            </div>
+            <div class="platform-icon all-icon" v-else>
+              <IconAllPlatform />
+            </div>
+            <span>{{ platform.name }}</span>
           </div>
         </div>
       </div>
-
       <!-- 筛选条件区块 -->
-      <div class="filter-toolbar sticky-filter-bar">
+      <div class="filter-toolbar" ref="filterToolbarRef">
         <div class="filter-row">
           <div class="filter-item">
             <span class="filter-label">店铺筛选</span>
-            <el-select
-              v-model="filters.store"
-              placeholder="全部店铺"
-              filterable
-              clearable
-              size="small"
-              class="filter-select"
-            >
+            <el-select v-model="filters.store" placeholder="全部店铺" filterable clearable size="small" class="filter-select">
               <el-option label="全部店铺" value="" />
               <el-option label="XXX旗舰店1" value="store1" />
               <el-option label="XXX旗舰店2" value="store2" />
               <el-option label="XXX旗舰店3" value="store3" />
             </el-select>
           </div>
-
           <div class="filter-item">
             <span class="filter-label">部门筛选</span>
-            <el-select
-              v-model="filters.department"
-              placeholder="全部部门"
-              filterable
-              clearable
-              size="small"
-              class="filter-select"
-            >
+            <el-select v-model="filters.department" placeholder="全部部门" filterable clearable size="small" class="filter-select">
               <el-option label="全部部门" value="" />
               <el-option label="销售一部" value="dept1" />
               <el-option label="销售二部" value="dept2" />
               <el-option label="运营部" value="dept3" />
             </el-select>
           </div>
-
           <div class="filter-item">
             <span class="filter-label">BD筛选</span>
-            <el-select
-              v-model="filters.bd"
-              placeholder="全部BD"
-              filterable
-              clearable
-              size="small"
-              class="filter-select"
-            >
+            <el-select v-model="filters.bd" placeholder="全部BD" filterable clearable size="small" class="filter-select">
               <el-option label="全部BD" value="" />
               <el-option label="张三" value="bd1" />
               <el-option label="李四" value="bd2" />
               <el-option label="王五" value="bd3" />
             </el-select>
           </div>
-
           <div class="filter-item date-filter">
             <span class="filter-label">时间筛选</span>
             <div class="date-quick-btns">
-              <span
-                v-for="t in dateQuickTabs"
-                :key="t.key"
-                class="quick-btn"
-                :class="{ active: filters.dateType === t.key }"
-                @click="filters.dateType = t.key"
-              >{{ t.label }}</span>
+              <span v-for="t in dateQuickTabs" :key="t.key" class="quick-btn" :class="{ active: filters.dateType === t.key }" @click="filters.dateType = t.key">{{ t.label }}</span>
             </div>
-            <el-date-picker
-              v-model="filters.dateRange"
-              type="daterange"
-              range-separator="~"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD"
-              size="small"
-              class="date-range-picker"
-              :clearable="false"
-            />
+            <el-date-picker v-model="filters.dateRange" type="daterange" range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY/MM/DD" value-format="YYYY-MM-DD" class="date-range-picker" :clearable="false" />
           </div>
         </div>
       </div>
@@ -514,24 +486,21 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import Pagination from '@/components/Pagination.vue'
-
-// 当前时间
-const now = new Date()
-const updateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
+import IconAllPlatform from '@/components/icons/IconAllPlatform.vue'
 
 // ==================== 区域A：筛选 ====================
+const filterToolbarRef = ref(null)
 const filters = reactive({
   store: '',
   department: '',
   bd: '',
-  dateType: '30d',
-  dateRange: [],
+  dateType: '7d',
+  dateRange: ['2026-04-13', '2026-04-19'],
   platform: 'all'
 })
-
 const dateQuickTabs = [
   { key: 'yesterday', label: '昨天' },
   { key: '7d', label: '近7天' },
@@ -539,33 +508,12 @@ const dateQuickTabs = [
   { key: '90d', label: '近90天' },
   { key: 'custom', label: '自定义' }
 ]
-
 const platformTabs = [
-  {
-    id: 'all',
-    name: '全部',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>'
-  },
-  {
-    id: 'tiktok',
-    name: 'TikTok',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>'
-  },
-  {
-    id: 'instagram',
-    name: 'Instagram',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/></svg>'
-  },
-  {
-    id: 'shopee',
-    name: 'Shopee',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="12" r="10"/></svg>'
-  },
-  {
-    id: 'lazada',
-    name: 'Lazada',
-    icon: '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>'
-  }
+  { id: 'all', name: '全部' },
+  { id: 'tiktok', name: 'TikTok' },
+  { id: 'instagram', name: 'Instagram' },
+  { id: 'shopee', name: 'Shopee' },
+  { id: 'lazada', name: 'Lazada' },
 ]
 
 // 计算日期范围文本
@@ -586,6 +534,10 @@ onMounted(() => {
     `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
   ]
 })
+
+// 当前时间
+const now = new Date()
+const updateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
 
 // ==================== 区域B：数据概览 ====================
 const showOverviewConfig = ref(false)
@@ -1176,55 +1128,99 @@ $success-green: #31A24C;
 $error-red: #E41E3F;
 $warning-amber: #F7B928;
 
-.performance-page { background: $bg; min-height: calc(100vh - 48px); padding: 16px 0 24px; }
+.performance-page { background: $bg; min-height: calc(100vh - 48px); padding: 0 0 24px; }
 
 // ===== 区域A =====
 .filter-area { margin: 0; }
 .platform-tabs-bar {
   background: $white;
   border: none;
-  border-bottom: none;
-  border-radius: $radius $radius 0 0;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
+  margin-top: 16px;
 }
-.platform-tabs { display: flex; gap: 24px; }
+.platform-tabs { display: flex; gap: 32px; }
 .platform-tab {
   display: flex; align-items: center; gap: 8px; padding: 12px 0;
   color: $secondary-text; cursor: pointer; border-bottom: 2px solid transparent;
   transition: all $fast; position: relative; top: 1px;
-  .platform-icon { display: flex; align-items: center; }
   &:hover { color: $primary-text; }
   &.active { color: $primary; font-weight: 500; border-bottom-color: $primary; }
+  .platform-icon {
+    width: 20px; height: 20px;
+    &.tiktok-icon {
+      width: 20px; height: 20px; border-radius: 6px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 6px; }
+    }
+    &.instagram-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.shopee-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.lazada-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.all-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      color: #1677FF;
+    }
+  }
 }
 .filter-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border: none;
-  border-top: none;
-  border-radius: 0 0 $radius $radius;
   background: $white;
-  transition: box-shadow 0.3s ease, border-radius 0.3s ease;
-}
-.sticky-filter-bar {
+  border-top: 1px solid #E8E8E8;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
   position: sticky;
-  top: 48px;
-  z-index: 90;
+  top: 60px;
+  z-index: 89;
+  transition: box-shadow 0.3s ease;
+}
+.filter-toolbar.is-stuck {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-.filter-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.filter-item { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.filter-label { font-size: 13px; color: $text-1; font-weight: 500; white-space: nowrap; }
-.filter-select { width: 200px; }
-.filter-item.date-filter { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-.date-quick-btns { display: flex; gap: 4px; }
-.quick-btn {
-  padding: 4px 12px; font-size: 13px; border-radius: 4px; cursor: pointer; color: $text-2; background: $bg; border: 1px solid transparent; transition: all $fast;
+.filter-row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+.filter-item { display: flex; align-items: center; flex-shrink: 0; }
+.filter-label { margin-right: 10px; color: #4e5969; font-family: PingFang SC; font-size: 13px; font-style: normal; font-weight: 400; white-space: nowrap; text-align: right; }
+.filter-select {
+  width: 200px;
+  :deep(.el-select__wrapper) {
+    height: 32px !important;
+  }
+}
+.filter-item.date-filter { display: flex; align-items: center; gap: 0; margin-left: auto; }
+.date-quick-btns { display: flex; gap: 0; margin-right: 8px; }
+.quick-btn { padding: 4px 12px; font-size: 13px; cursor: pointer; color: $text-2; background: transparent; border: 1px solid #d9d9d9; transition: all $fast; border-radius: 0;
   &:hover { color: $primary; }
   &.active { background: #e6f4ff; color: $primary; border-color: #91caff; }
+  &:first-child { border-radius: 4px 0 0 4px; }
+  &:last-child { border-radius: 0 4px 4px 0; }
 }
-.date-range-picker { :deep(.el-input__wrapper) { height: 28px; } }
+.date-range-picker {
+  :deep(.el-date-editor) {
+    height: 32px !important;
+  }
+  :deep(.el-date-editor--daterange) {
+    height: 32px !important;
+  }
+  :deep(.el-input__wrapper) {
+    height: 32px !important;
+  }
+  :deep(.el-range-editor) {
+    height: 32px !important;
+  }
+  :deep(.el-range-editor--small) {
+    height: 32px !important;
+  }
+}
 
 // ===== 通用 Section =====
 .section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: none; }

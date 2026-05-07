@@ -18,18 +18,18 @@
             @click="handleTimeChange(t.key)"
           >{{ t.label }}</span>
         </div>
-        <el-button size="small" class="export-btn" @click="$emit('export')">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right: 4px">
+        <button class="custom-btn export-btn" @click="$emit('export')">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
             <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
           </svg>
-          数据导出
-        </el-button>
-        <el-button size="small" class="config-btn" @click="$emit('showTableConfigDialog')">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right: 4px">
+          <span>数据导出</span>
+        </button>
+        <button class="custom-btn config-btn" @click="$emit('showTableConfigDialog')">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
             <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
           </svg>
-          表格设置
-        </el-button>
+          <span>表格设置</span>
+        </button>
       </div>
     </div>
   </div>
@@ -158,6 +158,26 @@ $bg: #f5f5f5;
     background: $primary;
     border-color: $primary;
     color: #fff;
+  }
+}
+
+.custom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  font-size: 14px;
+  padding: 0 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  border: 1px solid $border;
+  background: $white;
+  color: $primary-text;
+  
+  &:focus {
+    outline: none;
   }
 }
 

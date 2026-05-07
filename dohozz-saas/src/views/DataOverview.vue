@@ -988,7 +988,16 @@ $fast: 150ms ease;
 .section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: none;
   &.half { flex: 1; min-width: 0; margin: 0; }
 }
-.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  .el-button {
+    height: 32px;
+    font-size: 14px;
+  }
+}
 .head-left { display: flex; align-items: center; gap: 12px; }
 .section-title { font-size: 14px; font-weight: 600; color: $primary-text; }
 .update-time { font-size: 12px; color: $secondary-text; }

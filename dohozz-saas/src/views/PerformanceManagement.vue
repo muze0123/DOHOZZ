@@ -9,14 +9,6 @@
 
     <!-- 主内容 -->
     <template v-else>
-      <!-- 筛选区 -->
-      <PerformanceMFilterSection
-        v-model="filters"
-        :department-list="departmentList"
-        :medium-list="mediumList"
-        @change="handleFilterChange"
-      />
-
       <!-- 数据统计区 -->
       <PerformanceMStatsSection
         :update-time="updateTime"
@@ -59,27 +51,12 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import PerformanceMFilterSection from './PerformanceManagement/components/PerformanceMFilterSection.vue'
 import PerformanceMStatsSection from './PerformanceManagement/components/PerformanceMStatsSection.vue'
 import PerformanceMTableSection from './PerformanceManagement/components/PerformanceMTableSection.vue'
 import PerformanceMDataUpdateDialog from './PerformanceManagement/dialogs/PerformanceMDataUpdateDialog.vue'
 import PerformanceMViewReadDialog from './PerformanceManagement/dialogs/PerformanceMViewReadDialog.vue'
 import PerformanceMTableConfigDialog from './PerformanceManagement/dialogs/PerformanceMTableConfigDialog.vue'
 import PerformanceMMoreTimeDialog from './PerformanceManagement/dialogs/PerformanceMMoreTimeDialog.vue'
-
-// Mock 数据
-const mockDepartmentList = [
-  { id: 'dept1', name: '市场部' },
-  { id: 'dept2', name: '销售部' },
-  { id: 'dept3', name: '运营部' },
-  { id: 'dept4', name: '商务部' }
-]
-
-const mockMediumList = [
-  { id: 'med1', name: '媒介A' },
-  { id: 'med2', name: '媒介B' },
-  { id: 'med3', name: '媒介C' }
-]
 
 const mockTableData = [
   {
@@ -129,15 +106,7 @@ const mockTableData = [
   }
 ]
 
-// 状态
 const loading = ref(true)
-const filters = reactive({
-  platform: 'all',
-  department: '',
-  medium: ''
-})
-const departmentList = ref(mockDepartmentList)
-const mediumList = ref(mockMediumList)
 const tableData = ref([])
 const pagination = reactive({
   page: 1,
@@ -145,13 +114,11 @@ const pagination = reactive({
   total: 0
 })
 
-// 弹窗状态
 const showDataUpdateDialog = ref(false)
 const showViewReadDialog = ref(false)
 const showTableConfigDialog = ref(false)
 const showMoreTimeDialog = ref(false)
 
-// 表格列配置
 const allColumns = [
   { key: 'employee', label: '媒介/部门', sortable: false },
   { key: 'followStreamerCount', label: '跟进达人', sortable: true },
@@ -176,7 +143,6 @@ const totalData = computed(() => {
 
 const updateTime = ref('')
 
-// 生命周期
 onMounted(() => {
   fetchData()
   updateTime.value = new Date().toLocaleString('zh-CN', {
@@ -188,7 +154,6 @@ onMounted(() => {
   }).replace(/\//g, '-')
 })
 
-// 数据获取
 const fetchData = async () => {
   loading.value = true
   try {
@@ -198,12 +163,6 @@ const fetchData = async () => {
   } finally {
     loading.value = false
   }
-}
-
-// 事件处理
-const handleFilterChange = () => {
-  pagination.page = 1
-  fetchData()
 }
 
 const handlePageChange = (page) => {
