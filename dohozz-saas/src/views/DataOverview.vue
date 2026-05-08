@@ -364,49 +364,56 @@
       </template>
     </el-dialog>
 
-    <!-- ==================== 自定义表格字段弹窗 ==================== -->
-    <el-dialog v-model="showConfigDialog" title="自定义表格字段" width="680px" :close-on-click-modal="false" @open="onConfigDialogOpen">
-      <div class="config-dialog-tip">指标最少选择 3 个，最多选择 12 个，已选择 <span>{{ tempSelectedIds.length }}</span> 个</div>
-      <div class="config-cols">
-        <div class="config-left">
-          <div v-for="group in metricGroups" :key="group.name" class="metric-group">
-            <div class="metric-group-title">{{ group.name }}</div>
-            <div class="metric-group-opts">
-               <el-checkbox-group v-model="tempSelectedIds">
-                 <el-checkbox v-for="opt in group.options" :key="opt.id" :label="opt.id" @change="(val) => handleCheckChange(val, opt.id, opt)">
+    <!-- ==================== 自定义表格字段抽屉 ==================== -->
+    <el-drawer v-model="showConfigDialog" direction="rtl" size="1200px" :close-on-click-modal="false" @open="onConfigDialogOpen">
+      <template #header>
+        <div class="drawer-header">
+          <div class="header-title">自定义表格字段</div>
+          <div class="header-tip">指标最少选择 3 个，最多选择 12 个，已选择 <span>{{ tempSelectedIds.length }}</span> 个</div>
+        </div>
+      </template>
+      <div class="drawer-content">
+        <div class="panel-left">
+          <div class="config-left">
+            <div v-for="group in metricGroups" :key="group.name" class="metric-group">
+              <div class="metric-group-title">{{ group.name }}</div>
+              <div class="metric-group-items">
+                 <el-checkbox v-for="opt in group.options" :key="opt.id" :model-value="tempSelectedIds.includes(opt.id)" @update:model-value="(val) => val ? tempSelectedIds.push(opt.id) : tempSelectedIds = tempSelectedIds.filter(id => id !== opt.id)">
                    <el-tooltip :content="opt.tooltip" placement="right"><span>{{ opt.label }}</span></el-tooltip>
                  </el-checkbox>
-               </el-checkbox-group>
+              </div>
             </div>
           </div>
         </div>
-        <div class="config-right">
-          <div class="right-header">已选 ({{ tempSelectedIds.length }})</div>
-          <div class="selected-list">
-            <div v-for="(item, idx) in tempSelectedItems" :key="item.id" 
-                 class="selected-item" draggable="true" 
-                 @dragstart="onDragStart(idx)" @dragover.prevent @drop="onDrop(idx)">
-              <div class="item-inner">
-                <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf"><path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
-                <span>{{ item.label }}</span>
+        <div class="panel-right">
+          <div class="config-right">
+            <div class="right-header"><span>已选 ({{ tempSelectedIds.length }})</span><span class="header-tip-text">长按可拖动调整展示排序</span></div>
+            <div class="selected-list">
+              <div v-for="(item, idx) in tempSelectedItems" :key="item.id"
+                   class="selected-item" draggable="true"
+                   @dragstart="onDragStart(idx)" @dragover.prevent @drop="onDrop(idx)">
+                <div class="item-inner">
+                  <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf"><path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
+                  <span>{{ item.label }}</span>
+                </div>
+                <span class="delete-icon" @click="removeSelected(item.id)">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#999"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </span>
               </div>
-              <span class="delete-icon" @click="removeSelected(item.id)">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="#999"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-              </span>
             </div>
           </div>
         </div>
       </div>
       <template #footer>
-        <div class="dialog-footer-between">
+        <div class="drawer-footer">
           <el-button type="info" plain @click="confirmRestoreDefault">恢复默认</el-button>
-          <div>
+          <div class="footer-actions">
             <el-button @click="showConfigDialog = false">取消</el-button>
             <el-button type="primary" @click="saveConfig">确定</el-button>
           </div>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
@@ -1281,18 +1288,39 @@ $fast: 150ms ease;
 .config-dialog-tip { font-size: 13px; color: $text-2; margin-bottom: 16px; padding: 10px 16px; background: #e6f4ff; border: none; border-radius: 4px;
    span { font-weight: 700; color: $primary; }
 }
-.config-cols { display: flex; gap: 20px; align-items: flex-start; }
-.config-left { flex: 1; min-width: 0; max-height: 480px; overflow-y: auto; padding-right: 12px; }
-.metric-group { margin-bottom: 20px; }
-.metric-group-title { font-size: 13px; font-weight: 600; color: $text-1; margin-bottom: 10px; }
-.metric-group-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
-  :deep(.el-checkbox) { margin-right: 0; height: auto; display: flex; align-items: flex-start;
-    .el-checkbox__label { font-size: 13px; color: $text-1; white-space: normal; padding-left: 6px; }
+.drawer-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #f5f6f7;
+}
+.panel-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 24px;
+  overflow-y: auto;
+}
+.panel-right {
+  width: 320px;
+  flex-shrink: 0;
+}
+.config-left { flex: 1; overflow-y: auto; }
+.metric-group { margin-bottom: 24px; }
+.metric-group-title { font-size: 14px; font-weight: 600; color: #050505; margin-bottom: 0px; padding-bottom: 0px; border-bottom: 0px; }
+.metric-group-items { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 12px;
+  :deep(.el-checkbox) { width: 200px; height: 20.375px; margin-right: 30px; font-weight: 500; font-size: 14px; position: relative; cursor: pointer; white-space: nowrap; user-select: none;
+    .el-checkbox__input.is-checked .el-checkbox__inner { width: 16px; height: 16px; }
+    .el-checkbox__label { font-size: 14px; color: #1d2129; font-weight: 500; white-space: normal; padding-left: 8px; line-height: 16px; }
   }
 }
-.config-right { width: 240px; border: none; border-radius: 4px; display: flex; flex-direction: column; max-height: 480px; }
-.right-header { padding: 12px; background: #fafafa; border-bottom: 1px solid $border; font-size: 13px; font-weight: 600; color: $text-1; }
-.selected-list { flex: 1; overflow-y: auto; padding: 8px; }
+.config-right { border: none; border-radius: 8px; display: flex; flex-direction: column; height: 1102px; background: #fff; overflow: hidden; }
+.right-header { padding: 16px; background: #fff; border: none; font-size: 14px; font-weight: 600; color: $text-1; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; .header-tip-text { font-size: 12px; color: #999; font-weight: 400; } }
+.selected-list { flex: 1; overflow-y: auto; padding: 12px; }
 .selected-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border: none; margin-bottom: 8px; border-radius: 4px; cursor: grab; font-size: 13px; color: $text-1; transition: box-shadow 0.2s;
   &:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); .delete-icon svg { fill: #ff4d4f; } }
   &:active { cursor: grabbing; }
@@ -1303,6 +1331,75 @@ $fast: 150ms ease;
   &:hover svg { fill: #ff4d4f; }
 }
 .dialog-footer-between { display: flex; align-items: center; justify-content: space-between; }
+
+// ===== 抽屉 =====
+:deep(.el-drawer) {
+  background: #f5f6f7;
+  .el-drawer__header {
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .el-drawer__close-btn {
+      position: absolute;
+      right: 24px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4e5969;
+      .el-icon {
+        font-size: 24px;
+        color: #4e5969;
+      }
+    }
+  }
+  .el-drawer__body {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+}
+.drawer-header {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  flex: 1;
+  .header-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+  .header-tip {
+    margin-left: 20px;
+    font-size: 13px;
+    color: $text-2;
+    span {
+      font-weight: 700;
+      color: $primary;
+    }
+  }
+}
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #fff;
+  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid #e8e8e8;
+  background: #fff;
+}
+.footer-actions {
+  display: flex;
+  gap: 12px;
+}
 
 // ===== 响应式 =====
 @media (max-width: 1200px) {
