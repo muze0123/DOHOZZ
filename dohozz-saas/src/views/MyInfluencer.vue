@@ -187,7 +187,12 @@
             <el-icon><ArrowDown /></el-icon>
           </el-button>
         </el-dropdown>
-        <el-button class="config-btn">配置</el-button>
+        <el-button class="config-btn" @click="showConfigDialog = true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right: 4px">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+          </svg>
+          配置
+        </el-button>
         <el-button type="primary" class="add-btn">
           <el-icon><Plus /></el-icon>
           添加达人
@@ -394,6 +399,81 @@
         <el-button type="danger" @click="confirmBatchDelete">删除</el-button>
       </template>
     </el-dialog>
+
+    <!-- ==================== 自定义表格字段抽屉 ==================== -->
+    <el-drawer
+      v-model="showConfigDialog"
+      direction="rtl"
+      size="1200px"
+    >
+      <template #header>
+        <div class="drawer-header">
+          <span class="header-title">自定义表格字段</span>
+          <div class="header-tip">指标最少选择 3 个，最多选择 15 个，已选择 <span>{{ tempSelectedIds.length }}</span> 个</div>
+        </div>
+      </template>
+      <div class="drawer-content">
+        <div class="panel-left">
+          <div class="config-left">
+            <div v-for="group in metricGroups" :key="group.name" class="metric-group">
+              <div class="metric-group-title">{{ group.name }}</div>
+              <div class="metric-group-items">
+                <el-checkbox
+                  v-for="opt in group.options"
+                  :key="opt.id"
+                  :model-value="tempSelectedIds.includes(opt.id)"
+                  @update:model-value="(val) => val ? tempSelectedIds.push(opt.id) : tempSelectedIds = tempSelectedIds.filter(id => id !== opt.id)"
+                >
+                  <el-tooltip :content="opt.tooltip" placement="top">
+                    <span>{{ opt.label }}</span>
+                  </el-tooltip>
+                </el-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-right">
+          <div class="config-right">
+            <div class="config-right-header">
+              <span>已选 ({{ tempSelectedIds.length }})</span>
+              <span class="header-tip-text">长按可拖动调整展示排序</span>
+            </div>
+            <div class="selected-list">
+              <div
+                v-for="(item, idx) in tempSelectedItems"
+                :key="item.id"
+                class="selected-item"
+                draggable="true"
+                @dragstart="onDragStart(idx)"
+                @dragover.prevent
+                @drop="onDrop(idx)"
+              >
+                <div class="item-inner">
+                  <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf">
+                    <path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+                  </svg>
+                  <span>{{ item.label }}</span>
+                </div>
+                <span class="delete-icon" @click="removeSelected(item.id)">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#999">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <div class="drawer-footer">
+          <el-button @click="confirmRestore">恢复默认</el-button>
+          <div class="footer-actions">
+            <el-button @click="showConfigDialog = false">取消</el-button>
+            <el-button type="primary" @click="saveConfig">确定</el-button>
+          </div>
+        </div>
+      </template>
+    </el-drawer>
   </div>
 </template>
 
@@ -452,6 +532,99 @@ const isFollowDialogVisible = ref(false)
 const isDeleteDialogVisible = ref(false)
 const selectedBd = ref('')
 const followRemark = ref('')
+
+// 自定义表格字段抽屉
+const showConfigDialog = ref(false)
+const tempSelectedIds = ref([])
+const tempSelectedItems = ref([])
+let draggedIndex = ref(-1)
+
+// 指标配置
+const allKpiDataMap = {
+  '1': { id: '1', label: '达人名称', tooltip: '达人账号名称' },
+  '2': { id: '2', label: '达人ID', tooltip: '达人唯一标识' },
+  '3': { id: '3', label: '头像', tooltip: '达人头像图片' },
+  '4': { id: '4', label: '真实姓名', tooltip: '达人真实姓名' },
+  '5': { id: '5', label: '等级', tooltip: '达人等级LV1-LV5' },
+  '6': { id: '6', label: '国家地区', tooltip: '达人所在国家/地区' },
+  '7': { id: '7', label: '粉丝数', tooltip: '达人粉丝数量' },
+  '8': { id: '8', label: '带货类目', tooltip: '达人主要带货品类' },
+  '9': { id: '9', label: '近30日成交金额', tooltip: '近30天内成交金额' },
+  '10': { id: '10', label: '成交金额', tooltip: '累计成交金额' },
+  '11': { id: '11', label: '成交单数', tooltip: '累计成交订单数' },
+  '12': { id: '12', label: '销量', tooltip: '累计销售数量' },
+  '13': { id: '13', label: '跟进BD', tooltip: '负责跟进该达人的BD' },
+  '14': { id: '14', label: '标签', tooltip: '达人的标签属性' },
+  '15': { id: '15', label: '跟进时间', tooltip: '最后跟进时间' },
+  '16': { id: '16', label: '认证状态', tooltip: '是否已认证' },
+  '17': { id: '17', label: '合作状态', tooltip: '当前合作阶段' },
+  '18': { id: '18', label: '最近合作时间', tooltip: '最近一次合作时间' }
+}
+
+const metricGroups = [
+  { name: '基本信息', options: [ allKpiDataMap['1'], allKpiDataMap['2'], allKpiDataMap['3'], allKpiDataMap['4'], allKpiDataMap['5'], allKpiDataMap['6'] ] },
+  { name: '数据指标', options: [ allKpiDataMap['7'], allKpiDataMap['8'], allKpiDataMap['9'], allKpiDataMap['10'], allKpiDataMap['11'], allKpiDataMap['12'] ] },
+  { name: '跟进信息', options: [ allKpiDataMap['13'], allKpiDataMap['14'], allKpiDataMap['15'], allKpiDataMap['16'], allKpiDataMap['17'], allKpiDataMap['18'] ] }
+]
+
+const defaultKpiIds = ['1', '3', '7', '9', '10', '13', '15']
+
+const handleCheckChange = (isChecked, opt) => {
+  if (isChecked) {
+    if (tempSelectedIds.value.length >= 15) {
+      ElMessage.warning('最多选择 15 个指标')
+      tempSelectedIds.value = tempSelectedIds.value.filter(x => x !== opt.id)
+      return
+    }
+    tempSelectedItems.value.push(opt)
+  } else {
+    if (tempSelectedIds.value.length <= 3) {
+      ElMessage.warning('最少选择 3 个指标')
+      tempSelectedIds.value.push(opt.id)
+      return
+    }
+    tempSelectedItems.value = tempSelectedItems.value.filter(x => x.id !== opt.id)
+  }
+}
+
+const removeSelected = (id) => {
+  if (tempSelectedIds.value.length <= 3) {
+    ElMessage.warning('最少选择 3 个指标')
+    return
+  }
+  tempSelectedIds.value = tempSelectedIds.value.filter(x => x !== id)
+  tempSelectedItems.value = tempSelectedItems.value.filter(x => x.id !== id)
+}
+
+const onDragStart = (idx) => { draggedIndex.value = idx }
+const onDrop = (idx) => {
+  if (draggedIndex.value === -1 || draggedIndex.value === idx) return
+  const list = tempSelectedItems.value
+  const item = list.splice(draggedIndex.value, 1)[0]
+  list.splice(idx, 0, item)
+  tempSelectedIds.value = list.map(x => x.id)
+  draggedIndex.value = -1
+}
+
+const confirmRestore = () => {
+  tempSelectedIds.value = [...defaultKpiIds]
+  syncTempItemsFromIds()
+}
+
+const syncTempItemsFromIds = () => {
+  tempSelectedItems.value = tempSelectedIds.value.map(id => allKpiDataMap[id])
+}
+
+const saveConfig = () => {
+  if (tempSelectedIds.value.length < 3) { ElMessage.warning('最少选择 3 个指标'); return }
+  if (tempSelectedIds.value.length > 15) { ElMessage.warning('最多选择 15 个指标'); return }
+  showConfigDialog.value = false
+  ElMessage.success('保存成功')
+}
+
+// 初始化
+tempSelectedIds.value = [...defaultKpiIds]
+syncTempItemsFromIds()
 
 // 模拟数据
 const mockData = ref([
@@ -1177,5 +1350,245 @@ function goToDetail(row) {
 
 :deep(.warning-toast) {
   --el-message-bg-color: #ff6600;
+}
+
+// ==================== 抽屉样式 ====================
+:deep(.el-drawer) {
+  background: #f5f6f7;
+  .el-drawer__header {
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    border-bottom: 0px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .el-drawer__close-btn {
+      position: absolute;
+      right: 24px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4e5969;
+      .el-icon {
+        font-size: 24px;
+        color: #4e5969;
+      }
+    }
+  }
+  .el-drawer__body {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .el-drawer__footer {
+    padding: 0;
+    text-align: right;
+    overflow: hidden;
+  }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  .header-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+  .header-tip {
+    margin-left: 20px;
+    font-size: 13px;
+    color: #65676B;
+    span {
+      font-weight: 700;
+      color: #0064E0;
+    }
+  }
+}
+
+.drawer-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #f5f6f7;
+}
+
+.panel-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 24px;
+  overflow-y: auto;
+}
+
+.panel-right {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+.config-left {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.config-right {
+  height: 100%;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  overflow: hidden;
+}
+
+.metric-group {
+  margin-bottom: 24px;
+}
+
+.metric-group-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  border-bottom: 0px;
+}
+
+.metric-group-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 12px;
+  :deep(.el-checkbox) {
+    width: 200px;
+    height: 20.375px;
+    margin-right: 30px;
+    font-weight: 500;
+    font-size: 14px;
+    position: relative;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    .el-checkbox__inner {
+      width: 16px;
+      height: 16px;
+    }
+    .el-checkbox__label {
+      font-size: 14px;
+      color: #86909c;
+      font-weight: 500;
+      white-space: normal;
+      padding-left: 8px;
+      line-height: 16px;
+    }
+    &.is-checked .el-checkbox__label {
+      color: #1677ff;
+    }
+  }
+}
+
+.config-right-header {
+  padding: 16px;
+  background: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .header-tip-text {
+    font-size: 12px;
+    color: #999;
+    font-weight: 400;
+  }
+}
+
+.selected-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.selected-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #fff;
+  border: none;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  cursor: grab;
+  font-size: 13px;
+  color: #050505;
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    .delete-icon svg {
+      fill: #ff4d4f;
+    }
+  }
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.item-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drag-handle {
+  cursor: grab;
+}
+
+.delete-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  &:hover svg {
+    fill: #ff4d4f;
+  }
+}
+
+.drawer-footer {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 24px;
+  background: #fff;
+  border-top: 0px;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 12px;
+}
+
+// 配置按钮样式
+.config-btn {
+  border-radius: 4px;
+  height: 32px;
+  font-size: 14px;
 }
 </style>

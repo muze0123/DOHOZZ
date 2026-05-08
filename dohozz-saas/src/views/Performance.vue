@@ -85,7 +85,7 @@
             <span class="help-icon">?</span>
           </el-tooltip>
         </div>
-        <el-button size="small" @click="showOverviewConfig = true">
+        <el-button size="small" class="overview-config-btn" @click="showOverviewConfig = true">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right: 4px">
             <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
           </svg>
@@ -275,134 +275,158 @@
       </div>
     </div>
 
-    <!-- ==================== 区域E：自定义表格字段弹窗 ==================== -->
-    <el-dialog
+    <!-- ==================== 区域E：自定义表格字段抽屉 ==================== -->
+    <el-drawer
       v-model="showOverviewConfig"
-      title="自定义表格字段"
-      width="680px"
-      :close-on-click-modal="false"
+      direction="rtl"
+      size="1200px"
+            :close-on-click-modal="false"
     >
-      <div class="config-tip">
-        指标最少选择 3 个，最多选择 15 个，已选择 <span>{{ tempOverviewSelectedIds.length }}</span> 个
-      </div>
-      <div class="config-cols">
-        <div class="config-left">
-          <div v-for="group in overviewMetricGroups" :key="group.name" class="metric-group">
-            <div class="metric-group-title">{{ group.name }}</div>
-            <div class="metric-group-opts">
-              <el-checkbox-group v-model="tempOverviewSelectedIds">
+      <template #header>
+        <div class="drawer-header">
+          <span class="header-title">自定义表格字段</span>
+          <div class="header-tip">指标最少选择 3 个，最多选择 15 个，已选择 <span>{{ tempOverviewSelectedIds.length }}</span> 个</div>
+        </div>
+      </template>
+      <div class="drawer-content">
+        <div class="panel-left">
+          <div class="config-left">
+            <div v-for="group in overviewMetricGroups" :key="group.name" class="metric-group">
+              <div class="metric-group-title">{{ group.name }}</div>
+              <div class="metric-group-items">
                 <el-checkbox
                   v-for="opt in group.options"
                   :key="opt.id"
-                  :label="opt.id"
-                  @change="(val) => handleOverviewCheckChange(val, opt)"
+                  :model-value="tempOverviewSelectedIds.includes(opt.id)"
+                  @update:model-value="(val) => val ? tempOverviewSelectedIds.push(opt.id) : tempOverviewSelectedIds = tempOverviewSelectedIds.filter(id => id !== opt.id)"
                 >
-                  <el-tooltip :content="opt.tooltip" placement="right">
+                  <el-tooltip :content="opt.tooltip" placement="top">
                     <span>{{ opt.label }}</span>
                   </el-tooltip>
                 </el-checkbox>
-              </el-checkbox-group>
+              </div>
             </div>
           </div>
         </div>
-        <div class="config-right">
-          <div class="right-header">已选 ({{ tempOverviewSelectedIds.length }})</div>
-          <div class="selected-list">
-            <div
-              v-for="(item, idx) in tempOverviewSelectedItems"
-              :key="item.id"
-              class="selected-item"
-              draggable="true"
-              @dragstart="onDragStart(idx)"
-              @dragover.prevent
-              @drop="onDrop(idx)"
-            >
-              <div class="item-inner">
-                <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf">
-                  <path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-                </svg>
-                <span>{{ item.label }}</span>
+        <div class="panel-right">
+          <div class="config-right">
+            <div class="overview-right-header">
+              <span>已选 ({{ tempOverviewSelectedIds.length }})</span>
+              <span class="header-tip-text">长按可拖动调整展示排序</span>
+            </div>
+            <div class="selected-list">
+              <div
+                v-for="(item, idx) in tempOverviewSelectedItems"
+                :key="item.id"
+                class="selected-item"
+                draggable="true"
+                @dragstart="onDragStart(idx)"
+                @dragover.prevent
+                @drop="onDrop(idx)"
+              >
+                <div class="item-inner">
+                  <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf">
+                    <path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+                  </svg>
+                  <span>{{ item.label }}</span>
+                </div>
+                <span class="delete-icon" @click="removeOverviewSelected(item.id)">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#999">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                  </svg>
+                </span>
               </div>
-              <span class="delete-icon" @click="removeOverviewSelected(item.id)">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="#999">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                </svg>
-              </span>
             </div>
           </div>
         </div>
       </div>
       <template #footer>
-        <el-button @click="confirmOverviewRestore">恢复默认</el-button>
-        <el-button @click="showOverviewConfig = false">取消</el-button>
-        <el-button type="primary" @click="saveOverviewConfig">确定</el-button>
+        <div class="drawer-footer">
+          <el-button @click="confirmOverviewRestore">恢复默认</el-button>
+          <div class="footer-actions">
+            <el-button @click="showOverviewConfig = false">取消</el-button>
+            <el-button type="primary" @click="saveOverviewConfig">确定</el-button>
+          </div>
+        </div>
       </template>
-    </el-dialog>
+    </el-drawer>
 
-    <!-- 绩效统计区配置弹窗 -->
-    <el-dialog
+    <!-- 绩效统计区配置抽屉 -->
+    <el-drawer
       v-model="showStatConfig"
-      title="自定义表格字段"
-      width="680px"
-      :close-on-click-modal="false"
+      direction="rtl"
+      size="1200px"
+            :close-on-click-modal="false"
       @open="onStatConfigOpen"
     >
-      <div class="config-tip">
-        指标最少选择 3 个，最多选择 15 个，已选择 <span>{{ tempStatSelectedIds.length }}</span> 个
-      </div>
-      <div class="config-cols">
-        <div class="config-left">
-          <div v-for="group in statMetricGroups" :key="group.name" class="metric-group">
-            <div class="metric-group-title">{{ group.name }}</div>
-            <div class="metric-group-opts">
-              <el-checkbox-group v-model="tempStatSelectedIds">
+      <template #header>
+        <div class="drawer-header">
+          <span class="header-title">自定义表格字段</span>
+          <div class="header-tip">指标最少选择 3 个，最多选择 15 个，已选择 <span>{{ tempStatSelectedIds.length }}</span> 个</div>
+        </div>
+      </template>
+      <div class="drawer-content">
+        <div class="panel-left">
+          <div class="config-left">
+            <div v-for="group in statMetricGroups" :key="group.name" class="metric-group">
+              <div class="metric-group-title">{{ group.name }}</div>
+              <div class="metric-group-items">
                 <el-checkbox
                   v-for="opt in group.options"
                   :key="opt.id"
-                  :label="opt.id"
-                  @change="(val) => handleStatCheckChange(val, opt)"
+                  :model-value="tempStatSelectedIds.includes(opt.id)"
+                  @update:model-value="(val) => val ? tempStatSelectedIds.push(opt.id) : tempStatSelectedIds = tempStatSelectedIds.filter(id => id !== opt.id)"
                 >
-                  <el-tooltip :content="opt.tooltip" placement="right">
+                  <el-tooltip :content="opt.tooltip" placement="top">
                     <span>{{ opt.label }}</span>
                   </el-tooltip>
                 </el-checkbox>
-              </el-checkbox-group>
+              </div>
             </div>
           </div>
         </div>
-        <div class="config-right">
-          <div class="right-header">已选 ({{ tempStatSelectedIds.length }})</div>
-          <div class="selected-list">
-            <div
-              v-for="(item, idx) in tempStatSelectedItems"
-              :key="item.id"
-              class="selected-item"
-              draggable="true"
-              @dragstart="onStatDragStart(idx)"
-              @dragover.prevent
-              @drop="onStatDrop(idx)"
-            >
-              <div class="item-inner">
-                <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf">
-                  <path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-                </svg>
-                <span>{{ item.label }}</span>
+        <div class="panel-right">
+          <div class="config-right">
+            <div class="stat-right-header">
+              <span>已选 ({{ tempStatSelectedIds.length }})</span>
+              <span class="header-tip-text">长按可拖动调整展示排序</span>
+            </div>
+            <div class="selected-list">
+              <div
+                v-for="(item, idx) in tempStatSelectedItems"
+                :key="item.id"
+                class="selected-item"
+                draggable="true"
+                @dragstart="onStatDragStart(idx)"
+                @dragover.prevent
+                @drop="onStatDrop(idx)"
+              >
+                <div class="item-inner">
+                  <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf">
+                    <path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+                  </svg>
+                  <span>{{ item.label }}</span>
+                </div>
+                <span class="delete-icon" @click="removeStatSelected(item.id)">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#999">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                  </svg>
+                </span>
               </div>
-              <span class="delete-icon" @click="removeStatSelected(item.id)">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="#999">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                </svg>
-              </span>
             </div>
           </div>
         </div>
       </div>
       <template #footer>
-        <el-button @click="confirmStatRestore">恢复默认</el-button>
-        <el-button @click="showStatConfig = false">取消</el-button>
-        <el-button type="primary" @click="saveStatConfig">确定</el-button>
+        <div class="drawer-footer">
+          <el-button @click="confirmStatRestore">恢复默认</el-button>
+          <div class="footer-actions">
+            <el-button @click="showStatConfig = false">取消</el-button>
+            <el-button type="primary" @click="saveStatConfig">确定</el-button>
+          </div>
+        </div>
       </template>
-    </el-dialog>
+    </el-drawer>
 
     <!-- ==================== 区域F：导出绩效数据弹窗 ==================== -->
     <el-dialog
@@ -1335,6 +1359,19 @@ $warning-amber: #F7B928;
 
 // ===== 区域D：绩效统计 =====
 .toolbar-actions { display: flex; align-items: center; gap: 12px; }
+.toolbar-actions :deep(.el-button--small) {
+  height: 32px;
+  font-size: 14px;
+  padding: 8px 14px;
+}
+
+// 数据概览配置按钮
+.section-head :deep(.el-button--small),
+.overview-config-btn {
+  height: 32px;
+  font-size: 14px;
+  padding: 8px 14px;
+}
 .tab-toggle { display: flex; border: none; border-radius: 4px; overflow: hidden; }
 .toggle-btn {
   padding: 4px 14px; font-size: 13px; cursor: pointer; color: $text-2; background: #fff;
@@ -1382,34 +1419,222 @@ $warning-amber: #F7B928;
   &:focus { border-color: $primary; }
 }
 
-// ===== 弹窗样式 =====
-.config-tip {
-  font-size: 13px; color: $text-2; margin-bottom: 16px; padding: 10px 16px;
-  background: #e6f4ff; border: none; border-radius: 4px;
-  span { font-weight: 700; color: $primary; }
-}
-.config-cols { display: flex; gap: 20px; align-items: flex-start; }
-.config-left { flex: 1; min-width: 0; max-height: 480px; overflow-y: auto; padding-right: 12px; }
-.metric-group { margin-bottom: 20px; }
-.metric-group-title { font-size: 13px; font-weight: 600; color: $text-1; margin-bottom: 10px; }
-.metric-group-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
-  :deep(.el-checkbox) { margin-right: 0; height: auto; display: flex; align-items: flex-start;
-    .el-checkbox__label { font-size: 13px; color: $text-1; white-space: normal; padding-left: 6px; }
+// ===== 抽屉样式 =====
+:deep(.el-drawer) {
+  background: #f5f6f7;
+  .el-drawer__header {
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    border-bottom: 0px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .el-drawer__close-btn {
+      position: absolute;
+      right: 24px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4e5969;
+      .el-icon {
+        font-size: 24px;
+        color: #4e5969;
+      }
+    }
+  }
+  .el-drawer__body {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .el-drawer__footer {
+    padding: 0;
+    text-align: right;
+    overflow: hidden;
   }
 }
-.config-right { width: 240px; border: none; border-radius: 4px; display: flex; flex-direction: column; max-height: 480px; }
-.right-header { padding: 12px; background: #fafafa; border-bottom: 1px solid $border; font-size: 13px; font-weight: 600; color: $text-1; }
-.selected-list { flex: 1; overflow-y: auto; padding: 8px; }
-.selected-item {
-  display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;
-  background: #fff; border: none; margin-bottom: 8px; border-radius: 4px;
-  cursor: grab; font-size: 13px; color: $text-1; transition: box-shadow 0.2s;
-  &:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); .delete-icon svg { fill: $error-red; } }
-  &:active { cursor: grabbing; }
+.drawer-header {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  .header-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+  .header-tip {
+    margin-left: 20px;
+    font-size: 13px;
+    color: #65676B;
+    span {
+      font-weight: 700;
+      color: #0064E0;
+    }
+  }
 }
-.item-inner { display: flex; align-items: center; gap: 8px; }
-.drag-handle { cursor: grab; }
-.delete-icon { cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 2px; }
+.drawer-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #f5f6f7;
+}
+.panel-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 24px;
+  overflow-y: auto;
+}
+.panel-right {
+  width: 320px;
+  flex-shrink: 0;
+}
+.config-left {
+  flex: 1;
+  overflow-y: auto;
+}
+.config-right {
+  height: 1127px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  overflow: hidden;
+}
+.metric-group {
+  margin-bottom: 24px;
+}
+.metric-group-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  border-bottom: 0px;
+}
+.metric-group-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 12px;
+  :deep(.el-checkbox) {
+    width: 200px;
+    height: 20.375px;
+    margin-right: 30px;
+    font-weight: 500;
+    font-size: 14px;
+    position: relative;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    .el-checkbox__inner {
+      width: 16px;
+      height: 16px;
+    }
+    .el-checkbox__label {
+      font-size: 14px;
+      color: #86909c;
+      font-weight: 500;
+      white-space: normal;
+      padding-left: 8px;
+      line-height: 16px;
+    }
+    &.is-checked .el-checkbox__label {
+      color: #1677ff;
+    }
+  }
+}
+.stat-right-header,
+.overview-right-header {
+  padding: 16px;
+  background: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .header-tip-text {
+    font-size: 12px;
+    color: #999;
+    font-weight: 400;
+  }
+}
+.selected-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+.selected-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #fff;
+  border: none;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  cursor: grab;
+  font-size: 13px;
+  color: #050505;
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    .delete-icon svg {
+      fill: #ff4d4f;
+    }
+  }
+  &:active {
+    cursor: grabbing;
+  }
+}
+.item-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.drag-handle {
+  cursor: grab;
+}
+.delete-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  &:hover svg {
+    fill: #ff4d4f;
+  }
+}
+.drawer-footer {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 24px;
+  background: #fff;
+  border-top: 0px;
+}
+.footer-actions {
+  display: flex;
+  gap: 12px;
+}
 
 // 导出弹窗
 .export-content { padding: 16px 0; }

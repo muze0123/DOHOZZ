@@ -378,8 +378,8 @@
             <div v-for="group in metricGroups" :key="group.name" class="metric-group">
               <div class="metric-group-title">{{ group.name }}</div>
               <div class="metric-group-items">
-                 <el-checkbox v-for="opt in group.options" :key="opt.id" :model-value="tempSelectedIds.includes(opt.id)" @update:model-value="(val) => val ? tempSelectedIds.push(opt.id) : tempSelectedIds = tempSelectedIds.filter(id => id !== opt.id)">
-                   <el-tooltip :content="opt.tooltip" placement="right"><span>{{ opt.label }}</span></el-tooltip>
+                 <el-checkbox v-for="opt in group.options" :key="opt.id" :model-value="tempSelectedIds.includes(opt.id)" @update:model-value="(val) => handleCheckboxChange(val, opt)">
+                   <el-tooltip :content="opt.tooltip" placement="top"><span>{{ opt.label }}</span></el-tooltip>
                  </el-checkbox>
               </div>
             </div>
@@ -459,11 +459,18 @@ const allKpiDataMap = {
   '15': { id: '15', label: '团长合作销量', value: '320', trend: '3%', trendDir: 'up', tooltip: '按支付成功时间，团长订单支付成功销量（含退款），需员工跟进后统计' },
   '16': { id: '16', label: '寄样数', value: '456', trend: '7.2%', trendDir: 'up', tooltip: '按样品发货时间，所选周期内发货成功的样品单数量' },
   '17': { id: '17', label: '跟进达人数', value: '1,280', trend: '3.1%', trendDir: 'up', tooltip: '按跟进时间，所选周期内新跟进的达人数' },
-  '18': { id: '18', label: '寄样达人数', value: '198', trend: '-2.8%', trendDir: 'down', tooltip: '按发货时间，所选周期内发货成功的达人数' }
+  '18': { id: '18', label: '寄样达人数', value: '198', trend: '-2.8%', trendDir: 'down', tooltip: '按发货时间，所选周期内发货成功的达人数' },
+  '19': { id: '19', label: '店铺总退款金额', value: '¥8.20w', trend: '2.1%', trendDir: 'up', tooltip: '根据【支付成功时间】来判定，代表在所选周期内支付、且已退款成功的订单金额汇总。举例：某客户1月15日下单并支付成功，2月1日退款成功；那么这笔退款金额算入1月的【成交-退款金额】，不算入2月里' },
+  '20': { id: '20', label: '达播实际成交金额', value: '¥95.50w', trend: '15%', trendDir: 'up', tooltip: '根据【支付成功时间】来判定，在所选周期内支付成功的买家实付金额汇总（剔除退款金额），包含达人订单和团长订单' },
+  '21': { id: '21', label: '达播成交金额', value: '¥105.32w', trend: '17%', trendDir: 'up', tooltip: '根据【支付成功时间】来判定，在所选周期内支付成功的买家实付金额汇总（包含退款金额），包含达人订单和团长订单' },
+  '22': { id: '22', label: '达播成交订单量', value: '12,580', trend: '8.5%', trendDir: 'up', tooltip: '根据【支付成功时间】来判定，在所选周期内支付成功的买家订单量汇总（包含退款订单），包含达人订单和团长订单' },
+  '23': { id: '23', label: '达播退款金额', value: '¥6.80w', trend: '3.2%', trendDir: 'up', tooltip: '根据【支付成功时间】来判定，代表在所选周期内支付、且已退款成功的订单金额汇总，包含达人订单和团长订单。举例：某客户1月15日下单并支付成功，2月1日退款成功；那么这笔退款金额算入1月的【成交-退款金额】，不算入2月里' },
+  '24': { id: '24', label: '计佣金额', value: '¥98.75w', trend: '14%', trendDir: 'up', tooltip: '根据【下单时间】来判定，买家实付金额+平台/达人补贴-运费，即在所选周期内会用于达人佣金/团长服务费计算的金额汇总（包含退款金额）；包含达人订单和团长订单' },
+  '25': { id: '25', label: '计佣金额-去退', value: '¥91.20w', trend: '13%', trendDir: 'up', tooltip: '根据【下单时间】来判定，买家实付金额+平台/达人补贴-运费，即在所选周期内会用于达人佣金/团长服务费计算的金额汇总（剔除退款金额）；包含达人订单和团长订单' }
 }
 
 const metricGroups = [
-  { name: '总成交数据', options: [ allKpiDataMap['1'] ] },
+  { name: '总成交数据', options: [ allKpiDataMap['1'], allKpiDataMap['19'], allKpiDataMap['20'], allKpiDataMap['21'], allKpiDataMap['22'], allKpiDataMap['23'], allKpiDataMap['24'], allKpiDataMap['25'] ] },
   { name: '达人成交数据', options: [ allKpiDataMap['7'], allKpiDataMap['8'], allKpiDataMap['9'], allKpiDataMap['10'] ] },
   { name: '团长成交数据', options: [ allKpiDataMap['11'], allKpiDataMap['12'], allKpiDataMap['13'], allKpiDataMap['14'], allKpiDataMap['15'] ] },
   { name: '达人跟进数据', options: [ allKpiDataMap['17'], allKpiDataMap['18'], allKpiDataMap['16'] ] }
@@ -644,9 +651,9 @@ const updateTrendChart = () => {
   // 根据数值生成Y轴刻度
   const generateYAxis = (data) => {
     const max = Math.max(...data.map(d => Math.abs(d)))
-    const step = Math.ceil(max / 4)
+    const niceMax = max * 1.2
     return {
-      max: Math.ceil(max / step) * step,
+      max: niceMax,
       splitNumber: 4,
       axisLabel: { formatter: (v) => v >= 10000 ? (v / 10000).toFixed(1) + 'w' : v }
     }
@@ -665,12 +672,18 @@ const updateTrendChart = () => {
       yAxisIndex: index,
       xAxisIndex: 0,
       data,
-      smooth: false,
+      smooth: true,
       symbol: 'circle',
-      symbolSize: 4,
-      lineStyle: { width: 1, color: index === 0 ? '#1677ff' : '#36cfc9' },
+      symbolSize: 8,
+      lineStyle: { width: 2, color: index === 0 ? '#1677ff' : '#36cfc9' },
       itemStyle: { color: index === 0 ? '#1677ff' : '#36cfc9' },
-      emphasis: { focus: 'series' }
+      emphasis: { focus: 'series' },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: index === 0 ? 'rgba(22, 119, 255, 0.3)' : 'rgba(54, 207, 201, 0.3)' },
+          { offset: 1, color: index === 0 ? 'rgba(22, 119, 255, 0.05)' : 'rgba(54, 207, 201, 0.05)' }
+        ])
+      }
     }
   })
 
@@ -691,7 +704,7 @@ const updateTrendChart = () => {
       itemHeight: 2,
       textStyle: { color: '#666', fontSize: 12 }
     },
-    grid: { left: 60, right: 60, top: 20, bottom: 40 },
+    grid: { left: '3%', right: '4%', bottom: '8%', top: '12%', containLabel: true },
     xAxis: {
       type: 'category',
       data: xData,
@@ -710,7 +723,7 @@ const updateTrendChart = () => {
         position: index === 0 ? 'left' : 'right',
         show: true,
         ...yAxis,
-        axisLine: { show: true, lineStyle: { color: index === 0 ? '#1677ff' : '#36cfc9' } },
+        axisLine: { show: false },
         axisLabel: { color: '#999', fontSize: 10 },
         splitLine: { lineStyle: { color: '#f5f5f5', type: 'dashed' } }
       }
@@ -718,7 +731,12 @@ const updateTrendChart = () => {
     series
   }
 
-  trendChart.setOption(option)
+  trendChart.setOption(option, { notMerge: true })
+  requestAnimationFrame(() => {
+    if (trendChartRef.value) {
+      trendChart.resize({ width: trendChartRef.value.clientWidth })
+    }
+  })
 }
 
 // 初始化样品趋势图
@@ -988,6 +1006,25 @@ const handleCheckChange = (isChecked, id, opt) => {
   }
 }
 
+// 处理复选框变化，同步左右面板
+const handleCheckboxChange = (isChecked, opt) => {
+  if (isChecked) {
+    if (tempSelectedIds.value.length >= 12) {
+      ElMessage.warning('最多选择 12 个指标')
+      return
+    }
+    tempSelectedIds.value.push(opt.id)
+    tempSelectedItems.value.push(opt)
+  } else {
+    if (tempSelectedIds.value.length <= 3) {
+      ElMessage.warning('最少保留 3 个指标')
+      return
+    }
+    tempSelectedIds.value = tempSelectedIds.value.filter(id => id !== opt.id)
+    tempSelectedItems.value = tempSelectedItems.value.filter(item => item.id !== opt.id)
+  }
+}
+
 const removeSelected = (id) => {
   if (tempSelectedIds.value.length <= 3) {
     ElMessage.warning('最少保留 3 个指标')
@@ -1182,8 +1219,8 @@ $fast: 150ms ease;
 .trend-down { color: #52c41a; }
 
 // 趋势图
-.trend-chart-area { margin-top: 12px; width: 100%; overflow-x: auto; }
-.trend-chart-echarts { width: 100%; min-width: 800px; height: 350px; }
+.trend-chart-area { margin-top: 12px; width: 100%; overflow: hidden; }
+.trend-chart-echarts { width: 100%; height: 350px; }
 
 // ===== GMV 分布 =====
 .dual-section { display: flex; gap: 16px; margin: 16px 0 0;
@@ -1314,11 +1351,12 @@ $fast: 150ms ease;
 .metric-group-title { font-size: 14px; font-weight: 600; color: #050505; margin-bottom: 0px; padding-bottom: 0px; border-bottom: 0px; }
 .metric-group-items { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 12px;
   :deep(.el-checkbox) { width: 200px; height: 20.375px; margin-right: 30px; font-weight: 500; font-size: 14px; position: relative; cursor: pointer; white-space: nowrap; user-select: none;
-    .el-checkbox__input.is-checked .el-checkbox__inner { width: 16px; height: 16px; }
-    .el-checkbox__label { font-size: 14px; color: #1d2129; font-weight: 500; white-space: normal; padding-left: 8px; line-height: 16px; }
+    .el-checkbox__inner { width: 16px; height: 16px; }
+    .el-checkbox__label { font-size: 14px; color: #86909c; font-weight: 500; white-space: normal; padding-left: 8px; line-height: 16px; }
+    &.is-checked .el-checkbox__label { color: #1677ff; }
   }
 }
-.config-right { border: none; border-radius: 8px; display: flex; flex-direction: column; height: 1102px; background: #fff; overflow: hidden; }
+.config-right { height: 1127px; border: none; border-radius: 8px; display: flex; flex-direction: column; background: #fff; overflow: hidden; }
 .right-header { padding: 16px; background: #fff; border: none; font-size: 14px; font-weight: 600; color: $text-1; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; .header-tip-text { font-size: 12px; color: #999; font-weight: 400; } }
 .selected-list { flex: 1; overflow-y: auto; padding: 12px; }
 .selected-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border: none; margin-bottom: 8px; border-radius: 4px; cursor: grab; font-size: 13px; color: $text-1; transition: box-shadow 0.2s;
@@ -1339,7 +1377,7 @@ $fast: 150ms ease;
     padding: 0;
     margin: 0;
     background: #fff;
-    border-bottom: 1px solid #e8e8e8;
+    border-bottom: 0px;
     height: 60px;
     display: flex;
     align-items: center;
@@ -1365,6 +1403,11 @@ $fast: 150ms ease;
     display: flex;
     flex-direction: column;
   }
+  .el-drawer__footer {
+    padding: 0;
+    text-align: right;
+    overflow: hidden;
+  }
 }
 .drawer-header {
   display: flex;
@@ -1387,14 +1430,14 @@ $fast: 150ms ease;
   }
 }
 .drawer-footer {
+  width: 100%;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 15px 24px;
   background: #fff;
-  border-top: 1px solid #e8e8e8;
-  border-top: 1px solid #e8e8e8;
-  background: #fff;
+  border-top: 0px;
 }
 .footer-actions {
   display: flex;

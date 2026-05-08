@@ -386,8 +386,8 @@ const filteredTagGroups = computed(() => {
 })
 
 const paginatedTagGroups = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
+  const start = (paginationState.value.page - 1) * paginationState.value.pageSize
+  const end = start + paginationState.value.pageSize
   return filteredTagGroups.value.slice(start, end)
 })
 
@@ -426,7 +426,7 @@ const currentGroup = ref(null)
 // 平台切换
 function handlePlatformChange(platform) {
   activePlatform.value = platform
-  currentPage.value = 1
+  paginationState.value.page = 1
 }
 
 // 时间筛选切换
@@ -443,13 +443,13 @@ function handleTimeFilterChange(filter) {
 
 // 搜索
 function handleSearch() {
-  currentPage.value = 1
+  paginationState.value.page = 1
 }
 
 // 搜索清空
 function handleSearchClear() {
   searchInput.value = ''
-  currentPage.value = 1
+  paginationState.value.page = 1
 }
 
 // 卡片内分页变化
