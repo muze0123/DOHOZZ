@@ -486,7 +486,7 @@ const handlePageSizeChange = (size) => {
   border-bottom: none;
   border-radius: 8px 8px 0 0;
   padding: 0 16px;
-  margin-top: 16px;
+  margin: 0;
 }
 
 .platform-tabs {

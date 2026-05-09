@@ -1,7 +1,7 @@
 // dohozz-saas/src/mock/productShopAnalysis.js
 
 // 平台列表
-export const platforms = ['全部', '抖音', '快手', '视频号', '小红书']
+export const platforms = ['全部', 'TikTok', 'Instagram', 'Shopee', 'Lazada']
 
 // 快捷时间选项
 export const quickTimeOptions = [

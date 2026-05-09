@@ -5,14 +5,12 @@
     @click="handleClick"
   >
     <div class="msg-item-inner">
-      <!-- 平台Logo -->
-      <div class="msg-platform-logo">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v1.89a4.35 4.35 0 0 1-1.76 3.66c-2.15 1.65-4.67-.31-4.67-2.96 0-1.65 1.35-3.09 3.07-3.37V.06c-4.02.34-7.25 3.73-6.61 7.76 1.2 7.46 10.21 7.58 10.87.51.37-.3 1.17-.73 1.88-.84-.05.02-.09.04-.15.05-.08 0-.15-.01-.22-.01.04.13.07.27.09.41 1.34-.08 2.48-.87 2.89-2.02a4.23 4.23 0 0 1 3.08 3.04 3.93 3.93 0 0 1-.51.17h.01c-1.27.61-2.74.3-3.63-.71z"/>
-        </svg>
-      </div>
       <!-- 消息标签 -->
       <div class="msg-tag">消息</div>
+      <!-- 平台Logo -->
+      <div class="msg-platform-logo">
+        <img :src="platformLogo" :alt="item.platform" />
+      </div>
       <!-- 消息正文 -->
       <div class="msg-body-text">{{ item.title }}</div>
       <!-- 发送时间 -->
@@ -25,7 +23,13 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 import { JUMP_ROUTE_MAP } from '@/api/messageCenter'
+import TikTokLogo from '@/assets/images/TikTok.png'
+import InstagramLogo from '@/assets/images/Instagram.png'
+import LazadaLogo from '@/assets/images/Lazada.png'
+import RedbookLogo from '@/assets/images/Redbook.png'
+import ShopeeLogo from '@/assets/images/Shopee.png'
 
 const props = defineProps({
   item: { type: Object, required: true }
@@ -33,6 +37,19 @@ const props = defineProps({
 
 const emit = defineEmits(['markRead'])
 const router = useRouter()
+
+// 平台Logo映射
+const platformLogoMap = {
+  tiktok: TikTokLogo,
+  instagram: InstagramLogo,
+  lazada: LazadaLogo,
+  redbook: RedbookLogo,
+  shopee: ShopeeLogo
+}
+
+const platformLogo = computed(() => {
+  return platformLogoMap[props.item.platform] || TikTokLogo
+})
 
 function handleClick() {
   if (!props.item.isRead) {
@@ -48,7 +65,8 @@ function handleClick() {
 .msg-item {
   display: flex;
   align-items: center;
-  padding: 16px 0;
+  height: 60px;
+  padding: 0;
   border-bottom: 1px solid #F5F5F5;
   gap: 10px;
   cursor: pointer;
@@ -66,15 +84,20 @@ function handleClick() {
 }
 
 .msg-platform-logo {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 4px;
-  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #fff;
+  overflow: hidden;
+}
+
+.msg-platform-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .msg-tag {

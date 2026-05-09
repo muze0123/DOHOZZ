@@ -656,6 +656,7 @@ function handleEditSampleSuccess() {
 }
 .platform-tabs-bar {
   padding: 0 16px;
+  margin: 0;
 }
 .platform-tabs { display: flex; gap: 32px; }
 .platform-tab {

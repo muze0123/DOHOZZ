@@ -726,7 +726,7 @@ const developingDialogVisible = ref(false)
 @import '@/assets/styles/_influencer-page.scss';
 
 .member-management {
-  padding: 16px 0 24px;
+  padding: 0;
   background: #f5f6f7;
   min-height: calc(100vh - 48px);
 }

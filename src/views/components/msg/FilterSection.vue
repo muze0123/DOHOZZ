@@ -9,7 +9,7 @@
           :key="tab.key"
           class="filter-option"
           :class="{ active: selectedExceptionTab === tab.key }"
-          @click="$emit('update:selectedExceptionTab', tab.key)"
+          @click="handleTabClick('exception', tab.key)"
         >
           {{ tab.label }}
           <span v-if="exceptionBadgeMap[tab.key] > 0" class="filter-badge">
@@ -27,7 +27,7 @@
           :key="tab.key"
           class="filter-option"
           :class="{ active: selectedReminderTab === tab.key }"
-          @click="$emit('update:selectedReminderTab', tab.key)"
+          @click="handleTabClick('reminder', tab.key)"
         >
           {{ tab.label }}
           <span v-if="reminderBadgeMap[tab.key] > 0" class="filter-badge">
@@ -42,34 +42,49 @@
 <script setup>
 import { EXCEPTION_TABS, REMINDER_TABS } from '@/api/messageCenter'
 
-defineProps({
-  selectedExceptionTab: { type: String, default: 'all' },
-  selectedReminderTab: { type: String, default: 'all' },
+const props = defineProps({
+  selectedExceptionTab: { type: String, default: '' },
+  selectedReminderTab: { type: String, default: '' },
   exceptionBadgeMap: { type: Object, default: () => ({}) },
   reminderBadgeMap: { type: Object, default: () => ({}) }
 })
 
-defineEmits(['update:selectedExceptionTab', 'update:selectedReminderTab'])
+const emit = defineEmits(['update:selectedExceptionTab', 'update:selectedReminderTab'])
 
 const exceptionTabs = EXCEPTION_TABS
 const reminderTabs = REMINDER_TABS
+
+// 点击切换单选，选中一个时清除另一个分类的选中状态
+function handleTabClick(type, key) {
+  if (type === 'exception') {
+    const newValue = props.selectedExceptionTab === key ? '' : key
+    emit('update:selectedExceptionTab', newValue)
+    // 清除消息提醒选中状态
+    emit('update:selectedReminderTab', '')
+  } else {
+    const newValue = props.selectedReminderTab === key ? '' : key
+    emit('update:selectedReminderTab', newValue)
+    // 清除异常监控选中状态
+    emit('update:selectedExceptionTab', '')
+  }
+}
 </script>
 
 <style scoped>
 .filter-section {
   background: #fff;
-  padding: 4px 24px 0;
+  padding: 12px 24px 12px 24px;
   border-bottom: 1px solid #F0F0F0;
 }
 
 .filter-row {
   display: flex;
   align-items: center;
-  height: 40px;
+  height: 48px;
 }
 
 .filter-row-label {
-  width: 56px;
+  width: 98px;
   flex-shrink: 0;
   font-size: 13px;
   color: #8C8C8C;
@@ -80,18 +95,19 @@ const reminderTabs = REMINDER_TABS
   display: flex;
   align-items: center;
   flex: 1;
+  height: 48px;
   overflow: hidden;
 }
 
 .filter-option {
   position: relative;
-  padding: 4px 0;
-  margin-right: 24px;
+  padding: 6px 12px;
+  margin-right: 8px;
   font-size: 13px;
   color: #595959;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s;
+  border-radius: 4px;
+  transition: all 0.15s;
   white-space: nowrap;
 }
 
@@ -99,14 +115,14 @@ const reminderTabs = REMINDER_TABS
 
 .filter-option.active {
   color: #1677FF;
+  background: #E6F4FF;
   font-weight: 500;
-  border-bottom: 2px solid #1677FF;
 }
 
 .filter-badge {
   position: absolute;
-  top: -2px;
-  right: -12px;
+  top: -4px;
+  right: -8px;
   min-width: 14px;
   height: 14px;
   padding: 0 3px;
@@ -118,5 +134,6 @@ const reminderTabs = REMINDER_TABS
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
 }
 </style>

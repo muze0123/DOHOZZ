@@ -384,6 +384,7 @@ onMounted(() => {
 
 .platform-tabs-bar {
   border-bottom: 1px solid $border-color;
+  margin: 0;
 }
 
 .platform-tabs {

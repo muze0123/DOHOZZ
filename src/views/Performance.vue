@@ -1210,7 +1210,7 @@ $success-green: #31A24C;
 $error-red: #E41E3F;
 $warning-amber: #F7B928;
 
-.performance-page { background: $bg; min-height: calc(100vh - 48px); padding: 0 0 24px; }
+.performance-page { background: $bg; min-height: calc(100vh - 48px); padding: 0; margin: 0; }
 
 // ===== 区域A =====
 .filter-area { margin: 0; }
@@ -1219,7 +1219,7 @@ $warning-amber: #F7B928;
   border: none;
   border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
-  margin-top: 16px;
+  margin: 0;
 }
 .platform-tabs { display: flex; gap: 32px; }
 .platform-tab {

@@ -270,6 +270,7 @@ $border-radius-md: 8px;
   border: 1px solid $divider;
   border-radius: $border-radius-md $border-radius-md 0 0;
   padding: 0 16px;
+  margin: 0;
 }
 
 .platform-tabs {

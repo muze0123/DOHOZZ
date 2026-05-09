@@ -1,66 +1,71 @@
 <template>
   <div class="message-center">
-    <!-- 顶部 Tab 栏 -->
-    <MsgTopBar
-      :active-tab="activeTab"
-      :notification-unread-count="notificationUnreadCount"
-      :announcement-unread-count="announcementUnreadCount"
-      @update:active-tab="handleTabChange"
-      @open-wechat-bind="showWechatBindModal = true"
-      @open-msg-settings="handleMsgSettings"
-    />
+    <!-- 顶部 Tab + 筛选区 -->
+    <div class="notice-header">
+      <MsgTopBar
+        :active-tab="activeTab"
+        :notification-unread-count="notificationUnreadCount"
+        :announcement-unread-count="announcementUnreadCount"
+        @update:active-tab="handleTabChange"
+        @open-wechat-bind="showWechatBindModal = true"
+        @open-msg-settings="handleMsgSettings"
+      />
 
-    <!-- 分类筛选区 -->
-    <FilterSection
-      v-if="activeTab === 'notification'"
-      v-model:selected-exception-tab="filterState.exceptionTab"
-      v-model:selected-reminder-tab="filterState.reminderTab"
-      :exception-badge-map="exceptionBadgeMap"
-      :reminder-badge-map="reminderBadgeMap"
-    />
-    <NoticeFilterRow v-else />
-
-    <!-- 消息列表标题栏 -->
-    <div class="msg-list-header">
-      <div>
-        <span class="msg-list-title">{{ activeTab === 'notification' ? '消息列表' : '系统公告' }}</span>
-        <span class="msg-list-count">共计 {{ displayList.length }} 条消息</span>
-      </div>
-      <div class="msg-list-right" v-if="activeTab === 'notification'">
-        <label class="unread-only-checkbox">
-          <input type="checkbox" v-model="filterState.unreadOnly" />
-          只看未读消息
-        </label>
-        <button
-          v-if="currentUnreadCount > 0"
-          class="btn-mark-all-read"
-          @click="handleMarkAllRead"
-        >
-          一键已读({{ currentUnreadCount }})
-        </button>
-      </div>
+      <!-- 分类筛选区 -->
+      <FilterSection
+        v-if="activeTab === 'notification'"
+        v-model:selected-exception-tab="filterState.exceptionTab"
+        v-model:selected-reminder-tab="filterState.reminderTab"
+        :exception-badge-map="exceptionBadgeMap"
+        :reminder-badge-map="reminderBadgeMap"
+      />
+      <NoticeFilterRow v-else />
     </div>
 
-    <!-- 消息列表 -->
-    <MsgList
-      v-if="activeTab === 'notification'"
-      :items="displayList"
-      @mark-read="handleMarkRead"
-    />
-    <NoticeList
-      v-else
-      :items="displayList"
-      @mark-read="handleMarkRead"
-    />
+    <!-- 消息列表内容区 -->
+    <div class="msg-content">
+      <!-- 消息列表标题栏 -->
+      <div class="msg-list-header">
+        <div>
+          <span class="msg-list-title">{{ activeTab === 'notification' ? '消息列表' : '系统公告' }}</span>
+          <span class="msg-list-count">共计 {{ displayList.length }} 条消息</span>
+        </div>
+        <div class="msg-list-right" v-if="activeTab === 'notification'">
+          <label class="unread-only-checkbox">
+            <input type="checkbox" v-model="filterState.unreadOnly" />
+            只看未读消息
+          </label>
+          <button
+            v-if="currentUnreadCount > 0"
+            class="btn-mark-all-read"
+            @click="handleMarkAllRead"
+          >
+            一键已读({{ currentUnreadCount }})
+          </button>
+        </div>
+      </div>
 
-    <!-- 分页栏 -->
-    <MsgPagination
-      v-if="activeTab === 'notification'"
-      :total="filteredNotifications.length"
-      v-model:current-page="pagination.page"
-      v-model:page-size="pagination.pageSize"
-      @change="handlePageChange"
-    />
+      <!-- 消息列表 -->
+      <MsgList
+        v-if="activeTab === 'notification'"
+        :items="displayList"
+        @mark-read="handleMarkRead"
+      />
+      <NoticeList
+        v-else
+        :items="displayList"
+        @mark-read="handleMarkRead"
+      />
+
+      <!-- 分页栏 -->
+      <MsgPagination
+        v-if="activeTab === 'notification'"
+        :total="filteredNotifications.length"
+        v-model:current-page="pagination.page"
+        v-model:page-size="pagination.pageSize"
+        @change="handlePageChange"
+      />
+    </div>
 
     <!-- 绑定公众号弹窗 -->
     <WechatBindModal v-model:visible="showWechatBindModal" />
@@ -99,8 +104,8 @@ const route = useRoute()
 // 状态
 const activeTab = ref('notification')
 const filterState = ref({
-  exceptionTab: 'all',
-  reminderTab: 'all',
+  exceptionTab: '',
+  reminderTab: '',
   unreadOnly: false
 })
 const pagination = ref({ page: 1, pageSize: 10 })
@@ -122,14 +127,14 @@ const filteredNotifications = computed(() => {
   let result = notifications.value
 
   // 异常监控筛选
-  if (filterState.value.exceptionTab !== 'all') {
+  if (filterState.value.exceptionTab) {
     result = result.filter(n => n.category === 'exception' && n.subCategory === filterState.value.exceptionTab)
   }
 
   // 消息提醒筛选
-  if (filterState.value.reminderTab !== 'all') {
+  if (filterState.value.reminderTab) {
     const reminderFiltered = notifications.value.filter(n => n.category === 'reminder' && n.subCategory === filterState.value.reminderTab)
-    if (filterState.value.exceptionTab === 'all') {
+    if (!filterState.value.exceptionTab) {
       result = reminderFiltered
     } else {
       // 并集：两个分类都选了，合并结果
@@ -168,7 +173,7 @@ const latestAnnouncementContent = computed(() => {
 // 方法
 function handleTabChange(tab) {
   activeTab.value = tab
-  filterState.value = { exceptionTab: 'all', reminderTab: 'all', unreadOnly: false }
+  filterState.value = { exceptionTab: '', reminderTab: '', unreadOnly: false }
   pagination.value.page = 1
 }
 
@@ -214,15 +219,30 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .message-center {
-  min-height: 100vh;
-  background: #F5F6F7;
+  width: 1200px;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 12px;
+  padding: 0;
+  background: transparent;
+}
+
+.notice-header {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.msg-content {
+  margin-top: 16px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .msg-list-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 52px;
+  height: 63px;
   padding: 0 24px;
   background: #fff;
   border-bottom: 1px solid #F0F0F0;
@@ -262,10 +282,10 @@ onMounted(() => {
 }
 
 .btn-mark-all-read {
-  height: 30px;
+  height: 32px;
   padding: 0 14px;
   background: #fff;
-  border: none;
+  border: 1px solid #1677FF;
   border-radius: 4px;
   color: #1677FF;
   font-size: 13px;

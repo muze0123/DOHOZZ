@@ -1099,7 +1099,7 @@ $fast: 150ms ease;
   border: none;
   border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: 0 16px;
-  margin-top: 16px;
+  margin: 0;
 }
 .platform-tabs { display: flex; gap: 32px; }
 .platform-tab {

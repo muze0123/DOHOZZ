@@ -165,7 +165,7 @@ const handleLogin = async () => {
     localStorage.setItem('auth_token', 'logged_in')
 
     setTimeout(() => {
-      router.push('/dashboard')
+      router.push('/workspace')
     }, 500)
   } catch (error) {
     ElMessage.error(error.message || '登录失败，请重试')
