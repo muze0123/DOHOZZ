@@ -292,10 +292,10 @@
       <div class="section-head">
         <div class="head-left">
           <span class="section-title">排行榜</span>
-          <div class="tab-toggle">
-            <span class="toggle-btn" :class="{ active: rankTab === 'bd' }" @click="rankTab = 'bd'; rankPage = 1">BD</span>
-            <span class="toggle-btn" :class="{ active: rankTab === 'sample' }" @click="rankTab = 'sample'; rankPage = 1">样品</span>
-          </div>
+        </div>
+        <div class="tab-toggle">
+          <span class="toggle-btn" :class="{ active: rankTab === 'bd' }" @click="rankTab = 'bd'; rankPage = 1">BD</span>
+          <span class="toggle-btn" :class="{ active: rankTab === 'sample' }" @click="rankTab = 'sample'; rankPage = 1">样品</span>
         </div>
       </div>
       <div class="data-table-wrapper">
@@ -765,7 +765,7 @@ const initSampleChart = () => {
         itemHeight: 2,
         textStyle: { color: '#666', fontSize: 11 }
       },
-      grid: { left: 50, right: 20, top: 10, bottom: 40 },
+      grid: { left: 50, right: 20, top: 10, bottom: 40, containLabel: true },
       xAxis: {
         type: 'category',
         data: xData,
@@ -778,7 +778,6 @@ const initSampleChart = () => {
         {
           type: 'value',
           position: 'left',
-          max: 150,
           axisLine: { show: true, lineStyle: { color: '#91caff' } },
           axisLabel: { color: '#999', fontSize: 9 },
           splitLine: { lineStyle: { color: '#f5f5f5', type: 'dashed' } }
@@ -786,7 +785,6 @@ const initSampleChart = () => {
         {
           type: 'value',
           position: 'right',
-          max: 100,
           axisLine: { show: true, lineStyle: { color: '#fa8c16' } },
           axisLabel: { color: '#999', fontSize: 9 },
           splitLine: { show: false }
@@ -817,6 +815,7 @@ const initSampleChart = () => {
       ]
     }
     sampleChart.setOption(option)
+    sampleChart.resize()
   }
 }
 
@@ -1205,7 +1204,7 @@ $fast: 150ms ease;
 
 // ===== GMV 分布 =====
 .dual-section { display: flex; gap: 16px; margin: 16px 0 0;
-  &.inner { margin: 12px 0 0; }
+  &.inner { gap: 48px; margin: 12px 0 0; }
 }
 .gmv-content { display: flex; align-items: center; gap: 32px; }
 .donut-wrapper { flex-shrink: 0; }
@@ -1268,9 +1267,9 @@ $fast: 150ms ease;
 .sk-label { font-size: 12px; color: $text-2; margin-bottom: 4px; display: flex; align-items: center; }
 .sk-value { font-size: 20px; font-weight: 700; color: $text-1; margin-bottom: 2px; }
 .sk-trend { font-size: 12px; }
-.chart-box { flex: 1; min-width: 0; }
+.chart-box { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .chart-box-title { font-size: 13px; font-weight: 600; color: $text-1; margin-bottom: 8px; }
-.bar-line-chart { width: 100%; height: 200px; }
+.bar-line-chart { width: 100%; flex: 1; min-height: 200px; }
 .top10-list { display: flex; flex-direction: column; gap: 8px; }
 .top10-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
 .top10-rank { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #f0f0f0; font-size: 11px; font-weight: 600; color: $text-2; flex-shrink: 0;
@@ -1294,10 +1293,10 @@ $fast: 150ms ease;
 .link-text { color: $primary; cursor: pointer; margin-left: 4px; &:hover { text-decoration: underline; } }
 
 // ===== 排行榜 Tab =====
-.tab-toggle { display: flex; border: none; border-radius: 4px; overflow: hidden; }
-.toggle-btn { padding: 4px 14px; font-size: 13px; cursor: pointer; color: $text-2; background: #fff; border-right: 1px solid $border; transition: all $fast;
-  &:last-child { border-right: none; }
-  &.active { background: $primary; color: #fff; }
+.tab-toggle { display: flex; border-radius: 4px; overflow: hidden; }
+.toggle-btn { width: 62px; padding: 4px 0; font-size: 13px; cursor: pointer; color: $text-2; background: #fff; border: 1px solid $border; border-right: none; transition: all $fast; text-align: center;
+  &:last-child { border-right: 1px solid $border; }
+  &.active { background: $primary; color: #fff; border-color: $primary; }
 }
 
 // ===== 弹窗 =====

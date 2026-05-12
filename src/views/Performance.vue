@@ -280,7 +280,8 @@
       v-model="showOverviewConfig"
       direction="rtl"
       size="1200px"
-            :close-on-click-modal="false"
+      :close-on-click-modal="false"
+      @open="onOverviewConfigOpen"
     >
       <template #header>
         <div class="drawer-header">
@@ -559,7 +560,7 @@ const allOverviewKpiDataMap = {
 
 const overviewMetricGroups = [
   { name: '交易指标', options: [
-    { id: '1', label: '成交金额', tooltip: '按支付成功时间，所选周期内支付成功的买家实付金额汇总（含退款）' },
+    { id: '1', label: '成交金额', tooltip: '按支付成功时间，所选周期内支付成功的买家实付金额汇总（含退款）', fixed: true },
     { id: '2', label: '成交订单数', tooltip: '按支付成功时间，所选周期内支付成功的订单数（含退款订单）' },
     { id: '3', label: '首次出单达人成交金额', tooltip: '按支付成功时间，首次出单时间在所选周期内的达人成交金额（含退款）' },
     { id: '4', label: '首次出单达人成交金额占比', tooltip: '首次出单达人成交金额/成交金额' },
@@ -658,12 +659,26 @@ const getTrendDisplay = (kpi) => {
   }
 }
 
-// 判断选项是否应该禁用（已达到最大数量且当前选项未选中）
+// 判断选项是否应该禁用（已达到最大数量且当前选项未选中，或者是固定选项）
 const isOptionDisabled = (optId) => {
+  // 固定选项不允许取消选中
+  if (tempOverviewSelectedIds.value.includes(optId) && optId === '1') {
+    return true
+  }
   return !tempOverviewSelectedIds.value.includes(optId) && tempOverviewSelectedIds.value.length >= 15
 }
 
+const onOverviewConfigOpen = () => {
+  tempOverviewSelectedIds.value = [...userSavedOverviewConfigIds.value]
+  syncTempOverviewItemsFromIds()
+}
+
 const handleOverviewCheckChange = (isChecked, opt) => {
+  // 固定选项不允许取消选中
+  if (!isChecked && opt.id === '1') {
+    ElMessage.warning('成交金额为固定选中项，不可取消')
+    return
+  }
   if (isChecked) {
     if (tempOverviewSelectedIds.value.length >= 15) {
       ElMessage.warning('最多选择 15 个指标')
@@ -686,6 +701,11 @@ const handleOverviewCheckChange = (isChecked, opt) => {
 }
 
 const removeOverviewSelected = (id) => {
+  // 固定选项不允许删除
+  if (id === '1') {
+    ElMessage.warning('成交金额为固定选中项，不可移除')
+    return
+  }
   if (tempOverviewSelectedIds.value.length <= 3) {
     ElMessage.warning('最少选择 3 个指标')
     return
@@ -694,9 +714,23 @@ const removeOverviewSelected = (id) => {
   tempOverviewSelectedItems.value = tempOverviewSelectedItems.value.filter(x => x.id !== id)
 }
 
-const onDragStart = (idx) => { draggedIndex.value = idx }
+const onDragStart = (idx) => {
+  // 固定选项（成交金额 id='1'）不允许拖拽
+  if (idx === 0 && tempOverviewSelectedItems.value[idx]?.id === '1') {
+    draggedIndex.value = -1
+    return
+  }
+  draggedIndex.value = idx
+}
 const onDrop = (idx) => {
+  // 固定选项不允许拖拽移动
   if (draggedIndex.value === -1 || draggedIndex.value === idx) return
+  // 不允许拖入固定位置（index 0）
+  if (idx === 0) {
+    ElMessage.warning('成交金额为固定选中项，不可调整顺序')
+    draggedIndex.value = -1
+    return
+  }
   const list = tempOverviewSelectedItems.value
   const item = list.splice(draggedIndex.value, 1)[0]
   list.splice(idx, 0, item)
