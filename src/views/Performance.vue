@@ -298,7 +298,8 @@
                   v-for="opt in group.options"
                   :key="opt.id"
                   :model-value="tempOverviewSelectedIds.includes(opt.id)"
-                  @update:model-value="(val) => val ? tempOverviewSelectedIds.push(opt.id) : tempOverviewSelectedIds = tempOverviewSelectedIds.filter(id => id !== opt.id)"
+                  :disabled="isOptionDisabled(opt.id)"
+                  @change="(val) => handleOverviewCheckChange(val, opt)"
                 >
                   <el-tooltip :content="opt.tooltip" placement="top">
                     <span>{{ opt.label }}</span>
@@ -375,7 +376,8 @@
                   v-for="opt in group.options"
                   :key="opt.id"
                   :model-value="tempStatSelectedIds.includes(opt.id)"
-                  @update:model-value="(val) => val ? tempStatSelectedIds.push(opt.id) : tempStatSelectedIds = tempStatSelectedIds.filter(id => id !== opt.id)"
+                  :disabled="isStatOptionDisabled(opt.id)"
+                  @change="(val) => handleStatCheckChange(val, opt)"
                 >
                   <el-tooltip :content="opt.tooltip" placement="top">
                     <span>{{ opt.label }}</span>
@@ -656,20 +658,29 @@ const getTrendDisplay = (kpi) => {
   }
 }
 
+// 判断选项是否应该禁用（已达到最大数量且当前选项未选中）
+const isOptionDisabled = (optId) => {
+  return !tempOverviewSelectedIds.value.includes(optId) && tempOverviewSelectedIds.value.length >= 15
+}
+
 const handleOverviewCheckChange = (isChecked, opt) => {
   if (isChecked) {
     if (tempOverviewSelectedIds.value.length >= 15) {
       ElMessage.warning('最多选择 15 个指标')
-      tempOverviewSelectedIds.value = tempOverviewSelectedIds.value.filter(x => x !== opt.id)
       return
     }
-    tempOverviewSelectedItems.value.push(opt)
+    if (!tempOverviewSelectedIds.value.includes(opt.id)) {
+      tempOverviewSelectedIds.value.push(opt.id)
+    }
+    if (!tempOverviewSelectedItems.value.find(x => x.id === opt.id)) {
+      tempOverviewSelectedItems.value.push(opt)
+    }
   } else {
     if (tempOverviewSelectedIds.value.length <= 3) {
       ElMessage.warning('最少选择 3 个指标')
-      tempOverviewSelectedIds.value.push(opt.id)
       return
     }
+    tempOverviewSelectedIds.value = tempOverviewSelectedIds.value.filter(x => x !== opt.id)
     tempOverviewSelectedItems.value = tempOverviewSelectedItems.value.filter(x => x.id !== opt.id)
   }
 }
@@ -1093,20 +1104,28 @@ const syncTempStatItemsFromIds = () => {
   tempStatSelectedItems.value = tempStatSelectedIds.value.map(id => allItems.find(item => item.id === id)).filter(Boolean)
 }
 
+const isStatOptionDisabled = (optId) => {
+  return !tempStatSelectedIds.value.includes(optId) && tempStatSelectedIds.value.length >= 15
+}
+
 const handleStatCheckChange = (isChecked, opt) => {
   if (isChecked) {
     if (tempStatSelectedIds.value.length >= 15) {
       ElMessage.warning('最多选择 15 个指标')
-      tempStatSelectedIds.value = tempStatSelectedIds.value.filter(x => x !== opt.id)
       return
     }
-    tempStatSelectedItems.value.push(opt)
+    if (!tempStatSelectedIds.value.includes(opt.id)) {
+      tempStatSelectedIds.value.push(opt.id)
+    }
+    if (!tempStatSelectedItems.value.find(x => x.id === opt.id)) {
+      tempStatSelectedItems.value.push(opt)
+    }
   } else {
     if (tempStatSelectedIds.value.length <= 3) {
       ElMessage.warning('最少选择 3 个指标')
-      tempStatSelectedIds.value.push(opt.id)
       return
     }
+    tempStatSelectedIds.value = tempStatSelectedIds.value.filter(x => x !== opt.id)
     tempStatSelectedItems.value = tempStatSelectedItems.value.filter(x => x.id !== opt.id)
   }
 }

@@ -350,7 +350,6 @@ function scrollToFilters() {
 function handlePlatformTabChange(key) {
   filters.platform = key
   pagination.page = 1
-  ElMessage.success('平台切换成功')
 }
 
 function handleTimeDimChange(key) {
@@ -558,7 +557,7 @@ function formatDuration(sec) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .live-recording-page {
   @extend .page-container;

@@ -418,7 +418,7 @@ function goToDetail(row) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .black-list {
   @extend .page-container;

@@ -63,10 +63,7 @@
           </div>
           <div class="filter-item date-filter">
             <span class="filter-label">时间筛选</span>
-            <div class="date-quick-btns">
-              <span v-for="t in dateQuickTabs" :key="t.key" class="quick-btn" :class="{ active: filters.dateType === t.key }" @click="filters.dateType = t.key">{{ t.label }}</span>
-            </div>
-            <el-date-picker v-model="filters.dateRange" type="daterange" range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY/MM/DD" value-format="YYYY-MM-DD" class="date-range-picker" :clearable="false" />
+            <TimeRangeFilter v-model="timeFilterValue" @change="handleTimeFilterChange" />
           </div>
         </div>
       </div>
@@ -378,7 +375,7 @@
             <div v-for="group in metricGroups" :key="group.name" class="metric-group">
               <div class="metric-group-title">{{ group.name }}</div>
               <div class="metric-group-items">
-                 <el-checkbox v-for="opt in group.options" :key="opt.id" :model-value="tempSelectedIds.includes(opt.id)" @update:model-value="(val) => handleCheckboxChange(val, opt)">
+                 <el-checkbox v-for="opt in group.options" :key="opt.id" :model-value="tempSelectedIds.includes(opt.id)" :disabled="isOptionDisabled(opt.id)" @change="(val) => handleCheckboxChange(val, opt)">
                    <el-tooltip :content="opt.tooltip" placement="top"><span>{{ opt.label }}</span></el-tooltip>
                  </el-checkbox>
               </div>
@@ -423,20 +420,24 @@ import { ElMessage, ElAvatar, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
 import IconAllPlatform from '@/components/icons/IconAllPlatform.vue'
 import SimplePagination from '@/components/SimplePagination.vue'
+import TimeRangeFilter from '@/components/TimeRangeFilter.vue'
 
 // ===== 区域A：筛选 =====
 const filterToolbarRef = ref(null)
 const filters = reactive({
   store: '', department: '', bd: '',
-  dateType: '7d',
-  dateRange: ['2026-04-13', '2026-04-19'],
   platform: 'all'
 })
-const dateQuickTabs = [
-  { key: 'yesterday', label: '昨天' }, { key: '7d', label: '近7天' },
-  { key: '30d', label: '近30天' }, { key: '90d', label: '近90天' },
-  { key: 'custom', label: '自定义' }
-]
+const timeFilterValue = ref({
+  quickTime: 'today',
+  week: '',
+  month: '',
+  customStart: '',
+  customEnd: ''
+})
+const handleTimeFilterChange = (val) => {
+  console.log('时间筛选变化:', val)
+}
 const platformTabs = [
   { id: 'all', name: '全部' },
   { id: 'tiktok', name: 'TikTok' },
@@ -988,6 +989,10 @@ const syncTempItemsFromIds = () => {
   tempSelectedItems.value = tempSelectedIds.value.map(id => allKpiDataMap[id])
 }
 
+const isOptionDisabled = (optId) => {
+  return !tempSelectedIds.value.includes(optId) && tempSelectedIds.value.length >= 12
+}
+
 const handleCheckChange = (isChecked, id, opt) => {
   if (isChecked) {
     if (tempSelectedIds.value.length > 12) {
@@ -1160,30 +1165,6 @@ $fast: 150ms ease;
   }
 }
 .filter-item.date-filter { display: flex; align-items: center; gap: 0; margin-left: auto; }
-.date-quick-btns { display: flex; gap: 0; margin-right: 8px; }
-.quick-btn { padding: 4px 12px; font-size: 13px; cursor: pointer; color: $text-2; background: transparent; border: 1px solid #d9d9d9; transition: all $fast; border-radius: 0;
-  &:hover { color: $primary; }
-  &.active { background: #e6f4ff; color: $primary; border-color: #91caff; }
-  &:first-child { border-radius: 4px 0 0 4px; }
-  &:last-child { border-radius: 0 4px 4px 0; }
-}
-.date-range-picker {
-  :deep(.el-date-editor) {
-    height: 32px !important;
-  }
-  :deep(.el-date-editor--daterange) {
-    height: 32px !important;
-  }
-  :deep(.el-input__wrapper) {
-    height: 32px !important;
-  }
-  :deep(.el-range-editor) {
-    height: 32px !important;
-  }
-  :deep(.el-range-editor--small) {
-    height: 32px !important;
-  }
-}
 
 // ===== 通用 Section =====
 .section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: none;

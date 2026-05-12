@@ -188,7 +188,7 @@ function getStatusClass(status) {
 </script>
 
 <style scoped lang="scss">
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .sample-list-section {
   padding: 0 20px;

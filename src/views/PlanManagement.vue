@@ -524,7 +524,6 @@ async function loadData() {
 function handlePlatformChange(key) {
   filters.platform = key
   pagination.page = 1
-  ElMessage.success('平台切换成功')
 }
 
 // 分组切换

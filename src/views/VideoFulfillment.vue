@@ -637,7 +637,7 @@ function handleShowRule() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .video-fulfillment {
   @extend .page-container;

@@ -375,7 +375,7 @@ function goToDetail(row) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .white-list {
   @extend .page-container;

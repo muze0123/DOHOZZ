@@ -463,7 +463,7 @@ const handleImportSuccess = () => {
 </script>
 
 <style scoped lang="scss">
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .enterprise-influencer {
   padding: 16px;

@@ -246,7 +246,7 @@ function handleTimeChange(key) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .non-cart-video {
   @extend .page-container;

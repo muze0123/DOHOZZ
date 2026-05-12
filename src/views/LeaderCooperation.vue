@@ -428,7 +428,7 @@ const selectedIds = computed(() => selectedRows.value.map(r => r.id))
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .leader-cooperation {
   padding: 16px 0 24px;

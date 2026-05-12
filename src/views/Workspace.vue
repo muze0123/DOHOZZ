@@ -80,13 +80,16 @@
               class="todo-card"
               :class="{ 'has-warning': todo.warning > 0 }"
             >
-              <div class="todo-label">{{ todo.label }}</div>
+              <div class="todo-label">
+                {{ todo.label }}
+                <span class="label-arrow">›</span>
+              </div>
               <div class="todo-value" :class="{ warning: todo.warning > 0 }">
                 {{ todo.value }}
               </div>
               <div class="todo-warning" v-if="todo.warningText">
-                <span :class="{ 'warning-text': todo.warning > 0 }">{{ todo.warningText }}</span>
-                <span class="warning-count" v-if="todo.warning > 0">{{ todo.warning }}</span>
+                <span class="warning-tit">{{ todo.warningText }}</span>
+                <span class="warning-val" v-if="todo.warning > 0">{{ todo.warning }}</span>
               </div>
             </div>
           </div>
@@ -102,6 +105,7 @@
               v-for="tool in quickTools"
               :key="tool.id"
               class="quick-tool-item"
+              @click="handleQuickToolClick(tool.id)"
             >
               <div class="tool-icon" v-html="tool.icon"></div>
               <span class="tool-name">{{ tool.name }}</span>
@@ -133,6 +137,9 @@
               </div>
             </div>
           </div>
+
+          <!-- 业绩目标完成趋势图表 -->
+          <PerformanceTargetTrendChart />
 
           <div class="performance-stats">
             <div class="stat-item">
@@ -187,20 +194,7 @@
               {{ status.label }}{{ status.count }}
             </div>
           </div>
-          <div class="date-filter">
-            <div class="date-tabs">
-              <span
-                v-for="tab in dateTabs"
-                :key="tab"
-                class="date-tab"
-                :class="{ active: selectedDate === tab }"
-                @click="selectedDate = tab"
-              >
-                {{ tab }}
-              </span>
-            </div>
-            <span class="date-range">近7天（2025/11/20 - 2025/11/26）</span>
-          </div>
+          <TimeRangeFilterWithAll v-model="timeRange" />
         </div>
 
         <!-- 数据列表 -->
@@ -299,6 +293,8 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElAvatar } from 'element-plus'
 import PerformanceTargetDrawer from '@/components/PerformanceTargetDrawer.vue'
 import SimplePagination from '@/components/SimplePagination.vue'
+import PerformanceTargetTrendChart from './components/Workspace/PerformanceTargetTrendChart.vue'
+import TimeRangeFilterWithAll from '@/components/TimeRangeFilterWithAll.vue'
 
 const router = useRouter()
 
@@ -312,7 +308,13 @@ const UserIcon = {
 const activePlatform = ref('tiktok')
 const selectedDept = ref('')
 const selectedBD = ref('')
-const selectedDate = ref('近N天')
+const timeRange = ref({
+  quickTime: 'all',
+  week: '',
+  month: '',
+  customStart: '',
+  customEnd: ''
+})
 const selectedStatus = ref('all')
 const notifTab = ref('reminder')
 const userInfoBarRef = ref(null)
@@ -414,7 +416,23 @@ const quickTools = reactive([
   { id: 6, name: '跟进合作', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>' }
 ])
 
-const dateTabs = ['周', '月', '自定义', '近N天']
+// 快捷工具路由映射
+const quickToolRoutes = {
+  1: '/influencer-database',       // 找达人 -> 达人库
+  2: '/import-influencer-leads',  // 批量导入达人线索
+  3: '/outreach-task',             // 批量建联 -> 建联任务
+  4: '/sample-management',         // 申请寄样 -> 样品管理
+  5: '/video-fulfillment',         // 达人履约 -> 视频履约
+  6: '/cooperation-management'    // 跟进合作 -> 合作管理
+}
+
+// 快捷工具点击处理
+const handleQuickToolClick = (toolId) => {
+  const route = quickToolRoutes[toolId]
+  if (route) {
+    router.push(route)
+  }
+}
 
 const statusFilters = reactive([
   { key: 'all', label: '全部', count: 100 },
@@ -455,7 +473,6 @@ const currentNotifications = computed(() => {
 
 const switchPlatform = (platformId) => {
   activePlatform.value = platformId
-  ElMessage.info(`已切换至 ${platforms.find(p => p.id === platformId)?.name}`)
 }
 
 const getStatusClass = (status) => {
@@ -831,14 +848,26 @@ $transition-fast: 150ms ease;
 
 .todo-card {
   background: $warm-gray;
-  border: none;
+  border: 1px solid transparent;
   border-radius: $border-radius-md;
   padding: 12px;
   transition: all $transition-fast;
   cursor: pointer;
 
   &:hover {
-    border-color: $meta-blue;
+    background: #E6F4FF;
+
+    .todo-label {
+      color: $meta-blue;
+
+      .label-arrow {
+        display: inline;
+      }
+    }
+
+    .todo-value {
+      color: $meta-blue;
+    }
   }
 
   &.has-warning {
@@ -850,6 +879,22 @@ $transition-fast: 150ms ease;
   font-size: 12px;
   color: $secondary-text;
   margin-bottom: 8px;
+  transition: color $transition-fast;
+  cursor: pointer;
+
+  &:hover {
+    color: $meta-blue;
+
+    .label-arrow {
+      display: inline;
+    }
+  }
+
+  .label-arrow {
+    display: none;
+    margin-left: 4px;
+    color: $meta-blue;
+  }
 }
 
 .todo-value {
@@ -857,6 +902,7 @@ $transition-fast: 150ms ease;
   font-weight: 600;
   color: $primary-text;
   margin-bottom: 4px;
+  transition: color $transition-fast;
 
   &.warning {
     color: $warning-amber;
@@ -864,18 +910,34 @@ $transition-fast: 150ms ease;
 }
 
 .todo-warning {
+  display: inline-flex;
   font-size: 11px;
-  color: #999;
   line-height: 1.4;
+  transition: all $transition-fast;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-top: 4px;
+
+  &:hover {
+    border-color: $meta-blue;
+
+    .warning-tit,
+    .warning-val {
+      color: $meta-blue;
+    }
+  }
 }
 
-.warning-text {
-  color: $warning-amber;
+.warning-tit {
+  color: #999;
+  transition: color $transition-fast;
 }
 
-.warning-count {
-  color: $warning-amber;
+.warning-val {
+  color: #000;
   font-weight: 500;
+  transition: color $transition-fast;
 }
 
 // 快捷工具区
@@ -920,6 +982,13 @@ $transition-fast: 150ms ease;
   .section-header {
     margin-bottom: 12px;
   }
+}
+
+.performance-trend-chart {
+  margin-bottom: 16px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px 16px 0;
 }
 
 .performance-stats {
@@ -996,41 +1065,6 @@ $transition-fast: 150ms ease;
   }
 }
 
-.date-filter {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-}
-
-.date-tabs {
-  display: flex;
-  gap: 4px;
-}
-
-.date-tab {
-  padding: 4px 12px;
-  font-size: 13px;
-  color: $secondary-text;
-  cursor: pointer;
-  border-radius: $border-radius-sm;
-  transition: all $transition-fast;
-
-  &:hover {
-    color: $primary-text;
-  }
-
-  &.active {
-    background: $meta-blue;
-    color: $white;
-  }
-}
-
-.date-range {
-  font-size: 12px;
-  color: $disabled-text;
-}
-
 .status-tabs-row {
   display: flex;
   align-items: center;
@@ -1038,6 +1072,7 @@ $transition-fast: 150ms ease;
   margin-bottom: 16px;
   flex-wrap: wrap;
   gap: 12px;
+  position: relative;
 }
 
 .status-tabs {

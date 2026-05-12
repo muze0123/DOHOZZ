@@ -422,7 +422,8 @@
                   v-for="opt in group.options"
                   :key="opt.id"
                   :model-value="tempSelectedIds.includes(opt.id)"
-                  @update:model-value="(val) => val ? tempSelectedIds.push(opt.id) : tempSelectedIds = tempSelectedIds.filter(id => id !== opt.id)"
+                  :disabled="isOptionDisabled(opt.id)"
+                  @change="(val) => handleCheckChange(val, opt)"
                 >
                   <el-tooltip :content="opt.tooltip" placement="top">
                     <span>{{ opt.label }}</span>
@@ -567,22 +568,30 @@ const metricGroups = [
   { name: '跟进信息', options: [ allKpiDataMap['13'], allKpiDataMap['14'], allKpiDataMap['15'], allKpiDataMap['16'], allKpiDataMap['17'], allKpiDataMap['18'] ] }
 ]
 
+const isOptionDisabled = (optId) => {
+  return !tempSelectedIds.value.includes(optId) && tempSelectedIds.value.length >= 15
+}
+
 const defaultKpiIds = ['1', '3', '7', '9', '10', '13', '15']
 
 const handleCheckChange = (isChecked, opt) => {
   if (isChecked) {
     if (tempSelectedIds.value.length >= 15) {
       ElMessage.warning('最多选择 15 个指标')
-      tempSelectedIds.value = tempSelectedIds.value.filter(x => x !== opt.id)
       return
     }
-    tempSelectedItems.value.push(opt)
+    if (!tempSelectedIds.value.includes(opt.id)) {
+      tempSelectedIds.value.push(opt.id)
+    }
+    if (!tempSelectedItems.value.find(x => x.id === opt.id)) {
+      tempSelectedItems.value.push(opt)
+    }
   } else {
     if (tempSelectedIds.value.length <= 3) {
       ElMessage.warning('最少选择 3 个指标')
-      tempSelectedIds.value.push(opt.id)
       return
     }
+    tempSelectedIds.value = tempSelectedIds.value.filter(x => x !== opt.id)
     tempSelectedItems.value = tempSelectedItems.value.filter(x => x.id !== opt.id)
   }
 }
@@ -976,7 +985,7 @@ function goToDetail(row) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .my-influencer {
   @extend .page-container;

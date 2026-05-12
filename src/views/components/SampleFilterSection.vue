@@ -259,7 +259,7 @@ defineExpose({ reset })
 </script>
 
 <style scoped lang="scss">
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .sample-filter-section {
   .filter-section {

@@ -739,7 +739,7 @@ function goToDetail(row) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .influencer-public-pool {
   @extend .page-container;

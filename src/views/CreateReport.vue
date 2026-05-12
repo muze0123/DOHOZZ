@@ -228,7 +228,7 @@
             >
               <el-checkbox
                 :model-value="selectedFields.includes(field.id)"
-                :disabled="field.isDefault"
+                :disabled="field.isDefault || (!selectedFields.includes(field.id) && selectedFields.value.length >= 20)"
               />
               <span class="field-label">{{ field.label }}</span>
               <span v-if="field.isDefault" class="default-tag">默认</span>

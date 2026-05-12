@@ -723,7 +723,7 @@ const developingDialogVisible = ref(false)
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .member-management {
   padding: 0;

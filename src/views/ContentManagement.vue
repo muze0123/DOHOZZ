@@ -155,7 +155,7 @@ function handleMoreClick() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/_influencer-page.scss';
+@import '@/styles/_influencer-page.scss';
 
 .content-management {
   @extend .page-container;
