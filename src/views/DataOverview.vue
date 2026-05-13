@@ -148,7 +148,7 @@
         <div class="head-left">
           <span class="section-title">动销数据</span>
         </div>
-        <el-button size="small" type="primary" plain @click="handleExport">
+        <el-button size="small" @click="handleExport">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right:4px"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           导出
         </el-button>
@@ -387,8 +387,17 @@
             <div class="right-header"><span>已选 ({{ tempSelectedIds.length }})</span><span class="header-tip-text">长按可拖动调整展示排序</span></div>
             <div class="selected-list">
               <div v-for="(item, idx) in tempSelectedItems" :key="item.id"
-                   class="selected-item" draggable="true"
-                   @dragstart="onDragStart(idx)" @dragover.prevent @drop="onDrop(idx)">
+                   class="selected-item"
+                   :class="{
+                     'is-dragging': showInsertIndicator && dragOverIndex === idx && dragOverIndex !== draggedIndex,
+                     'is-being-dragged': showInsertIndicator && draggedIndex === idx
+                   }"
+                   draggable="true"
+                   @dragstart="onDragStart(idx)"
+                   @dragover.prevent="onDragOver(idx)"
+                   @dragleave="onDragLeave"
+                   @drop="onDrop(idx)"
+                   @dragend="onDragEnd(idx)">
                 <div class="item-inner">
                   <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf"><path d="M10 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
                   <span>{{ item.label }}</span>
@@ -1038,15 +1047,37 @@ const removeSelected = (id) => {
   tempSelectedItems.value = tempSelectedItems.value.filter(x => x.id !== id)
 }
 
+const showInsertIndicator = ref(false)
 let draggedIndex = -1
-const onDragStart = (idx) => { draggedIndex = idx }
+let dragOverIndex = ref(-1)
+const onDragStart = (idx) => {
+  draggedIndex = idx
+  showInsertIndicator.value = true
+}
+const onDragOver = (idx) => {
+  dragOverIndex.value = idx
+}
+const onDragLeave = () => {
+  // 不立即清除，等待 drop 或 dragend 处理
+}
 const onDrop = (idx) => {
-  if (draggedIndex === -1 || draggedIndex === idx) return
+  showInsertIndicator.value = false
+  if (draggedIndex === -1 || draggedIndex === idx) {
+    draggedIndex = -1
+    dragOverIndex.value = -1
+    return
+  }
   const list = tempSelectedItems.value
   const item = list.splice(draggedIndex, 1)[0]
   list.splice(idx, 0, item)
   tempSelectedIds.value = list.map(x => x.id)
   draggedIndex = -1
+  dragOverIndex.value = -1
+}
+const onDragEnd = () => {
+  showInsertIndicator.value = false
+  draggedIndex = -1
+  dragOverIndex.value = -1
 }
 
 const confirmRestoreDefault = () => {
@@ -1154,7 +1185,7 @@ $fast: 150ms ease;
 .filter-toolbar.is-stuck {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-.filter-row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+.filter-row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; margin: 0; }
 .filter-item { display: flex; align-items: center; flex-shrink: 0; }
 .filter-label { margin-right: 10px; color: #4e5969; font-family: PingFang SC; font-size: 13px; font-style: normal; font-weight: 400; white-space: nowrap; text-align: right; }
 .filter-select {

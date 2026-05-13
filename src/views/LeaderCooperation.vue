@@ -95,10 +95,7 @@
             />
           </div>
         </div>
-        <div class="filter-row filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
+        <FilterActions @query="handleQuery" @reset="handleReset" />
       </div>
     </div>
 
@@ -233,6 +230,7 @@ import DeleteCooperationDialog from './LeaderCooperation/dialogs/DeleteCooperati
 import BatchDeleteDialog from './LeaderCooperation/dialogs/BatchDeleteDialog.vue'
 import ExportConfirmDialog from './LeaderCooperation/dialogs/ExportConfirmDialog.vue'
 import CooperationDetailDialog from './LeaderCooperation/dialogs/CooperationDetailDialog.vue'
+import FilterActions from '@/components/FilterActions.vue'
 import Pagination from '@/components/Pagination.vue'
 
 // 平台Tab配置
@@ -513,11 +511,7 @@ const selectedIds = computed(() => selectedRows.value.map(r => r.id))
     margin-bottom: 12px;
     flex-wrap: wrap;
 
-    &.filter-actions {
-      justify-content: flex-end;
-      margin-top: 8px;
-    }
-  }
+      }
 
   .filter-item {
     display: flex;

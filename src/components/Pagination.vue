@@ -1,3 +1,4 @@
+// 分页组件-带分页大小选择器和总条数显示
 <template>
   <div class="pagination">
     <button class="pagination-btn prev" @click="handlePrev" :disabled="currentPage <= 1">‹</button>

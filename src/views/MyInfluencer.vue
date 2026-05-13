@@ -444,10 +444,16 @@
                 v-for="(item, idx) in tempSelectedItems"
                 :key="item.id"
                 class="selected-item"
+                :class="{
+                  'is-dragging': showInsertIndicator && dragOverIndex === idx && dragOverIndex !== draggedIndex,
+                  'is-being-dragged': showInsertIndicator && draggedIndex === idx
+                }"
                 draggable="true"
                 @dragstart="onDragStart(idx)"
-                @dragover.prevent
+                @dragover.prevent="onDragOver(idx)"
+                @dragleave="onDragLeave"
                 @drop="onDrop(idx)"
+                @dragend="onDragEnd"
               >
                 <div class="item-inner">
                   <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf">
@@ -539,6 +545,8 @@ const showConfigDialog = ref(false)
 const tempSelectedIds = ref([])
 const tempSelectedItems = ref([])
 let draggedIndex = ref(-1)
+let dragOverIndex = ref(-1)
+let showInsertIndicator = ref(false)
 
 // 指标配置
 const allKpiDataMap = {
@@ -605,13 +613,30 @@ const removeSelected = (id) => {
   tempSelectedItems.value = tempSelectedItems.value.filter(x => x.id !== id)
 }
 
-const onDragStart = (idx) => { draggedIndex.value = idx }
+const onDragStart = (idx) => {
+  draggedIndex.value = idx
+  showInsertIndicator.value = true
+}
+const onDragOver = (idx) => {
+  dragOverIndex.value = idx
+}
+const onDragLeave = () => {
+  // 不立即清除，等待 drop 或 dragend 处理
+}
 const onDrop = (idx) => {
-  if (draggedIndex.value === -1 || draggedIndex.value === idx) return
+  showInsertIndicator.value = false
+  if (draggedIndex.value === -1 || draggedIndex.value === idx) {
+    draggedIndex.value = -1
+    return
+  }
   const list = tempSelectedItems.value
   const item = list.splice(draggedIndex.value, 1)[0]
   list.splice(idx, 0, item)
   tempSelectedIds.value = list.map(x => x.id)
+  draggedIndex.value = -1
+}
+const onDragEnd = () => {
+  showInsertIndicator.value = false
   draggedIndex.value = -1
 }
 

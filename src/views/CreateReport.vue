@@ -254,12 +254,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, inject } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
-const setThirdLevelPage = inject('setThirdLevelPage')
 
 // 报表名称
 const reportName = ref('')
@@ -511,13 +510,13 @@ const handleRemoveField = (fieldId) => {
 
 // 返回
 const handleBack = () => {
-  setThirdLevelPage('')
+  router.push('/report-center')
 }
 
 // 确认离开
 const confirmLeave = () => {
   showLeaveDialog.value = false
-  setThirdLevelPage('')
+  router.push('/report-center')
 }
 
 // 提交
@@ -535,7 +534,7 @@ const handleSubmit = () => {
   setTimeout(() => {
     ElMessage.success('创建报表成功')
     submitting.value = false
-    setThirdLevelPage('')
+    router.push('/report-center')
   }, 500)
 }
 

@@ -54,7 +54,8 @@
       "Bash(grep -rh \"border: 1px solid \\\\$\" /Users/zhangbin/Documents/DOHOZZ/dohozz-saas/src/views/)",
       "Bash(gh pr:*)",
       "Bash(rm:*)",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(kill -9 73579)"
     ]
   }
 }

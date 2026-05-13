@@ -71,10 +71,7 @@
             clearable
           />
         </div>
-        <div class="filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
+        <FilterActions @query="handleQuery" @reset="handleReset" />
       </div>
     </div>
 
@@ -305,6 +302,7 @@ import ExportDialog from './dialogs/ExportDialog.vue'
 import RecordRuleDialog from './dialogs/RecordRuleDialog.vue'
 import UpdateRuleDialog from './dialogs/UpdateRuleDialog.vue'
 import ProductListDialog from './dialogs/ProductListDialog.vue'
+import FilterActions from '@/components/FilterActions.vue'
 import Pagination from '@/components/Pagination.vue'
 
 // ==================== 平台Tab ====================
@@ -823,11 +821,6 @@ onUnmounted(() => {
   width: 140px;
 }
 
-.filter-actions {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-}
 
 // ==================== 数据概览与操作区 ====================
 .overview-section {

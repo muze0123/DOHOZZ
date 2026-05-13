@@ -1,3 +1,4 @@
+// 暂无数据占位符组件
 <template>
   <div class="no-data-placeholder">
     <div class="content-wrapper">

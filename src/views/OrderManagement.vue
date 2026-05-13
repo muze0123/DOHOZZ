@@ -105,10 +105,7 @@
               <el-option v-for="status in claimStatusOptions" :key="status.value" :label="status.label" :value="status.value" />
             </el-select>
           </div>
-          <div class="filter-item filter-actions">
-            <el-button type="primary" @click="handleQuery">查询</el-button>
-            <el-button @click="handleReset">重置</el-button>
-          </div>
+          <FilterActions @query="handleQuery" @reset="handleReset" />
         </div>
       </div>
     </div>
@@ -374,6 +371,7 @@
 import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Goods, User } from '@element-plus/icons-vue'
+import FilterActions from '@/components/FilterActions.vue'
 import Pagination from '@/components/Pagination.vue'
 
 // 平台选项
@@ -819,10 +817,7 @@ function handleCopyProductId(row) {
     white-space: nowrap;
   }
 
-  &.filter-actions {
-    margin-left: auto;
   }
-}
 
 .required {
   color: #ff4d4f;

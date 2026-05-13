@@ -41,58 +41,60 @@
     <!-- 区域B：提成方案区 -->
     <div class="section plan-section">
       <div class="section-header">
-        <span class="section-title">提成方案</span>
+        <div class="header-left">
+          <span class="section-title">提成方案</span>
+          <span class="section-tip">基于所设置的「提成规则」，改变规则将影响方案内容</span>
+        </div>
         <el-button type="primary" size="small" @click="handleAddPlan">
           <span class="btn-icon">+</span> 新增方案
         </el-button>
       </div>
 
       <!-- 筛选条件 -->
-      <div class="filter-bar">
-        <div class="filter-row">
-          <template v-if="currentRule.commissionType !== 'product'">
-            <div class="filter-item">
-              <span class="filter-label">员工筛选</span>
-              <el-select v-model="filters.employee" placeholder="全部" clearable filterable style="width: 160px">
-                <el-option label="全部" value="" />
-                <el-option label="张三" value="zhangsan" />
-                <el-option label="李四" value="lisi" />
-                <el-option label="王五" value="wangwu" />
-              </el-select>
-            </div>
-          </template>
-          <template v-else>
-            <div class="filter-item">
-              <span class="filter-label">平台</span>
-              <el-select v-model="filters.platform" placeholder="全部" style="width: 140px">
-                <el-option label="全部" value="" />
-                <el-option label="TikTok" value="tiktok" />
-                <el-option label="Shopee" value="shopee" />
-                <el-option label="Lazada" value="lazada" />
-              </el-select>
-            </div>
-          </template>
+      <div class="filter-row">
+        <template v-if="currentRule.commissionType !== 'product'">
           <div class="filter-item">
-            <span class="filter-label">方案搜索</span>
-            <el-input v-model="filters.planName" placeholder="请输入方案名称" clearable style="width: 160px" />
+            <span class="filter-label">员工筛选</span>
+            <el-select v-model="filters.employee" placeholder="全部" clearable filterable style="width: 200px">
+              <el-option label="全部" value="" />
+              <el-option label="张三" value="zhangsan" />
+              <el-option label="李四" value="lisi" />
+              <el-option label="王五" value="wangwu" />
+            </el-select>
           </div>
-          <template v-if="currentRule.commissionType === 'product'">
-            <div class="filter-item">
-              <span class="filter-label">商品搜索</span>
-              <el-input v-model="filters.productName" placeholder="商品名称/ID" clearable style="width: 160px" />
-            </div>
-          </template>
-          <div class="filter-actions">
-            <el-button type="primary" @click="handleQuery">查询</el-button>
-            <el-button @click="handleReset">重置</el-button>
+        </template>
+        <template v-else>
+          <div class="filter-item">
+            <span class="filter-label">平台</span>
+            <el-select v-model="filters.platform" placeholder="全部" style="width: 200px">
+              <el-option label="全部" value="" />
+              <el-option label="TikTok" value="tiktok" />
+              <el-option label="Shopee" value="shopee" />
+              <el-option label="Lazada" value="lazada" />
+            </el-select>
           </div>
+        </template>
+        <div class="filter-item">
+          <span class="filter-label">方案搜索</span>
+          <el-input v-model="filters.planName" placeholder="请输入方案名称" clearable style="width: 200px" />
         </div>
+        <template v-if="currentRule.commissionType === 'product'">
+          <div class="filter-item">
+            <span class="filter-label">商品搜索</span>
+            <el-input v-model="filters.productName" placeholder="商品名称/ID" clearable style="width: 200px" />
+          </div>
+        </template>
+        <FilterActions @query="handleQuery" @reset="handleReset" />
       </div>
 
       <!-- 未添加提示 -->
-      <div v-if="uncoveredCount > 0" class="uncovered-tip">
-        <span>当前有 {{ uncoveredCount }} 个{{ currentRule.commissionType === 'product' ? '商品链接' : '员工' }}未添加提成方案。</span>
-        <span v-if="hasDefaultPlan">未添加的，将按照默认方案计算提成。</span>
+      <div v-if="uncoveredCount > 0" class="tip-row">
+        <svg class="icon-warn" viewBox="0 0 24 24" width="20" height="20" fill="#FCB700">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        <span>当前有</span>
+        <span class="color-primary">{{ uncoveredCount }}</span>
+        <span>个员工未添加提成方案。</span>
       </div>
 
       <!-- 方案列表 -->
@@ -151,7 +153,7 @@
         <el-table-column prop="createTime" label="创建时间" width="160" sortable />
         <el-table-column prop="modifier" label="修改人" width="100" />
         <el-table-column prop="modifyTime" label="修改时间" width="160" sortable />
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="150" fixed="right" class-name="action-column">
           <template #default="{ row }">
             <div class="action-cell">
               <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
@@ -531,11 +533,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, inject } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Pagination from '@/components/Pagination.vue'
+import FilterActions from '@/components/FilterActions.vue'
 
-const setThirdLevelPage = inject('setThirdLevelPage')
+const router = useRouter()
 
 // 提成规则
 const currentRule = reactive({
@@ -826,6 +830,20 @@ const mockPlans = [
     modifyTime: '2026-01-04 12:00:00',
     tiers: [],
     collapsed: true
+  },
+  {
+    id: '4',
+    planName: '待分配方案',
+    isDefault: false,
+    commissionRate: '8%',
+    manageRate: '15%',
+    userCount: 0,
+    creator: '赵六',
+    createTime: '2026-01-05 10:00:00',
+    modifier: '赵六',
+    modifyTime: '2026-01-06 15:00:00',
+    tiers: [],
+    collapsed: true
   }
 ]
 
@@ -850,7 +868,7 @@ const fetchHistory = () => {
 
 // 功能说明
 const handleHelpClick = () => {
-  setThirdLevelPage('commissionHelp')
+  router.push('/commission/help')
 }
 
 // 查询
@@ -1072,7 +1090,7 @@ $success-green: #31A24C;
 $warning-orange: #FF7A00;
 
 .commission-management {
-  padding: 16px 0 24px;
+  padding: 0;
   min-height: 100%;
 }
 
@@ -1086,16 +1104,9 @@ $warning-orange: #FF7A00;
 }
 
 .section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: $primary-text;
+  .el-button {
+    height: 32px;
+  }
 }
 
 // 提成规则区
@@ -1170,67 +1181,14 @@ $warning-orange: #FF7A00;
 }
 
 // 筛选栏
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 16px;
-  background: $bg;
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-
-.filter-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-}
-
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.filter-label {
-  font-size: 13px;
-  color: $secondary-text;
-  white-space: nowrap;
-}
-
 .filter-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-left: auto;
 }
 
-// 未覆盖提示
-.uncovered-tip {
-  font-size: 13px;
-  color: $warning-orange;
-  background: #fff7e6;
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-}
-
-// 方案列表
-.plan-name-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.default-tag {
-  padding: 2px 6px;
-  background: $warning-orange;
-  color: #fff;
-  font-size: 10px;
-  border-radius: 4px;
+.tip-row {
+  margin-top: 16px;
 }
 
 .commission-cell {
@@ -1265,11 +1223,6 @@ $warning-orange: #FF7A00;
 
 .no-data {
   color: $text-3;
-}
-
-.action-cell {
-  display: flex;
-  gap: 8px;
 }
 
 // 空状态
@@ -1316,13 +1269,7 @@ $warning-orange: #FF7A00;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
-}
-
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: $primary-text;
+  margin-bottom: 16px;
 }
 
 .required {

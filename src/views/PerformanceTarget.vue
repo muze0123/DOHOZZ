@@ -1,6 +1,6 @@
 <template>
   <div class="performance-target">
-    <!-- 区块A：平台Tab + 筛选区（合并为一个区块） -->
+    <!-- 区块A：平台Tab + 筛选区 -->
     <div class="filter-area">
       <!-- 平台Tab -->
       <div class="platform-tabs-bar">
@@ -12,14 +12,24 @@
             :class="{ active: currentPlatform === platform.value }"
             @click="handlePlatformChange(platform.value)"
           >
-            <div class="platform-icon">{{ platform.icon }}</div>
+            <div class="platform-icon tiktok-icon" v-if="platform.value === 'tiktok'">
+              <img src="@/assets/images/TikTok.png" alt="TikTok" />
+            </div>
+            <div class="platform-icon instagram-icon" v-else-if="platform.value === 'instagram'">
+              <img src="@/assets/images/Instagram.png" alt="Instagram" />
+            </div>
+            <div class="platform-icon shopee-icon" v-else-if="platform.value === 'shopee'">
+              <img src="@/assets/images/Shopee.png" alt="Shopee" />
+            </div>
+            <div class="platform-icon lazada-icon" v-else-if="platform.value === 'lazada'">
+              <img src="@/assets/images/Lazada.png" alt="Lazada" />
+            </div>
             <span>{{ platform.name }}</span>
           </div>
         </div>
       </div>
-
-      <!-- 筛选区 -->
-      <div class="filter-toolbar sticky-filter-bar">
+      <!-- 筛选条件区块 -->
+      <div class="filter-toolbar">
         <div class="filter-row">
           <div class="filter-item">
             <span class="filter-label">目标月度</span>
@@ -29,12 +39,12 @@
               value-format="YYYY-MM"
               placeholder="选择月份"
               size="small"
-              style="width: 130px"
+              class="filter-select"
             />
           </div>
           <div class="filter-item">
             <span class="filter-label">所属部门</span>
-            <el-select v-model="filters.department" placeholder="全部部门" clearable filterable size="small" style="width: 140px">
+            <el-select v-model="filters.department" placeholder="全部部门" clearable filterable size="small" class="filter-select">
               <el-option label="全部部门" value="" />
               <el-option label="销售一部" value="sales1" />
               <el-option label="销售二部" value="sales2" />
@@ -43,17 +53,14 @@
           </div>
           <div class="filter-item">
             <span class="filter-label">所属BD</span>
-            <el-select v-model="filters.bd" placeholder="全部BD" clearable filterable size="small" style="width: 140px">
+            <el-select v-model="filters.bd" placeholder="全部BD" clearable filterable size="small" class="filter-select">
               <el-option label="全部BD" value="" />
               <el-option label="BD-张三" value="zhangsan" />
               <el-option label="BD-李四" value="lisi" />
               <el-option label="BD-王五" value="wangwu" />
             </el-select>
           </div>
-          <div class="filter-item date-filter">
-            <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
-            <el-button size="small" @click="handleReset">重置</el-button>
-          </div>
+          <FilterActions @query="handleQuery" @reset="handleReset" />
         </div>
       </div>
     </div>
@@ -102,6 +109,9 @@
     <!-- 区块C：数据列表 -->
     <div class="section table-section">
       <div class="toolbar">
+        <div class="section-header">
+          <span class="section-title">业绩目标</span>
+        </div>
         <el-button type="primary" @click="handleAdd">+ 新增业绩目标</el-button>
       </div>
       <el-table
@@ -177,6 +187,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import Pagination from '@/components/Pagination.vue'
+import FilterActions from '@/components/FilterActions.vue'
 import PerformanceTargetDrawer from '@/components/PerformanceTargetDrawer.vue'
 
 // 平台选项
@@ -375,76 +386,72 @@ onMounted(() => {
   background: $background-light;
 }
 
-.filter-area {
-  background: $background-white;
-  border-radius: $border-radius-lg;
-  margin-bottom: 20px;
-  overflow: hidden;
-}
-
+.filter-area { margin-bottom: 16px; }
 .platform-tabs-bar {
-  border-bottom: 1px solid $border-color;
+  background: $background-white;
+  border: none;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
+  padding: 0 16px;
   margin: 0;
 }
-
-.platform-tabs {
-  display: flex;
-  padding: 0 20px;
-}
-
+.platform-tabs { display: flex; gap: 32px; }
 .platform-tab {
+  display: flex; align-items: center; gap: 8px; padding: 12px 0;
+  color: $text-secondary; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all $transition-fast; position: relative; top: 1px;
+  &:hover { color: $text-primary; }
+  &.active { color: $primary-color; font-weight: 500; border-bottom-color: $primary-color; }
+  .platform-icon {
+    width: 20px; height: 20px;
+    &.tiktok-icon {
+      width: 20px; height: 20px; border-radius: 6px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 6px; }
+    }
+    &.instagram-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.shopee-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+    &.lazada-icon {
+      width: 20px; height: 20px; border-radius: 4px; overflow: hidden;
+      img { width: 100%; height: 100%; border-radius: 4px; }
+    }
+  }
+}
+.filter-toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 16px 24px;
-  font-size: 14px;
-  color: $text-secondary;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all $transition-fast;
-
-  &:hover {
-    color: $text-primary;
-  }
-
-  &.active {
-    color: $primary-color;
-    border-bottom-color: $primary-color;
-    font-weight: 600;
-  }
-}
-
-.platform-icon {
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
-  background: #E8F4FF;
-  color: $primary-color;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.filter-toolbar {
-  padding: 16px 20px;
+  justify-content: space-between;
+  padding: 16px;
+  background: $background-white;
+  border-top: 1px solid #E8E8E8;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
 }
 
 .filter-row {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 32px;
+  margin: 0;
 }
 
 .filter-item {
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 32px;
 }
 
 .filter-label {
-  font-size: 14px;
+  font-size: 13px;
   color: $text-secondary;
+  margin-right: 10px;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .date-filter {
@@ -462,6 +469,7 @@ onMounted(() => {
 
 .chart-section {
   padding-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .chart-header {
@@ -572,8 +580,15 @@ onMounted(() => {
 
 .toolbar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
 }
 
 .member-cell {
@@ -681,7 +696,4 @@ onMounted(() => {
   background: #E8F4FF;
 }
 
-:deep(.el-date-editor) {
-  --el-date-editor-width: 140px;
-}
 </style>

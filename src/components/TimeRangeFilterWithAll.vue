@@ -1,3 +1,4 @@
+// 时间范围筛选组件，带全部选项
 <template>
   <div class="time-range-filter">
     <div class="filter-group">

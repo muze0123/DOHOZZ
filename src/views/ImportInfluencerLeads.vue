@@ -63,10 +63,7 @@
             style="width: 340px"
           />
         </div>
-        <div class="filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
+        <FilterActions @query="handleQuery" @reset="handleReset" />
       </div>
     </div>
 
@@ -250,6 +247,7 @@
 import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ArrowDown, CircleCheck } from '@element-plus/icons-vue'
+import FilterActions from '@/components/FilterActions.vue'
 import Pagination from '@/components/Pagination.vue'
 
 // 平台数据
@@ -521,9 +519,6 @@ $white: #FFFFFF;
   white-space: nowrap;
 }
 
-.filter-actions {
-  margin-left: auto;
-}
 
 // 列表头部
 .list-header {

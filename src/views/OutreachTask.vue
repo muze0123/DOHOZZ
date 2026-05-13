@@ -100,10 +100,7 @@
           />
         </div>
         
-        <div class="filter-actions">
-          <el-button @click="resetFilters" class="btn-reset">重置</el-button>
-          <el-button type="primary" @click="applyFilters" class="btn-search">查询</el-button>
-        </div>
+        <FilterActions @query="applyFilters" @reset="resetFilters" />
       </div>
     </div>
 
@@ -442,6 +439,7 @@
 <script setup>
 import { ref, reactive, computed, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
+import FilterActions from '@/components/FilterActions.vue'
 import Pagination from '@/components/Pagination.vue'
 
 const activeTab = ref('定向邀约')
@@ -894,30 +892,6 @@ const getInviteStatusClass = (status) => {
   }
 }
 
-.filter-actions {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-
-  .el-button {
-    height: 32px;
-    width: 72px;
-    padding: 0;
-    border-radius: 4px;
-    font-size: 13px;
-  }
-
-  .btn-search {
-    background: #1677FF;
-    border-color: #1677FF;
-  }
-
-  .btn-reset {
-    background: #FFFFFF;
-    border-color: #D9D9D9;
-    color: #595959;
-  }
-}
 
 /* 区域三：任务列表 */
 .list-section {

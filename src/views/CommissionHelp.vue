@@ -103,12 +103,12 @@
 </template>
 
 <script setup>
-import { inject } from 'vue'
+import { useRouter } from 'vue-router'
 
-const setThirdLevelPage = inject('setThirdLevelPage')
+const router = useRouter()
 
 const handleBack = () => {
-  setThirdLevelPage('')
+  router.back()
 }
 </script>
 

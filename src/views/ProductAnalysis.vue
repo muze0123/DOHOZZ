@@ -103,10 +103,7 @@
             <el-option v-for="bd in bdOptions" :key="bd.id" :label="bd.name" :value="bd.id" />
           </el-select>
         </div>
-        <div class="filter-item filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
+        <FilterActions @query="handleQuery" @reset="handleReset" />
       </div>
     </div>
 
@@ -299,6 +296,7 @@ import { ref, reactive, computed, onMounted, onUnmounted, watch, nextTick } from
 import { ElMessage } from 'element-plus'
 import { QuestionFilled, Box, Top, Bottom, Money, ShoppingCart, Delete, Link, CopyDocument } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
+import FilterActions from '@/components/FilterActions.vue'
 import ProductDetailDrawer from './ProductLibrary/dialogs/ProductDetailDrawer.vue'
 
 // 平台Tab配置
@@ -843,10 +841,7 @@ watch(scatterData, () => {
     margin-bottom: 0;
   }
 
-  &.filter-actions {
-    margin-left: auto;
   }
-}
 
 .filter-item {
   display: flex;

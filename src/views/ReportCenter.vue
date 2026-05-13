@@ -9,13 +9,13 @@
             v-model="searchKeyword"
             placeholder="请输入报表名称"
             clearable
-            style="width: 160px"
+            style="width: 200px"
             @keyup.enter="handleQuery"
           />
         </div>
         <div class="filter-item">
           <span class="filter-label">平台</span>
-          <el-select v-model="platform" placeholder="全部" style="width: 130px">
+          <el-select v-model="platform" placeholder="全部" style="width: 200px">
             <el-option label="全部" value="" />
             <el-option label="TikTok" value="tiktok" />
             <el-option label="Shopee" value="shopee" />
@@ -24,7 +24,7 @@
         </div>
         <div class="filter-item">
           <span class="filter-label">分析对象</span>
-          <el-select v-model="analysisType" placeholder="全部" style="width: 130px">
+          <el-select v-model="analysisType" placeholder="全部" style="width: 200px">
             <el-option label="全部" value="" />
             <el-option label="出单达人" value="talent" />
             <el-option label="员工" value="employee" />
@@ -38,7 +38,7 @@
             placeholder="全部"
             filterable
             clearable
-            style="width: 130px"
+            style="width: 200px"
           >
             <el-option label="全部" value="" />
             <el-option label="张三" value="zhangsan" />
@@ -58,10 +58,7 @@
             style="width: 320px"
           />
         </div>
-        <div class="filter-actions">
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </div>
+        <FilterActions @query="handleQuery" @reset="handleReset" />
       </div>
     </div>
 
@@ -127,7 +124,7 @@
             <span class="created-time">{{ row.createdAt }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="150" fixed="right" class-name="action-column">
           <template #default="{ row }">
             <div class="action-cell">
               <template v-if="row.status === 'done'">
@@ -183,13 +180,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, inject } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Pagination from '@/components/Pagination.vue'
+import FilterActions from '@/components/FilterActions.vue'
 
 const router = useRouter()
-const setThirdLevelPage = inject('setThirdLevelPage')
 
 // 分页
 const pagination = reactive({
@@ -320,7 +317,7 @@ const handleReset = () => {
 
 // 创建报表
 const handleCreate = () => {
-  setThirdLevelPage('create')
+  router.push('/report/create')
 }
 
 // 编辑报表
@@ -406,7 +403,7 @@ $border-radius-lg: 12px;
 $success-green: #31A24C;
 
 .report-center {
-  padding: 16px 0 24px;
+  padding: 0;
   min-height: 100%;
 }
 
@@ -443,7 +440,8 @@ $success-green: #31A24C;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 24px;
+  gap: 32px;
+  margin: 0;
 }
 
 .filter-item {
@@ -458,12 +456,7 @@ $success-green: #31A24C;
   white-space: nowrap;
 }
 
-.filter-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
+// 删除，不再需要
 
 .btn-icon {
   margin-right: 4px;
@@ -554,8 +547,16 @@ $success-green: #31A24C;
 
 .action-cell {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
+  justify-content: center;
+}
+
+:deep(.action-column) {
+  padding-right: 16px;
+  .cell {
+    overflow: visible;
+  }
 }
 
 .no-action {

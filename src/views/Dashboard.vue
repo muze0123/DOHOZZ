@@ -1229,9 +1229,10 @@ $transition-fast: 150ms ease;
 // 主内容包装
 .main-wrapper {
   display: flex;
-  min-width: 2342px;
+  flex: 1;
   margin: 0 auto;
   padding: 0 0 0 210px;
+  min-width: 0;
 
   &.fullscreen {
     margin: 0;
@@ -1380,11 +1381,10 @@ $transition-fast: 150ms ease;
 
 // 主内容区
 .main-content {
-  flex: 0 0 2342px;
-  width: 2342px;
-  padding: 16px;
+  flex: 1;
   min-width: 0;
-  margin: 0;
+  padding: 16px;
+  width: 100%;
 }
 
 .main-wrapper.fullscreen .main-content {

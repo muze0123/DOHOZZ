@@ -79,10 +79,7 @@
         </div>
 
         <!-- 搜索和重置按钮 -->
-        <div class="filter-actions">
-          <el-button type="primary" size="small" @click="handleSearch">搜索</el-button>
-          <el-button size="small" @click="handleReset">重置</el-button>
-        </div>
+        <FilterActions queryText="搜索" @query="handleSearch" @reset="handleReset" />
       </div>
 
       <!-- 下载任务提示 -->
@@ -294,6 +291,7 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import Pagination from '@/components/Pagination.vue'
+import FilterActions from '@/components/FilterActions.vue'
 
 const props = defineProps({
   modelValue: {

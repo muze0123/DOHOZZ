@@ -63,10 +63,7 @@
           </div>
           <div class="filter-item date-filter">
             <span class="filter-label">时间筛选</span>
-            <div class="date-quick-btns">
-              <span v-for="t in dateQuickTabs" :key="t.key" class="quick-btn" :class="{ active: filters.dateType === t.key }" @click="filters.dateType = t.key">{{ t.label }}</span>
-            </div>
-            <el-date-picker v-model="filters.dateRange" type="daterange" range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY/MM/DD" value-format="YYYY-MM-DD" class="date-range-picker" :clearable="false" />
+            <TimeRangeFilter v-model="timeFilterValue" @change="handleTimeFilterChange" />
           </div>
         </div>
       </div>
@@ -122,8 +119,10 @@
     <!-- ==================== 区域C：绩效分析区 ==================== -->
     <div class="section-block area-c">
       <div class="section-head">
-        <span class="section-title">绩效分析</span>
-        <span class="date-range-text">{{ dateRangeText }}</span>
+        <div class="head-left">
+          <span class="section-title">绩效分析</span>
+          <span class="date-range-text">{{ dateRangeText }}</span>
+        </div>
       </div>
 
       <div class="performance-analysis-content">
@@ -140,17 +139,6 @@
                 <el-option label="建联达人数" value="contact" />
                 <el-option label="寄样达人数" value="sample" />
               </el-select>
-            </div>
-            <div class="bubble-tools">
-              <el-button size="small" @click="handleZoomSelect">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right: 4px">
-                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/>
-                </svg>
-                圈选放大
-              </el-button>
-              <el-button v-if="isZoomed" size="small" @click="handleZoomBack">
-                点击返回
-              </el-button>
             </div>
           </div>
 
@@ -185,18 +173,21 @@
           <span class="section-title">绩效统计</span>
           <span class="date-range-text">{{ dateRangeText }}</span>
         </div>
+      </div>
+
+      <div class="toolbar-content">
+        <div class="tab-toggle">
+          <span
+            v-for="tab in statTabs"
+            :key="tab.key"
+            class="toggle-btn"
+            :class="{ active: currentStatTab === tab.key }"
+            @click="currentStatTab = tab.key"
+          >
+            {{ tab.label }}
+          </span>
+        </div>
         <div class="toolbar-actions">
-          <div class="tab-toggle">
-            <span
-              v-for="tab in statTabs"
-              :key="tab.key"
-              class="toggle-btn"
-              :class="{ active: currentStatTab === tab.key }"
-              @click="currentStatTab = tab.key"
-            >
-              {{ tab.label }}
-            </span>
-          </div>
           <el-checkbox v-model="showPreciseValue" label="显示精确数值" size="small" />
           <el-button size="small" @click="handleExport">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-right: 4px">
@@ -321,10 +312,16 @@
                 v-for="(item, idx) in tempOverviewSelectedItems"
                 :key="item.id"
                 class="selected-item"
+                :class="{
+                  'is-dragging': showOverviewInsertIndicator && overviewDragOverIndex === idx && overviewDragOverIndex !== draggedIndex,
+                  'is-being-dragged': showOverviewInsertIndicator && draggedIndex === idx
+                }"
                 draggable="true"
                 @dragstart="onDragStart(idx)"
-                @dragover.prevent
+                @dragover.prevent="onDragOver(idx)"
+                @dragleave="onDragLeave"
                 @drop="onDrop(idx)"
+                @dragend="onDragEnd"
               >
                 <div class="item-inner">
                   <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf">
@@ -399,10 +396,16 @@
                 v-for="(item, idx) in tempStatSelectedItems"
                 :key="item.id"
                 class="selected-item"
+                :class="{
+                  'is-dragging': showStatInsertIndicator && statDragOverIndex === idx && statDragOverIndex !== statDraggedIndex,
+                  'is-being-dragged': showStatInsertIndicator && statDraggedIndex === idx
+                }"
                 draggable="true"
                 @dragstart="onStatDragStart(idx)"
-                @dragover.prevent
+                @dragover.prevent="onStatDragOver(idx)"
+                @dragleave="onStatDragLeave"
                 @drop="onStatDrop(idx)"
+                @dragend="onStatDragEnd"
               >
                 <div class="item-inner">
                   <svg class="drag-handle" viewBox="0 0 24 24" width="16" height="16" fill="#bfbfbf">
@@ -483,6 +486,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
 import Pagination from '@/components/Pagination.vue'
 import IconAllPlatform from '@/components/icons/IconAllPlatform.vue'
+import TimeRangeFilter from '@/components/TimeRangeFilter.vue'
 
 // ==================== 区域A：筛选 ====================
 const filterToolbarRef = ref(null)
@@ -490,17 +494,18 @@ const filters = reactive({
   store: '',
   department: '',
   bd: '',
-  dateType: '7d',
-  dateRange: ['2026-04-13', '2026-04-19'],
   platform: 'all'
 })
-const dateQuickTabs = [
-  { key: 'yesterday', label: '昨天' },
-  { key: '7d', label: '近7天' },
-  { key: '30d', label: '近30天' },
-  { key: '90d', label: '近90天' },
-  { key: 'custom', label: '自定义' }
-]
+const timeFilterValue = ref({
+  quickTime: 'today',
+  week: '',
+  month: '',
+  customStart: '',
+  customEnd: ''
+})
+const handleTimeFilterChange = (val) => {
+  console.log('时间筛选变化:', val)
+}
 const platformTabs = [
   { id: 'all', name: '全部' },
   { id: 'tiktok', name: 'TikTok' },
@@ -721,10 +726,21 @@ const onDragStart = (idx) => {
     return
   }
   draggedIndex.value = idx
+  showOverviewInsertIndicator.value = true
+}
+const onDragOver = (idx) => {
+  overviewDragOverIndex.value = idx
+}
+const onDragLeave = () => {
+  // 不立即清除，等待 drop 或 dragend 处理
 }
 const onDrop = (idx) => {
+  showOverviewInsertIndicator.value = false
   // 固定选项不允许拖拽移动
-  if (draggedIndex.value === -1 || draggedIndex.value === idx) return
+  if (draggedIndex.value === -1 || draggedIndex.value === idx) {
+    draggedIndex.value = -1
+    return
+  }
   // 不允许拖入固定位置（index 0）
   if (idx === 0) {
     ElMessage.warning('成交金额为固定选中项，不可调整顺序')
@@ -737,8 +753,14 @@ const onDrop = (idx) => {
   tempOverviewSelectedIds.value = list.map(x => x.id)
   draggedIndex.value = -1
 }
+const onDragEnd = () => {
+  showOverviewInsertIndicator.value = false
+  draggedIndex.value = -1
+}
 
 let draggedIndex = ref(-1)
+let overviewDragOverIndex = ref(-1)
+let showOverviewInsertIndicator = ref(false)
 
 const confirmOverviewRestore = () => {
   ElMessageBox.confirm('确定恢复默认配置吗？', '提示', {
@@ -773,7 +795,6 @@ const saveOverviewConfig = () => {
 
 // ==================== 区域C：绩效分析 ====================
 const bubbleIndicator = ref('gmv')
-const isZoomed = ref(false)
 const bubbleChartRef = ref(null)
 let bubbleChart = null
 
@@ -819,16 +840,6 @@ const getBubbleXLabel = () => {
   return '增长率（%）'
 }
 
-const handleZoomSelect = () => {
-  ElMessage.info('请点击并拖拽框选区域进行放大')
-}
-
-const handleZoomBack = () => {
-  isZoomed.value = false
-  ElMessage.info('已返回全量视图')
-}
-
-// 初始化气泡图
 const initBubbleChart = () => {
   if (bubbleChartRef.value) {
     bubbleChart = echarts.init(bubbleChartRef.value)
@@ -1174,14 +1185,33 @@ const removeStatSelected = (id) => {
 }
 
 let statDraggedIndex = ref(-1)
+let statDragOverIndex = ref(-1)
+let showStatInsertIndicator = ref(false)
 
-const onStatDragStart = (idx) => { statDraggedIndex.value = idx }
+const onStatDragStart = (idx) => {
+  statDraggedIndex.value = idx
+  showStatInsertIndicator.value = true
+}
+const onStatDragOver = (idx) => {
+  statDragOverIndex.value = idx
+}
+const onStatDragLeave = () => {
+  // 不立即清除，等待 drop 或 dragend 处理
+}
 const onStatDrop = (idx) => {
-  if (statDraggedIndex.value === -1 || statDraggedIndex.value === idx) return
+  showStatInsertIndicator.value = false
+  if (statDraggedIndex.value === -1 || statDraggedIndex.value === idx) {
+    statDraggedIndex.value = -1
+    return
+  }
   const list = tempStatSelectedItems.value
   const item = list.splice(statDraggedIndex.value, 1)[0]
   list.splice(idx, 0, item)
   tempStatSelectedIds.value = list.map(x => x.id)
+  statDraggedIndex.value = -1
+}
+const onStatDragEnd = () => {
+  showStatInsertIndicator.value = false
   statDraggedIndex.value = -1
 }
 
@@ -1322,7 +1352,7 @@ $warning-amber: #F7B928;
 .filter-toolbar.is-stuck {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-.filter-row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+.filter-row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; margin: 0; }
 .filter-item { display: flex; align-items: center; flex-shrink: 0; }
 .filter-label { margin-right: 10px; color: #4e5969; font-family: PingFang SC; font-size: 13px; font-style: normal; font-weight: 400; white-space: nowrap; text-align: right; }
 .filter-select {
@@ -1331,31 +1361,7 @@ $warning-amber: #F7B928;
     height: 32px !important;
   }
 }
-.filter-item.date-filter { display: flex; align-items: center; gap: 0; margin-left: auto; }
-.date-quick-btns { display: flex; gap: 0; margin-right: 8px; }
-.quick-btn { padding: 4px 12px; font-size: 13px; cursor: pointer; color: $text-2; background: transparent; border: 1px solid #d9d9d9; transition: all $fast; border-radius: 0;
-  &:hover { color: $primary; }
-  &.active { background: #e6f4ff; color: $primary; border-color: #91caff; }
-  &:first-child { border-radius: 4px 0 0 4px; }
-  &:last-child { border-radius: 0 4px 4px 0; }
-}
-.date-range-picker {
-  :deep(.el-date-editor) {
-    height: 32px !important;
-  }
-  :deep(.el-date-editor--daterange) {
-    height: 32px !important;
-  }
-  :deep(.el-input__wrapper) {
-    height: 32px !important;
-  }
-  :deep(.el-range-editor) {
-    height: 32px !important;
-  }
-  :deep(.el-range-editor--small) {
-    height: 32px !important;
-  }
-}
+.filter-item.date-filter { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 
 // ===== 通用 Section =====
 .section-block { background: $white; border-radius: $border-radius-lg; padding: 16px; margin: 16px 0 0; border: none; }
@@ -1384,21 +1390,20 @@ $warning-amber: #F7B928;
 .trend-down { color: #52c41a; }
 
 // ===== 区域C：绩效分析 =====
-.performance-analysis-content { display: flex; gap: 16px; }
-.bubble-chart-section { flex: 1; min-width: 0; }
-.bubble-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.performance-analysis-content { display: flex; gap: 32px; align-items: flex-start; }
+.bubble-chart-section { flex: 1; width: calc(100% - 420px - 32px); display: flex; flex-direction: column; }
+.bubble-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
 .indicator-selector { display: flex; align-items: center; gap: 8px; }
 .selector-label { font-size: 13px; color: $text-2; }
 .indicator-select { width: 180px; }
-.bubble-tools { display: flex; gap: 8px; }
 
 .bubble-chart-container {
-  height: 320px; background: $bg; border-radius: 8px; position: relative;
+  flex: 1; height: 0; min-height: 405px; background: $bg; border-radius: 8px; position: relative;
 }
 
-.top10-section { width: 280px; flex-shrink: 0; }
-.top10-title { font-size: 13px; font-weight: 600; color: $text-1; margin-bottom: 12px; }
-.top10-list { display: flex; flex-direction: column; gap: 8px; }
+.top10-section { width: 420px; flex-shrink: 0; padding: 16px; border: 1px solid #e8e8e8; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+.top10-title { font-size: 13px; font-weight: 600; color: $text-1; margin-bottom: 12px; flex-shrink: 0; }
+.top10-list { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
 .top10-item { display: flex; align-items: center; gap: 8px; padding: 8px; background: $bg; border-radius: 6px; }
 .top10-rank {
   width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
@@ -1411,11 +1416,13 @@ $warning-amber: #F7B928;
 .top10-trend { font-size: 12px; &.trend-up { color: $success-green; } &.trend-down { color: $error-red; } }
 
 // ===== 区域D：绩效统计 =====
+.toolbar-content { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 16px; }
 .toolbar-actions { display: flex; align-items: center; gap: 12px; }
 .toolbar-actions :deep(.el-button--small) {
   height: 32px;
   font-size: 14px;
-  padding: 8px 14px;
+  padding: 5px 11px;
+  margin: 0;
 }
 
 // 数据概览配置按钮
@@ -1425,11 +1432,12 @@ $warning-amber: #F7B928;
   font-size: 14px;
   padding: 8px 14px;
 }
-.tab-toggle { display: flex; border: none; border-radius: 4px; overflow: hidden; }
+.tab-toggle { display: flex; border: 1px solid $border; border-radius: 4px; overflow: hidden; }
 .toggle-btn {
   padding: 4px 14px; font-size: 13px; cursor: pointer; color: $text-2; background: #fff;
   border-right: 1px solid $border; transition: all $fast;
   &:last-child { border-right: none; }
+  &:hover { background: #f0f7ff; color: $primary; }
   &.active { background: $primary; color: #fff; }
 }
 

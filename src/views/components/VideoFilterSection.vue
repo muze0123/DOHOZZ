@@ -121,10 +121,7 @@
             />
           </el-select>
         </div>
-        <div class="filter-item filter-actions">
-          <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
-          <el-button size="small" @click="handleReset">重置</el-button>
-        </div>
+        <FilterActions ml @query="handleQuery" @reset="handleReset" />
       </div>
     </div>
   </div>
@@ -132,6 +129,7 @@
 
 <script setup>
 import { reactive, watch } from 'vue'
+import FilterActions from '@/components/FilterActions.vue'
 
 const props = defineProps({
   filterParams: {

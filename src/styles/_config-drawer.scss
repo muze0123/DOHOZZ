@@ -204,7 +204,7 @@
   cursor: grab;
   font-size: 13px;
   color: #050505;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s, background-color 0.2s;
 
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -216,6 +216,28 @@
 
   &:active {
     cursor: grabbing;
+  }
+
+  // 拖拽中：被拖动的元素样式
+  &.is-being-dragged {
+    opacity: 0.5;
+    transform: scale(0.98);
+  }
+
+  // 拖拽悬停：显示插入位置（蓝色背景白色字体）
+  &.is-dragging {
+    background-color: #1677ff;
+    color: #fff;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
+
+    .drag-handle {
+      fill: #fff;
+    }
+
+    .delete-icon svg {
+      fill: #fff;
+    }
   }
 }
 
