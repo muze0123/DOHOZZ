@@ -72,30 +72,31 @@
       </div>
     </div>
 
-    <!-- List Header -->
-    <div class="list-header">
-      <div class="list-title">
-        <span class="title-text">今日推荐</span>
-        <span class="title-date">{{ todayDate }}</span>
-        <el-tooltip content="根据店铺信息和历史数据智能匹配">
-          <el-icon class="title-tip"><QuestionFilled /></el-icon>
-        </el-tooltip>
+    <div class="list-container">
+      <!-- List Header -->
+      <div class="list-header">
+        <div class="list-title">
+          <span class="title-text">今日推荐</span>
+          <span class="title-date">{{ todayDate }}</span>
+          <el-tooltip content="根据店铺信息和历史数据智能匹配">
+            <el-icon class="title-tip"><QuestionFilled /></el-icon>
+          </el-tooltip>
+        </div>
+        <div class="list-count">
+          <span class="count-text">
+            剩余 <span class="highlight">{{ recommendationStats.totalInfluencers - displayedCount }}</span> / 全量
+            {{ recommendationStats.totalInfluencers }} 达人
+          </span>
+        </div>
       </div>
-      <div class="list-count">
-        <span class="count-text">
-          剩余 <span class="highlight">{{ recommendationStats.totalInfluencers - displayedCount }}</span> / 全量
-          {{ recommendationStats.totalInfluencers }} 达人
-        </span>
-      </div>
-    </div>
 
-    <!-- Recommendation Cards -->
-    <div class="card-list">
-      <div
-        v-for="card in cardList"
-        :key="card.id"
-        class="recommendation-card"
-      >
+      <!-- Recommendation Cards -->
+      <div class="card-list">
+        <div
+          v-for="card in cardList"
+          :key="card.id"
+          class="recommendation-card"
+        >
         <!-- Card Main Area -->
         <div class="card-main">
           <!-- Row 1: Avatar + Name + Contact icon + Level tag -->
@@ -317,6 +318,7 @@
               {{ card.isFollowed ? '已跟进' : '跟进' }}
             </el-button>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -1085,14 +1087,19 @@ onUnmounted(() => {
   color: var(--color-primary);
 }
 
+.list-container {
+  background: #fff;
+  border-radius: 8px;
+}
+
 /* List Header */
 .list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: #fff;
-  border-radius: 8px;
+  background: transparent;
+  border-radius: 0;
   margin-bottom: 16px;
 }
 

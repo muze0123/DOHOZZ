@@ -30,3 +30,21 @@ If you're using Codex or another agent-capable tool, additional project-scoped h
 Managed by Trellis. Edits outside this block are preserved; edits inside may be overwritten by a future `trellis update`.
 
 <!-- TRELLIS:END -->
+
+
+<claude-mem-context>
+# Memory Context
+
+# [DOHOZZ] recent context, 2026-05-14 4:55pm GMT+8
+
+Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision
+Format: ID TIME TYPE TITLE
+Fetch details: get_observations([IDs]) | Search: mem-search skill
+
+Stats: 1 obs (83t read) | 10,596t work | 99% savings
+
+### May 14, 2026
+1791 4:54p 🟣 SmartRecommendation.vue list-header 和 card-list 容器化需求
+
+Access 11k tokens of past work via get_observations([IDs]) or mem-search skill.
+</claude-mem-context>
