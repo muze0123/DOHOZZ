@@ -572,8 +572,9 @@ $border-radius-lg: 12px;
   padding: 16px 16px;
   margin-left: -16px;
   margin-right: -16px;
-  background: $white;
-  border-bottom: 1px solid $divider;
+  margin-top: -16px;
+  background: #FFFFFF;
+  border-bottom: 0px;
 }
 
 .header-left {
@@ -614,16 +615,19 @@ $border-radius-lg: 12px;
   display: flex;
   gap: 16px;
   align-items: flex-start;
+  height: 100%;
 }
 
 .left-panel {
   flex: 2;
   min-width: 0;
+  height: 100%;
 }
 
 .right-panel {
   flex: 3;
   flex-shrink: 0;
+  height: 100%;
 }
 
 // 区块B：包含预览和操作按钮
@@ -631,7 +635,9 @@ $border-radius-lg: 12px;
   background: $white;
   border-radius: $border-radius-lg;
   padding: 16px;
-  border: 1px solid $divider;
+  border: 0px;
+  height: 100%;
+  min-height: 750px;
 }
 
 // 区块A：包含所有子区块的大区块
@@ -639,7 +645,9 @@ $border-radius-lg: 12px;
   background: $white;
   border-radius: $border-radius-lg;
   padding: 16px;
-  border: 1px solid $divider;
+  border: 0px;
+  height: 100%;
+  min-height: 750px;
 }
 
 .sub-section {

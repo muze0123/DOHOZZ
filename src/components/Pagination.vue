@@ -230,7 +230,7 @@ const handleSizeChange = (val) => {
 }
 
 .page-size-select {
-  width: 90px;
+  width: 90px !important;
   margin-left: 8px;
 
   :deep(.el-select__wrapper) {

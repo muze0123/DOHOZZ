@@ -73,24 +73,25 @@
     </div>
 
     <!-- List Header -->
-    <div class="list-header">
-      <div class="list-title">
-        <span class="title-text">今日推荐</span>
-        <span class="title-date">{{ todayDate }}</span>
-        <el-tooltip content="根据店铺信息和历史数据智能匹配">
-          <el-icon class="title-tip"><QuestionFilled /></el-icon>
-        </el-tooltip>
+    <div class="list-container">
+      <div class="list-header">
+        <div class="list-title">
+          <span class="title-text">今日推荐</span>
+          <span class="title-date">{{ todayDate }}</span>
+          <el-tooltip content="根据店铺信息和历史数据智能匹配">
+            <el-icon class="title-tip"><QuestionFilled /></el-icon>
+          </el-tooltip>
+        </div>
+        <div class="list-count">
+          <span class="count-text">
+            剩余 <span class="highlight">{{ recommendationStats.totalInfluencers - displayedCount }}</span> / 全量
+            {{ recommendationStats.totalInfluencers }} 达人
+          </span>
+        </div>
       </div>
-      <div class="list-count">
-        <span class="count-text">
-          剩余 <span class="highlight">{{ recommendationStats.totalInfluencers - displayedCount }}</span> / 全量
-          {{ recommendationStats.totalInfluencers }} 达人
-        </span>
-      </div>
-    </div>
 
-    <!-- Recommendation Cards -->
-    <div class="card-list">
+      <!-- Recommendation Cards -->
+      <div class="card-list">
       <div
         v-for="card in cardList"
         :key="card.id"
@@ -934,7 +935,7 @@ onUnmounted(() => {
   background: #fff;
   border-radius: 8px 8px 0 0;
   margin: 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .tab-left {
@@ -1085,6 +1086,15 @@ onUnmounted(() => {
   color: var(--color-primary);
 }
 
+/* List Container */
+.list-container {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #fff;
+  border-radius: 12px;
+}
+
 /* List Header */
 .list-header {
   display: flex;
@@ -1092,8 +1102,8 @@ onUnmounted(() => {
   align-items: center;
   padding: 12px 16px;
   background: #fff;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  border-radius: 0;
+  margin: 0;
 }
 
 .list-title {

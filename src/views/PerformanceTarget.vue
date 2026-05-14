@@ -696,4 +696,10 @@ onMounted(() => {
   background: #E8F4FF;
 }
 
+:deep(.el-table th.el-table__cell) {
+  background-color: $background-light;
+  color: $text-primary;
+  font-weight: 600;
+  font-size: 13px;
+}
 </style>

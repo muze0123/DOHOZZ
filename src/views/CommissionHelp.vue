@@ -136,8 +136,8 @@ $border-radius-lg: 12px;
   padding: 16px 16px;
   margin-left: -16px;
   margin-right: -16px;
+  margin-top: -16px;
   background: $white;
-  border-bottom: 1px solid $divider;
 }
 
 .header-left {
@@ -171,8 +171,8 @@ $border-radius-lg: 12px;
 }
 
 .help-content {
-  padding: 24px;
-  max-width: 1200px;
+  padding: 0;
+  max-width: 1590px;
 }
 
 .section {
@@ -181,6 +181,11 @@ $border-radius-lg: 12px;
   padding: 16px;
   margin: 0 0 16px 0;
   border: 1px solid $divider;
+}
+
+.intro-section {
+  border: 0;
+  margin-top: 16px;
 }
 
 .section-heading {
@@ -205,6 +210,7 @@ $border-radius-lg: 12px;
 }
 
 .step-section {
+  border: 0;
   .step-header {
     display: flex;
     align-items: center;

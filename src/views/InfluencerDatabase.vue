@@ -4,17 +4,7 @@
     <div class="header-section">
       <!-- 平台Tab -->
       <div class="platform-row">
-        <div class="platform-tabs">
-          <div
-            v-for="tab in store.platformTabs"
-            :key="tab.key"
-            class="platform-tab"
-            :class="{ active: store.activePlatform === tab.key }"
-            @click="handlePlatformChange(tab.key)"
-          >
-            <span>{{ tab.label }}</span>
-          </div>
-        </div>
+        <PlatformTabs v-model="store.activePlatform" @change="handlePlatformChange" />
         <div class="platform-actions">
           <el-button link type="primary" @click="toggleFilter" class="collapse-btn">
             {{ store.isFilterExpanded ? '收起筛选' : '展开筛选' }}
@@ -422,6 +412,7 @@ import PluginFinderDialog from './dialogs/PluginFinderDialog.vue'
 import AddInfluencerDialog from './dialogs/AddInfluencerDialog.vue'
 import TaskListDialog from './dialogs/TaskListDialog.vue'
 import Pagination from '@/components/Pagination.vue'
+import PlatformTabs from '@/components/PlatformTabs.vue'
 
 const store = useInfluencerDatabaseStore()
 
@@ -582,7 +573,7 @@ function formatSales(num) {
 
 // ==================== 头部区域：平台Tab + 搜索 + Sub-Tab ====================
 .header-section {
-  margin-top: 16px;
+  margin: 0;
   background: #fff;
   border: none;
   border-radius: 8px;
