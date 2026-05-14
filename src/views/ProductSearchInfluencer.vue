@@ -677,20 +677,21 @@ $text-placeholder: #BFBFBF;
 $text-hint: #8C8C8C;
 $border-default: #D9D9D9;
 $border-light: #EBEBEB;
-$bg-page: #F5F6F8;
+$bg-page: #FAFAFA;
 $bg-card: #FFFFFF;
 
 .product-search-influencer {
-  width: 100%;
-  min-height: 100%;
-  background: #f5f5f5;
-  padding: 16px 0 24px;
+  min-height: 805px;
+  min-height: min(805px, calc(100vh - 60px - 32px));
+  background: #ffffff;
+  padding: 16px 24px;
+  border-radius: 8px;
 }
 
 .page-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 // 初始态样式

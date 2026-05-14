@@ -547,52 +547,48 @@ $bg-page: #FAFAFA;
 $bg-card: #FFFFFF;
 
 .brand-discovery {
-  width: 100%;
-  min-height: 100%;
-  background: $bg-page;
-  padding: 16px 0 24px;
+  min-height: 805px;
+  min-height: min(805px, calc(100vh - 60px - 32px));
+  background: #ffffff;
+  padding: 16px 24px;
+  border-radius: 8px;
 }
 
-// 初始态样式
+// 初始态样式（与商品找达人一致）
 .search-initial-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 120px;
-  min-height: 60vh;
+  justify-content: center;
+  padding-top: 100px;
 }
 
 .search-inner {
-  width: 480px;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .page-title {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   color: $text-primary;
-  text-align: center;
-  margin-bottom: 28px;
-  letter-spacing: 0;
+  margin-bottom: 24px;
 }
 
 .result-page-title {
   font-size: 20px;
   font-weight: 600;
   color: $text-primary;
-  text-align: center;
   margin-bottom: 16px;
 }
 
 .search-bar {
   display: flex;
-  align-items: center;
   width: 100%;
-  margin-bottom: 16px;
-  gap: 0;
 }
 
 .result-search-bar {
-  margin-bottom: 0;
+  width: 600px;
 }
 
 .search-input-wrapper {
@@ -603,10 +599,10 @@ $bg-card: #FFFFFF;
 .search-input {
   width: 100%;
   height: 40px;
-  padding: 0 36px 0 12px;
+  padding: 0 40px 0 12px;
   border: 1px solid $border-default;
   border-right: none;
-  border-radius: 4px 0 0 4px;
+  border-radius: 6px 0 0 6px;
   font-size: 14px;
   color: $text-primary;
   outline: none;
@@ -617,19 +613,21 @@ $bg-card: #FFFFFF;
 
   &:focus {
     border-color: $primary-blue;
-    box-shadow: none;
   }
 }
 
 .search-clear-icon {
   position: absolute;
-  right: 80px;
+  right: 100px;
   top: 50%;
   transform: translateY(-50%);
   width: 16px;
   height: 16px;
   cursor: pointer;
   color: $text-placeholder;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     color: $text-secondary;
@@ -637,11 +635,11 @@ $bg-card: #FFFFFF;
 }
 
 .btn-search {
-  width: 72px;
+  width: 88px;
   height: 40px;
   background: $primary-blue;
   border: none;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 6px 6px 0;
   color: #fff;
   font-size: 14px;
   font-weight: 500;
@@ -654,6 +652,7 @@ $bg-card: #FFFFFF;
 }
 
 .search-history {
+  margin-top: 16px;
   width: 100%;
 }
 
@@ -672,20 +671,17 @@ $bg-card: #FFFFFF;
 .history-tag {
   display: inline-flex;
   align-items: center;
-  height: 28px;
-  padding: 0 10px;
-  background: #F5F5F5;
-  border-radius: 14px;
+  padding: 4px 10px;
+  background: #F0F2F5;
+  border-radius: 4px;
   font-size: 13px;
   color: $text-secondary;
   cursor: pointer;
   gap: 6px;
-  border: 1px solid $border-light;
   transition: all 0.15s;
 
   &:hover {
     background: $light-blue-bg;
-    border-color: $light-blue-border;
     color: $primary-blue;
   }
 }
@@ -694,7 +690,6 @@ $bg-card: #FFFFFF;
   width: 14px;
   height: 14px;
   color: $text-placeholder;
-  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -715,12 +710,11 @@ $bg-card: #FFFFFF;
 }
 
 .search-result-top {
-  padding-top: 32px;
-  padding-bottom: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: $bg-card;
+  padding-bottom: 16px;
+  background: #fff;
   border-radius: 8px 8px 0 0;
   border: none;
   border-bottom: none;
