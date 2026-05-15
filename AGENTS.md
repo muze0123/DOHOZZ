@@ -35,16 +35,17 @@ Managed by Trellis. Edits outside this block are preserved; edits inside may be 
 <claude-mem-context>
 # Memory Context
 
-# [DOHOZZ] recent context, 2026-05-14 4:55pm GMT+8
+# [DOHOZZ] recent context, 2026-05-15 3:34pm GMT+8
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 1 obs (83t read) | 10,596t work | 99% savings
+Stats: 2 obs (162t read) | 16,969t work | 99% savings
 
 ### May 14, 2026
 1791 4:54p 🟣 SmartRecommendation.vue list-header 和 card-list 容器化需求
+1793 4:57p 🔵 DOHOZZ项目使用trellis开发规范框架
 
-Access 11k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 17k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

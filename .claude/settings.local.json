@@ -62,7 +62,8 @@
       "Bash(xxd)",
       "Bash(md5 /Users/zhangbin/Documents/DOHOZZ/src/views/SmartRecommendation.vue)",
       "Bash(md5 /Users/zhangbin/Documents/DOHOZZ/src/views/SmartRecommendation.vue.bak)",
-      "Bash(md5 /Users/zhangbin/Documents/DOHOZZ/src/views/SmartRecommendation.vue.test)"
+      "Bash(md5 /Users/zhangbin/Documents/DOHOZZ/src/views/SmartRecommendation.vue.test)",
+      "Bash(read d:*)"
     ]
   }
 }
