@@ -408,24 +408,54 @@ onMounted(async () => {
 }
 
 .login-form {
+  width: 400px;
+  max-width: 100%;
+
   :deep(.el-form-item) {
+    width: 400px;
+    max-width: 100%;
     margin-bottom: 24px;
   }
 
+  :deep(.el-form-item__content) {
+    flex: none;
+    width: 400px;
+    max-width: 400px;
+  }
+
   :deep(.el-input) {
+    position: relative;
+    display: inline-block;
+    width: 400px !important;
+    max-width: 100%;
+    height: 52px;
+    font-size: 14px;
     --el-input-height: 52px;
+    --el-input-border-radius: 12px;
   }
 
   :deep(.el-input__wrapper) {
+    box-sizing: border-box;
+    width: 400px;
+    max-width: 100%;
+    height: 52px;
+    min-height: 52px;
     border-radius: 12px;
     box-shadow: 0 0 0 1px #e2e8f0;
     transition: all 0.15s ease;
     padding: 0 16px;
 
+    .el-input__inner {
+      height: 52px;
+      line-height: 52px;
+      font-size: 14px;
+    }
+
     .el-input__prefix,
     .el-input__suffix {
       display: flex;
       align-items: center;
+      height: 52px;
     }
 
     .el-input__prefix {
@@ -502,12 +532,35 @@ onMounted(async () => {
   }
 
   .login-form {
+    width: 100%;
+
     :deep(.el-form-item) {
+      width: 100%;
       margin-bottom: 20px;
     }
 
+    :deep(.el-form-item__content) {
+      width: 100%;
+      max-width: 100%;
+    }
+
     :deep(.el-input) {
+      max-width: 100%;
+      height: 48px;
       --el-input-height: 48px;
+    }
+
+    :deep(.el-input__wrapper) {
+      width: 100%;
+      height: 48px;
+      min-height: 48px;
+
+      .el-input__inner,
+      .el-input__prefix,
+      .el-input__suffix {
+        height: 48px;
+        line-height: 48px;
+      }
     }
   }
 
@@ -541,7 +594,20 @@ onMounted(async () => {
     }
 
     :deep(.el-input) {
+      height: 44px;
       --el-input-height: 44px;
+    }
+
+    :deep(.el-input__wrapper) {
+      height: 44px;
+      min-height: 44px;
+
+      .el-input__inner,
+      .el-input__prefix,
+      .el-input__suffix {
+        height: 44px;
+        line-height: 44px;
+      }
     }
   }
 
