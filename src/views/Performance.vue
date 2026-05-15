@@ -1377,8 +1377,8 @@ $warning-amber: #F7B928;
 
 // ===== 区域B：KPI =====
 .kpi-cards-scroll { margin: 0 -4px; padding-bottom: 4px; }
-.kpi-cards { display: flex; gap: 12px; flex-wrap: wrap; }
-.kpi-card { width: 369.156px; height: 114px; padding: 16px; background: $bg; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+.kpi-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(148.5px, 242.5px)); gap: 12px; max-width: calc(242.5px * 6 + 12px * 5); }
+.kpi-card { box-sizing: border-box; width: 100%; min-width: 148.5px; max-width: 242.5px; height: 114px; padding: 16px; background: $bg; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
   &:hover { border-color: #d6e4ff; }
   &.selected { border-color: $primary; background: #f0f7ff; }
 }
